@@ -6,6 +6,8 @@
     <title>z老师的数学每日一题</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.6/viewer.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.6/viewer.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/@waline/client@v3/dist/waline.css" />
+    <script src="https://unpkg.com/@waline/client@v3/dist/waline.js"></script>
     <style>
         body { margin: 0; padding: 0; background-color: #f5f5f7; display: flex; flex-direction: column; align-items: center; min-height: 100vh; font-family: -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; }
         .header { background: linear-gradient(135deg, #0071e3, #005bb5); color: white; width: 100%; text-align: center; padding: 18px 0; font-size: 20px; font-weight: bold; box-shadow: 0 4px 12px rgba(0,71,227,0.15); position: sticky; top: 0; z-index: 100; letter-spacing: 1px; }
@@ -29,13 +31,35 @@
         .download-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; margin-top: 15px; width: 100%; background: #f5f5f7; color: #0071e3; border: none; padding: 12px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; border: 1px solid rgba(0,113,227,0.15); }
         .resource-card { text-align: left; padding: 18px; border-left: 5px solid #ff9500; }
         .resource-title { font-size: 16px; color: #1d1d1f; font-weight: bold; margin-bottom: 6px; }
-        .resource-btn { background: #fff3e0; color: #ff9500; border: 1px solid rgba(255,149,0,0.2); margin-top: 8px; }
         .empty-state { text-align: center; padding: 60px 20px; color: #86868b; font-size: 15px; }
         .empty-icon { font-size: 48px; margin-bottom: 12px; display: block; }
         .footer { margin-top: auto; padding: 30px 0; color: #86868b; font-size: 12px; text-align: center; width: 100%; background-color: #f5f5f7; }
+
+        /* 锁屏弹窗样式 */
+        #auth-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(245, 245, 247, 0.96); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); z-index: 9999; display: flex; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; }
+        .auth-box { background: white; padding: 30px 24px; border-radius: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); text-align: center; max-width: 360px; width: 100%; border: 1px solid rgba(0,0,0,0.03); }
+        .auth-icon { font-size: 40px; margin-bottom: 15px; display: block; }
+        .auth-title { font-size: 18px; color: #1d1d1f; font-weight: bold; margin-bottom: 8px; }
+        .auth-subtitle { font-size: 13px; color: #86868b; margin-bottom: 20px; }
+        .auth-input { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid #d2d2d7; font-size: 16px; text-align: center; box-sizing: border-box; margin-bottom: 15px; outline: none; }
+        .auth-btn { width: 100%; background: #0071e3; color: white; border: none; padding: 14px; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; }
+        
+        /* 🌟 留言板定制美化 */
+        #comment-wrapper { background: white; border-radius: 20px; padding: 20px 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.04); margin-top: 25px; border: 1px solid rgba(0,0,0,0.02); }
+        .wl-meta-head { background: #0071e3 !important; }
     </style>
 </head>
 <body>
+
+    <div id="auth-overlay">
+        <div class="auth-box">
+            <span class="auth-icon">🔒</span>
+            <div class="auth-title">访问受限</div>
+            <div class="auth-subtitle">请输入 Tim 老师专属访问密码</div>
+            <input type="password" id="password-input" class="auth-input" placeholder="请输入班级暗号" onkeydown="if(event.keyCode===13) checkPassword()">
+            <button class="auth-btn" onclick="checkPassword()">验证并进入</button>
+        </div>
+    </div>
 
     <div class="header">📅 z老师的数学每日一题</div>
 
@@ -60,14 +84,60 @@
                 </div>
             </div>
         </div>
+
+        <div id="comment-section" style="display: none;">
+            <div class="section-title">💬 班级匿名答疑留言板</div>
+            <div id="comment-wrapper">
+                <div id="waline"></div>
+            </div>
+        </div>
     </div>
 
     <div class="footer">锲而舍之，朽木不折；锲而不舍，金石可镂</div>
 
     <script>
-        // ⚙️ 极其关键的配置：请确保这里的用户名和仓库名与您的 GitHub 完全一致！
         const GITHUB_USER = 'appleman159'; 
         const GITHUB_REPO = 'daily-math';
+        const CORRECT_PASSWORD = '678'; // 老师可以在这里修改你的班级暗号
+
+        function checkPassword() {
+            const input = document.getElementById('password-input').value;
+            if (input === CORRECT_PASSWORD) {
+                localStorage.setItem('tim_math_auth', 'passed');
+                document.getElementById('auth-overlay').style.display = 'none';
+                initPage();
+            } else {
+                alert("❌ 密码错误！\n请重新输入，或者询问 Tim 老师。");
+                document.getElementById('password-input').value = '';
+            }
+        }
+
+        window.onload = function() {
+            if (localStorage.getItem('tim_math_auth') === 'passed') {
+                document.getElementById('auth-overlay').style.display = 'none';
+                initPage();
+            }
+        }
+
+        // 解锁后初始化的总闸门
+        function initPage() {
+            loadGitHubData();
+            initWaline(); // 🌟 全自动拉起留言板
+        }
+
+        // 🌟 初始化留言板的核心逻辑（由免费云服务器全自动托管）
+        function initWaline() {
+            document.getElementById('comment-section').style.display = 'block';
+            Waline.init({
+                el: '#waline',
+                serverURL: 'https://comment.qzm.cc.cd', // 🚀 纯免费的独立后台服务
+                login: 'disable', // 🔒 开启极致偷懒：学生免登录，直接输入名字就能留言
+                placeholder: '考点卡壳了？步骤看不懂？欢迎在这里匿名提问，Tim老师会为你在线答疑！',
+                requiredFields: ['nick'], // 强制学生写个名字（哪怕是小明、匿名也行），方便老师辨认
+                emoji: false, // 关闭花里胡哨的表情包，保持高三高效刷题清爽氛围
+                search: false
+            });
+        }
 
         function switchTab(pageId, btnEl) {
             document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
@@ -81,118 +151,41 @@
             return dStr.substring(0,4) + '年' + dStr.substring(4,6) + '月' + dStr.substring(6,8) + '日';
         }
 
-        // 核心自动化扫描：利用 GitHub API 全自动读取仓库文件
-        const apiUrl = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/`;
-        const todayStr = new Date().toISOString().slice(0,10).replace(/-/g,"");
-        const timestamp = new Date().getTime();
+        function loadGitHubData() {
+            const apiUrl = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/`;
+            const todayStr = new Date().toISOString().slice(0,10).replace(/-/g,"");
+            const timestamp = new Date().getTime();
 
-        fetch(apiUrl)
-        .then(response => response.json())
-        .then(files => {
-            if (!Array.isArray(files)) return;
-
-            // 1. 分流出“题目图片”、“资料PDF”和“答案PDF”
-            let imgDates = [];
-            let resourceList = [];
-            let pdfAnswers = new Set();
-
-            files.forEach(file => {
-                const name = file.name;
-                if (name.endsWith('.jpg') || name.endsWith('.jpeg') || name.endsWith('.png')) {
-                    const datePart = name.split('.')[0];
-                    if (/^\d{8}$/.test(datePart)) imgDates.push(datePart);
-                } else if (name.endsWith('.pdf')) {
-                    if (name.includes('资料')) {
-                        resourceList.push(name);
-                    } else {
-                        pdfAnswers.add(name.split('.')[0]);
+            fetch(apiUrl)
+            .then(response => response.json())
+            .then(files => {
+                if (!Array.isArray(files)) return;
+                let imgDates = []; let resourceList = []; let pdfAnswers = new Set();
+                files.forEach(file => {
+                    const name = file.name;
+                    if (name.endsWith('.jpg') || name.endsWith('.jpeg') || name.endsWith('.png')) {
+                        const datePart = name.split('.')[0];
+                        if (/^\d{8}$/.test(datePart)) imgDates.push(datePart);
+                    } else if (name.endsWith('.pdf')) {
+                        if (name.includes('资料')) { resourceList.push(name); } else { pdfAnswers.add(name.split('.')[0]); }
                     }
-                }
-            });
-
-            // 2. 渲染【提分干货】资料页
-            const resourceBox = document.getElementById('resource-box');
-            if (resourceList.length > 0) {
-                resourceBox.innerHTML = ''; // 擦除“暂无资料”
-                resourceList.sort().reverse().forEach(fileName => {
-                    const displayName = fileName.replace('资料-', '').replace('.pdf', '');
-                    resourceBox.insertAdjacentHTML('beforeend', `
-                        <div class="card resource-card">
-                            <div class="resource-title">📄 ${displayName}</div>
-                            <button class="download-btn" style="background:#fff3e0; color:#ff9500; border:1px solid rgba(255,149,0,0.2);" onclick="window.location.href='./${fileName}'">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-                                点击直接下载/打印 PDF 讲义
-                            </button>
-                        </div>
-                    `);
                 });
-            }
 
-            // 3. 排序并渲染【每日一题】
-            if (imgDates.length === 0) {
-                document.getElementById('math-empty').style.display = 'block';
-                return;
-            }
-
-            imgDates.sort().reverse(); // 按日期从新到旧排序
-
-            const previewBox = document.getElementById('preview-box');
-            const todayBox = document.getElementById('today-box');
-            const historyBox = document.getElementById('history-box');
-            let hasToday = false;
-
-            imgDates.forEach(date => {
-                let sectionBox, badgeHTML;
-                const ext = files.find(f => f.name.startsWith(date))?.name.split('.').pop() || 'jpg';
-                const imgUrl = `./${date}.${ext}?t=${timestamp}`;
-                const hasPdf = pdfAnswers.has(date);
-
-                if (date > todayStr) {
-                    sectionBox = previewBox;
-                    document.getElementById('preview-section').style.display = 'block';
-                    badgeHTML = `<span class="badge badge-preview">🔮 提前预习</span>`;
-                } else if (date === todayStr || !hasToday) {
-                    sectionBox = todayBox;
-                    document.getElementById('today-section').style.display = 'block';
-                    badgeHTML = `<span class="badge badge-today">📌 今日最新</span>`;
-                    hasToday = true;
-                } else {
-                    sectionBox = historyBox;
-                    document.getElementById('history-section').style.display = 'block';
-                    badgeHTML = `<span class="badge badge-history">📚 历史复习</span>`;
+                const resourceBox = document.getElementById('resource-box');
+                if (resourceList.length > 0) {
+                    resourceBox.innerHTML = '';
+                    resourceList.sort().reverse().forEach(fileName => {
+                        const displayName = fileName.replace('资料-', '').replace('.pdf', '');
+                        resourceBox.insertAdjacentHTML('beforeend', `
+                            <div class="card resource-card">
+                                <div class="resource-title">📄 ${displayName}</div>
+                                <button class="download-btn" style="background:#fff3e0; color:#ff9500; border:1px solid rgba(255,149,0,0.2);" onclick="window.location.href='./${fileName}'">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                                    点击直接下载/打印 PDF 讲义
+                                </button>
+                            </div>
+                        `);
+                    });
                 }
 
-                sectionBox.insertAdjacentHTML('beforeend', `
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="card-date">${formatDate(date)}</div>
-                            ${badgeHTML}
-                        </div>
-                        <img class="math-img" src="${imgUrl}" alt="数学题">
-                        <div class="hint">🔍 点击图片可放大 / 双指可缩放</div>
-                        <button class="download-btn" onclick="downloadPDF('${date}', ${hasPdf})">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-                            📥 下载本题答案(如果有的话)
-                        </button>
-                    </div>
-                `);
-            });
-
-            // 激活放大缩放
-            document.querySelectorAll('.math-img').forEach(img => {
-                new Viewer(img, { navbar: false, title: false, toolbar: { zoomIn: 1, zoomOut: 1, oneToOne: 1, reset: 1 } });
-            });
-        }).catch(err => {
-            console.error("全自动读取网盘失败:", err);
-        });
-
-        function downloadPDF(date, hasPdf) {
-            if (hasPdf) {
-                window.location.href = `./${date}.pdf`;
-            } else {
-                alert("💡 Tim老师温馨提示：\n该题暂未上传独立答案文件，学生可直接点击上方图片放大查看！");
-            }
-        }
-    </script>
-</body>
-</html>
+                if (img
