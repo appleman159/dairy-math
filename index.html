@@ -84,27 +84,33 @@
         </div>
 
         <div id="resource-page" class="page-content">
-            <div id="resource-box">
-                <div class="empty-state">
-                    <span class="empty-icon">📂</span><strong>暂无资料</strong><br>
-                    <span style="font-size: 13px; color: #b0b0b5; margin-top: 5px; display: block;">老师正在连夜整理高考核心提分秘籍，敬请期待！</span>
-                </div>
-            </div>
+            <div id="resource-box"></div>
         </div>
     </div>
 
     <div class="footer">锲而舍之，朽木不折；锲而不舍，金石可镂</div>
 
     <script>
-        const GITHUB_USER = 'appleman159'; 
-        const GITHUB_REPO = 'daily-math';
         const CORRECT_PASSWORD = '678'; 
 
-        // 🌟【超级硬核备用底牌】：如果全自动扫描被 GitHub 接口限流卡住，
-        // 网页会雷打不动地强行把写在这里的资料和日期渲染出来，确保 100% 成功率！
-        const manualResources = [
+        // 🚀【Z老师的日常点名册】—— 今后您发了新题或新资料，只需在这里填一下，0延时绝对秒开！
+        // 1. 题目图片大名单（放在 images 文件夹里，支持.jpg或.png）
+        const myImages = [
+            '20260617.jpg',
+            '20260616.jpg',
+            '20260615.jpg'
+        ];
+
+        // 2. 答案大名单（放在 answers 文件夹里，名字和上面一模一样）
+        const myAnswers = [
+            '20260615.pdf' // 如果传了答案就写在这，没传就不写
+        ];
+
+        // 3. 干货提分资料大名单（放在 resources 文件夹里）
+        const myResources = [
             '资料-课后习题答案(2019人A版).pdf'
         ];
+
 
         function checkPassword() {
             const input = document.getElementById('password-input').value;
@@ -142,120 +148,89 @@
             const todayStr = new Date().toISOString().slice(0,10).replace(/-/g,"");
             const timestamp = new Date().getTime();
             
-            let autoDates = [];
-            for (let i = 5; i >= -90; i--) {
-                const targetDate = new Date();
-                targetDate.setDate(targetDate.getDate() + i);
-                const yyyy = targetDate.getFullYear();
-                const mm = String(targetDate.getMonth() + 1).padStart(2, '0');
-                const dd = String(targetDate.getDate()).padStart(2, '0');
-                autoDates.push(`${yyyy}${mm}${dd}`);
-            }
-
-            const apiUrl = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/?_=${timestamp}`;
-            
-            fetch(apiUrl)
-            .then(res => {
-                if(!res.ok) throw new Error("Rate limit");
-                return res.json();
-            })
-            .then(files => {
-                let imgDates = []; 
-                let resourceList = [...manualResources]; // 🌟 先吞入硬核备份名单，确保绝不落空
-                let pdfAnswers = new Set();
-                
-                if (Array.isArray(files)) {
-                    files.forEach(file => {
-                        const name = file.name;
-                        if (name.endsWith('.jpg') || name.endsWith('.jpeg') || name.endsWith('.png')) {
-                            const datePart = name.split('.')[0];
-                            if (/^\d{8}$/.test(datePart)) imgDates.push(datePart);
-                        } else if (name.endsWith('.pdf')) {
-                            if (name.includes('资料')) {
-                                if(!resourceList.includes(name)) resourceList.push(name);
-                            } else {
-                                pdfAnswers.add(name.split('.')[0]);
-                            }
-                        }
-                    });
-                }
-                buildDOM(imgDates.length > 0 ? imgDates : autoDates, resourceList, pdfAnswers, todayStr, timestamp);
-            })
-            .catch(() => {
-                // 🌟【绝境死士防线】一旦 GitHub 接口由于频繁刷新报错，立马启用备用引擎无缝渲染
-                buildDOM(autoDates, manualResources, new Set(), todayStr, timestamp);
-            });
-        }
-
-        function buildDOM(imgDates, resourceList, pdfAnswers, todayStr, timestamp) {
+            // 🚀 1. 渲染提分干货（从 resources 文件夹抓取）
             const resourceBox = document.getElementById('resource-box');
-            if (resourceList && resourceList.length > 0) {
+            if (myResources.length > 0) {
                 resourceBox.innerHTML = '';
-                resourceList.forEach(fileName => {
+                myResources.forEach(fileName => {
                     const displayName = fileName.replace('资料-', '').replace('.pdf', '');
                     resourceBox.insertAdjacentHTML('beforeend', `
                         <div class="card resource-card">
                             <div class="resource-title">📄 ${displayName}</div>
-                            <button class="download-btn" style="background:#fff3e0; color:#ff9500; border:1px solid rgba(255,149,0,0.2);" onclick="window.location.href='./${fileName}'">
+                            <button class="download-btn" style="background:#fff3e0; color:#ff9500; border:1px solid rgba(255,149,0,0.2);" onclick="window.location.href='./resources/${fileName}'">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
                                 点击直接下载/打印 PDF 讲义
                             </button>
                         </div>
                     `);
                 });
+            } else {
+                resourceBox.innerHTML = `
+                    <div class="empty-state">
+                        <span class="empty-icon">📂</span><strong>暂无资料</strong><br>
+                        <span style="font-size: 13px; color: #b0b0b5; margin-top: 5px; display: block;">老师正在连夜整理高考核心提分秘籍，敬请期待！</span>
+                    </div>`;
             }
 
-            imgDates.sort().reverse();
+            // 🚀 2. 渲染每日一题（从 images 文件夹抓取，自动按顺序分流）
             const previewBox = document.getElementById('preview-box'); 
             const todayBox = document.getElementById('today-box'); 
             const historyBox = document.getElementById('history-box'); 
             
             previewBox.innerHTML = ''; todayBox.innerHTML = ''; historyBox.innerHTML = '';
+            
+            // 按日期从新到旧排个序
+            myImages.sort().reverse();
             let todayMarked = false;
 
-            imgDates.forEach(date => {
-                const imgUrl = `./${date}.jpg?t=${timestamp}`;
-                const hasPdf = pdfAnswers.has(date);
+            myImages.forEach(fileName => {
+                const date = fileName.split('.')[0];
+                const imgUrl = `./images/${fileName}?t=${timestamp}`;
+                const hasPdf = myAnswers.includes(`${date}.pdf`);
                 
-                const imgCheck = new Image();
-                imgCheck.src = imgUrl;
-                imgCheck.onload = function() {
-                    let sectionBox, badgeHTML;
+                let sectionBox, badgeHTML;
 
-                    if (date > todayStr) {
-                        sectionBox = previewBox; document.getElementById('preview-section').style.display = 'block';
-                        badgeHTML = `<span class="badge badge-preview">🔮 提前预习</span>`;
-                    } else if (!todayMarked) {
-                        sectionBox = todayBox; document.getElementById('today-section').style.display = 'block';
-                        badgeHTML = `<span class="badge badge-today">📌 今日最新</span>`; 
-                        todayMarked = true;
-                    } else {
-                        sectionBox = historyBox; document.getElementById('history-section').style.display = 'block';
-                        badgeHTML = `<span class="badge badge-history">📚 历史复习</span>`;
-                    }
+                if (date > todayStr) {
+                    sectionBox = previewBox; document.getElementById('preview-section').style.display = 'block';
+                    badgeHTML = `<span class="badge badge-preview">🔮 提前预习</span>`;
+                } else if (!todayMarked) {
+                    sectionBox = todayBox; document.getElementById('today-section').style.display = 'block';
+                    badgeHTML = `<span class="badge badge-today">📌 今日最新</span>`; 
+                    todayMarked = true;
+                } else {
+                    sectionBox = historyBox; document.getElementById('history-section').style.display = 'block';
+                    badgeHTML = `<span class="badge badge-history">📚 历史复习</span>`;
+                }
 
-                    sectionBox.insertAdjacentHTML('beforeend', `
-                        <div class="card">
-                            <div class="card-header">
-                                <div class="card-date">${formatDate(date)}</div>
-                                ${badgeHTML}
-                            </div>
-                            <img class="math-img" src="${imgUrl}" alt="数学题" onerror="this.src='./${date}.png?t=${timestamp}'">
-                            <div class="hint">🔍 点击图片可放大 / 双指可缩放</div>
-                            <button class="download-btn" onclick="downloadPDF('${date}', ${hasPdf})">
-                                📥 下载本题答案(如果有的话)
-                            </button>
+                sectionBox.insertAdjacentHTML('beforeend', `
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-date">${formatDate(date)}</div>
+                            ${badgeHTML}
                         </div>
-                    `);
-
-                    new Viewer(sectionBox.lastElementChild.querySelector('.math-img'), { navbar: false, title: false, toolbar: { zoomIn: 1, zoomOut: 1, oneToOne: 1, reset: 1 } });
-                };
+                        <img class="math-img" src="${imgUrl}" alt="数学题">
+                        <div class="hint">🔍 点击图片可放大 / 双指可缩放</div>
+                        <button class="download-btn" onclick="downloadPDF('${date}', ${hasPdf})">
+                            📥 下载本题答案(如果有的话)
+                        </button>
+                    </div>
+                `);
             });
+
+            // 唤醒放大镜插件
+            setTimeout(() => {
+                document.querySelectorAll('.math-img').forEach(img => {
+                    new Viewer(img, { navbar: false, title: false, toolbar: { zoomIn: 1, zoomOut: 1, oneToOne: 1, reset: 1 } });
+                });
+            }, 100);
         }
 
-        // 答案下载逻辑
         function downloadPDF(date, hasPdf) {
-            if (hasPdf) { window.location.href = `./${date}.pdf`; } else { alert("💡 Z 老师温馨提示：\n该题暂未上传独立答案文件，学生可直接点击上方图片放大查看！"); }
+            if (hasPdf) { 
+                window.location.href = `./answers/${date}.pdf`; 
+            } else { 
+                alert("💡 Z 老师温馨提示：\n该题暂未在 answers 文件夹中上传独立答案 PDF，学生可直接点击上方图片放大查看！"); 
+            }
         }
     </script>
 </body>
