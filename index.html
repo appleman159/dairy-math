@@ -3,76 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tim老师的数学每日一题</title>
+    <title>z老师的数学每日一题</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.6/viewer.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.6/viewer.min.js"></script>
     <style>
         body { margin: 0; padding: 0; background-color: #f5f5f7; display: flex; flex-direction: column; align-items: center; min-height: 100vh; font-family: -apple-system, sans-serif; }
         .header { background: #0071e3; color: white; width: 100%; text-align: center; padding: 15px 0; font-size: 18px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
         .container { max-width: 600px; width: 100%; padding: 15px; box-sizing: border-box; }
-        .section-title { font-size: 16px; color: #1d1d1f; margin: 20px 0 10px 5px; font-weight: 600; display: flex; align-items: center; }
+        .section-title { font-size: 16px; color: #1d1d1f; margin: 20px 0 10px 5px; font-weight: 600; }
         .card { background: white; border-radius: 12px; padding: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); text-align: center; margin-bottom: 20px; }
         .card-date { text-align: left; font-size: 14px; color: #86868b; margin-bottom: 8px; font-weight: bold; border-left: 3px solid #0071e3; padding-left: 8px; }
-        img { max-width: 100%; height: auto; border-radius: 8px; display: block; margin: 0 auto; background-color: #fafafa; }
+        .math-img { max-width: 100%; height: auto; border-radius: 8px; display: block; margin: 0 auto; background-color: #fafafa; cursor: zoom-in; }
         .footer { margin-top: auto; padding: 20px 0; color: #86868b; font-size: 12px; text-align: center; }
-        .empty-hint { color: #86868b; font-size: 14px; padding: 30px 0; }
+        .hint { font-size: 11px; color: #0071e3; margin-top: 5px; font-weight: normal; float: right; }
     </style>
 </head>
 <body>
 
     <div class="header">📅 z老师的数学每日一题</div>
 
-    <div class="container">
-        <div class="section-title">📌 今日最新题目</div>
-        <div class="card">
-            <div id="today-date" class="card-date">正在获取今日题目...</div>
-            <img id="today-img" src="" alt="今日题目加载中...">
+    <div class="container" id="main-container">
         </div>
-
-        <div class="section-title">📚 往期回顾 (错题复习)</div>
-        <div id="history-container">
-            </div>
-    </div>
 
     <div class="footer">锲而舍之，朽木不折；锲而不舍，金石可镂</div>
 
     <script>
-        // 🛠️ 老师您看这里：在这里输入您出过题的日期列表（格式必须是 'YYYYMMDD'）
-        // 以后您每多传一张图，就在这个中括号里加一个日期，用逗号隔开
-        // 比如明天出完题，就改成：const examDates = ['20260616', '20260615'];
-        const examDates = ['20260615'];
+        // 🚀 核心自动化：网页会自动寻找并加载这几天的题目
+        // 老师，以后你只管往网盘里传图（如 20260616.jpg），如果想提前上传后面的题，直接把日期加在下面这个列表里即可！
+        const potentialDates = [
+            '20260618',
+            '20260617',
+            '20260616',
+            '20260615'
+        ];
 
-        // 自动格式化日期显示，例如 20260615 变成 2026年06月15日
         function formatDate(dStr) {
             return dStr.substring(0,4) + '年' + dStr.substring(4,6) + '月' + dStr.substring(6,8) + '日';
         }
 
+        const container = document.getElementById('main-container');
         const timestamp = new Date().getTime();
+        let isFirst = true;
 
-        if (examDates.length > 0) {
-            // 默认第一个是最新的
-            const latestDate = examDates[0];
-            document.getElementById('today-date').innerText = formatDate(latestDate) + ' (最新)';
-            document.getElementById('today-img').src = './' + latestDate + '.jpg?t=' + timestamp;
-            document.getElementById('today-img').onerror = function() {
-                this.alt = "未找到该日期的图片，请检查文件名是否为 " + latestDate + ".jpg";
-            };
-
-            // 剩下的放进历史回顾
-            const historyContainer = document.getElementById('history-container');
-            if (examDates.length > 1) {
-                for (let i = 1; i < examDates.length; i++) {
-                    const hDate = examDates[i];
-                    const card = document.createElement('div');
-                    card.className = 'card';
-                    card.innerHTML = `
-                        <div class="card-date">${formatDate(hDate)}</div>
-                        <img src="./${hDate}.jpg?t=${timestamp}" alt="历史题目" loading="lazy">
-                    `;
-                    historyContainer.appendChild(card);
+        // 智能流式加载：有图片的就显示，没上传的自动跳过
+        potentialDates.forEach(date => {
+            const imgUrl = `./${date}.jpg?t=${timestamp}`;
+            
+            // 预加载图片检查是否存在
+            const imgCheck = new Image();
+            imgCheck.src = imgUrl;
+            imgCheck.onload = function() {
+                // 图片存在，创建卡片
+                if (isFirst) {
+                    // 第一个加载成功的图片自动作为“今日最新”
+                    container.insertAdjacentHTML('afterbegin', `
+                        <div class="section-title">📌 今日最新题目</div>
+                        <div class="card">
+                            <div class="card-date">${formatDate(date)} (最新) <span class="hint">🔍 点击图片可放大缩放</span></div>
+                            <img class="math-img" src="${imgUrl}" alt="数学题">
+                        </div>
+                        <div class="section-title" id="history-title" style="display:none;">📚 往期回顾 (错题复习)</div>
+                        <div id="history-box"></div>
+                    `);
+                    isFirst = false;
+                } else {
+                    // 之后的图片扔进往期回顾
+                    const historyTitle = document.getElementById('history-title');
+                    if (historyTitle) historyTitle.style.display = 'block';
+                    
+                    const historyBox = document.getElementById('history-box');
+                    if (historyBox) {
+                        historyBox.insertAdjacentHTML('beforeend', `
+                            <div class="card">
+                                <div class="card-date">${formatDate(date)} <span class="hint">🔍 点击放大</span></div>
+                                <img class="math-img" src="${imgUrl}" alt="历史数学题">
+                            </div>
+                        `);
+                    }
                 }
-            } else {
-                historyContainer.innerHTML = '<div class="empty-hint">暂无更早的历史题目，加油！</div>';
-            }
-        }
+                
+                // 全自动激活手机端点击放大、双指缩放功能
+                setTimeout(() => {
+                    const images = document.querySelectorAll('.math-img');
+                    images.forEach(img => {
+                        if (!img.hasViewer) {
+                            new Viewer(img, {
+                                navbar: false,
+                                title: false,
+                                toolbar: { zoomIn: 1, zoomOut: 1, oneToOne: 1, reset: 1, rotateLeft: 1, rotateRight: 1 }
+                            });
+                            img.hasViewer = true;
+                        }
+                    });
+                }, 300);
+            };
+        });
     </script>
 </body>
 </html>
