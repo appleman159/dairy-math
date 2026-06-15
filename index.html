@@ -24,18 +24,13 @@
         .badge-resource { background-color: #fff3e0; color: #ff9500; }
         .math-img { max-width: 100%; height: auto; border-radius: 8px; display: block; margin: 0 auto; background-color: #fafafa; cursor: zoom-in; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
         .hint { font-size: 12px; color: #86868b; text-align: center; margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 4px; }
-        
-        /* 交互按钮通用样式 */
         .download-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; margin-top: 15px; width: 100%; background: #f5f5f7; color: #0071e3; border: none; padding: 12px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; border: 1px solid rgba(0,113,227,0.15); }
         .download-btn:hover { background: #0071e3; color: white; }
         .download-btn:active { transform: scale(0.98); }
-        
-        /* 资料库专属按钮样式 */
         .resource-card { text-align: left; padding: 18px; border-left: 5px solid #ff9500; }
         .resource-title { font-size: 16px; color: #1d1d1f; font-weight: bold; margin-bottom: 6px; }
         .resource-btn { background: #fff3e0; color: #ff9500; border: 1px solid rgba(255,149,0,0.2); margin-top: 8px; }
         .resource-btn:hover { background: #ff9500; color: white; }
-
         .footer { margin-top: auto; padding: 30px 0; color: #86868b; font-size: 12px; text-align: center; }
     </style>
 </head>
@@ -45,7 +40,7 @@
 
     <div class="container">
         <div id="resource-section" style="display:none;">
-            <div class="section-title resource">📂 提分干货资料下载 </div>
+            <div class="section-title resource">📂 提分干货资料下载 (随时打印)</div>
             <div id="resource-box"></div>
         </div>
 
@@ -59,39 +54,123 @@
     <script>
         // 🚀 1. 每日一题的日期列表
         const allDates = [
-            '20260630', '20260629', '20260628', '20260627', '20260626',
-            '20260625', '20260624', '20260623', '20260622', '20260621',
-            '20260620', '20260619', '20260618', '20260617', '20260616', 
-            '20260615', '20260614', '20260613'
+            '20260616', 
+            '20260615'
         ];
 
-        // 🚀 2. 提分干货资料列表（只要文件名包含“资料”二字，就会自动抓取放到最上面）
-        // 以后您有新资料，直接在这里加个名字（带.pdf），然后把文件传到 GitHub 即可！
+        // 🚀 2. 提分干货资料列表
         const resourceFiles = [
             '资料-高三数学核心二级结论汇总.pdf',
             '资料-导数大题满分答题模板.pdf'
         ];
 
         function formatDate(dStr) {
+            if(!dStr || dStr.length < 8) return '未知日期';
             return dStr.substring(0,4) + '年' + dStr.substring(4,6) + '月' + dStr.substring(6,8) + '日';
         }
 
         const todayStr = new Date().toISOString().slice(0,10).replace(/-/g,"");
         const timestamp = new Date().getTime();
 
-        // 加载干货资料库
-        const resourceBox = document.getElementById('resource-box');
-        if (resourceFiles.length > 0) {
-            resourceFiles.forEach(fileName => {
-                const fileUrl = `./${fileName}`;
-                // 检查文件是否存在
-                fetch(fileUrl, { method: 'HEAD' }).then(res => {
-                    if (res.ok) {
-                        document.getElementById('resource-section').style.display = 'block';
-                        // 过滤掉“资料-”和“.pdf”，让界面更好看
-                        const displayName = fileName.replace('资料-', '').replace('.pdf', '');
+        // 【安全加载】资料库逻辑
+        try {
+            const resourceBox = document.getElementById('resource-box');
+            if (typeof resourceFiles !== 'undefined' && resourceFiles.length > 0) {
+                resourceFiles.forEach(fileName => {
+                    if (!fileName) return;
+                    const fileUrl = `./${fileName}`;
+                    fetch(fileUrl, { method: 'HEAD' }).then(res => {
+                        if (res.ok) {
+                            document.getElementById('resource-section').style.display = 'block';
+                            const displayName = fileName.replace('资料-', '').replace('.pdf', '');
+                            const cardHTML = `
+                                <div class="card resource-card">
+                                    <div class="resource-title">📄 ${displayName}</div>
+                                    <button class="download-btn resource-btn" onclick="window.location.href='${fileUrl}'">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                                        点击直接下载/打印 PDF 讲义
+                                    </button>
+                                </div>
+                            `;
+                            resourceBox.insertAdjacentHTML('beforeend', cardHTML);
+                        }
+                    }).catch(() => {});
+                });
+            }
+        } catch(e) { console.log("资料加载暂避错误:", e); }
+
+        // 【安全加载】每日一题逻辑
+        try {
+            const previewBox = document.getElementById('preview-box');
+            const todayBox = document.getElementById('today-box');
+            const historyBox = document.getElementById('history-box');
+            let hasToday = false;
+
+            if (typeof allDates !== 'undefined' && allDates.length > 0) {
+                allDates.forEach(date => {
+                    if (!date) return;
+                    const imgUrl = `./${date}.jpg?t=${timestamp}`;
+                    const pdfUrl = `./${date}.pdf`; 
+                    
+                    const imgCheck = new Image();
+                    imgCheck.src = imgUrl;
+                    imgCheck.onload = function() {
+                        let sectionBox, badgeHTML;
+                        
+                        if (date > todayStr) {
+                            sectionBox = previewBox;
+                            document.getElementById('preview-section').style.display = 'block';
+                            badgeHTML = `<span class="badge badge-preview">🔮 提前预习</span>`;
+                        } else if (date === todayStr || !hasToday) {
+                            sectionBox = todayBox;
+                            document.getElementById('today-section').style.display = 'block';
+                            badgeHTML = `<span class="badge badge-today">📌 今日最新</span>`;
+                            hasToday = true;
+                        } else {
+                            sectionBox = historyBox;
+                            document.getElementById('history-section').style.display = 'block';
+                            badgeHTML = `<span class="badge badge-history">📚 历史复习</span>`;
+                        }
+
                         const cardHTML = `
-                            <div class="card resource-card">
-                                <div class="resource-title">📄 ${displayName}</div>
-                                <button class="download-btn resource-btn" onclick="window.location.href='${fileUrl}'">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            <div class="card">
+                                <div class="card-header">
+                                    <div class="card-date">${formatDate(date)}</div>
+                                    ${badgeHTML}
+                                </div>
+                                <img class="math-img" src="${imgUrl}" alt="数学题">
+                                <div class="hint">🔍 点击图片可放大 / 双指可缩放</div>
+                                <button class="download-btn" onclick="downloadPDF('${pdfUrl}', '${date}')">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                                    📥 下载本题 PDF 讲义/打印版
+                                </button>
+                            </div>
+                        `;
+                        sectionBox.insertAdjacentHTML('beforeend', cardHTML);
+
+                        const images = document.querySelectorAll('.math-img');
+                        images.forEach(img => {
+                            if (!img.hasViewer) {
+                                new Viewer(img, { navbar: false, title: false, toolbar: { zoomIn: 1, zoomOut: 1, oneToOne: 1, reset: 1 } });
+                                img.hasViewer = true;
+                            }
+                        });
+                    };
+                });
+            }
+        } catch(e) { console.log("题目加载暂避错误:", e); }
+
+        function downloadPDF(url, date) {
+            fetch(url).then(res => {
+                if (res.ok) {
+                    window.location.href = url;
+                } else {
+                    alert("💡 Tim老师温馨提示：\n该题暂未上传独立PDF文件，学生可直接点击上方图片放大后截图保存或打印！");
+                }
+            }).catch(() => {
+                alert("下载出错了，请稍后再试。");
+            });
+        }
+    </script>
+</body>
+</html>
