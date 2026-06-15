@@ -100,6 +100,12 @@
         const GITHUB_REPO = 'daily-math';
         const CORRECT_PASSWORD = '678'; 
 
+        // 🌟【超级硬核备用底牌】：如果全自动扫描被 GitHub 接口限流卡住，
+        // 网页会雷打不动地强行把写在这里的资料和日期渲染出来，确保 100% 成功率！
+        const manualResources = [
+            '资料-课后习题答案(2019人A版).pdf'
+        ];
+
         function checkPassword() {
             const input = document.getElementById('password-input').value;
             if (input === CORRECT_PASSWORD) {
@@ -146,13 +152,18 @@
                 autoDates.push(`${yyyy}${mm}${dd}`);
             }
 
-            // 🌟 核心破局：在索要列表网址末尾强制注入随机时间戳，彻底砸碎浏览器旧缓存！
             const apiUrl = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/?_=${timestamp}`;
             
             fetch(apiUrl)
-            .then(res => res.json())
+            .then(res => {
+                if(!res.ok) throw new Error("Rate limit");
+                return res.json();
+            })
             .then(files => {
-                let imgDates = []; let resourceList = []; let pdfAnswers = new Set();
+                let imgDates = []; 
+                let resourceList = [...manualResources]; // 🌟 先吞入硬核备份名单，确保绝不落空
+                let pdfAnswers = new Set();
+                
                 if (Array.isArray(files)) {
                     files.forEach(file => {
                         const name = file.name;
@@ -160,23 +171,27 @@
                             const datePart = name.split('.')[0];
                             if (/^\d{8}$/.test(datePart)) imgDates.push(datePart);
                         } else if (name.endsWith('.pdf')) {
-                            if (name.includes('资料')) { resourceList.push(name); } else { pdfAnswers.add(name.split('.')[0]); }
+                            if (name.includes('资料')) {
+                                if(!resourceList.includes(name)) resourceList.push(name);
+                            } else {
+                                pdfAnswers.add(name.split('.')[0]);
+                            }
                         }
                     });
                 }
                 buildDOM(imgDates.length > 0 ? imgDates : autoDates, resourceList, pdfAnswers, todayStr, timestamp);
             })
             .catch(() => {
-                buildDOM(autoDates, [], new Set(), todayStr, timestamp);
+                // 🌟【绝境死士防线】一旦 GitHub 接口由于频繁刷新报错，立马启用备用引擎无缝渲染
+                buildDOM(autoDates, manualResources, new Set(), todayStr, timestamp);
             });
         }
 
         function buildDOM(imgDates, resourceList, pdfAnswers, todayStr, timestamp) {
             const resourceBox = document.getElementById('resource-box');
-            // 🌟 资料动态破壳逻辑
             if (resourceList && resourceList.length > 0) {
-                resourceBox.innerHTML = ''; 
-                resourceList.sort().reverse().forEach(fileName => {
+                resourceBox.innerHTML = '';
+                resourceList.forEach(fileName => {
                     const displayName = fileName.replace('资料-', '').replace('.pdf', '');
                     resourceBox.insertAdjacentHTML('beforeend', `
                         <div class="card resource-card">
@@ -188,12 +203,6 @@
                         </div>
                     `);
                 });
-            } else {
-                resourceBox.innerHTML = `
-                    <div class="empty-state">
-                        <span class="empty-icon">📂</span><strong>暂无资料</strong><br>
-                        <span style="font-size: 13px; color: #b0b0b5; margin-top: 5px; display: block;">老师正在连夜整理高考核心提分秘籍，敬请期待！</span>
-                    </div>`;
             }
 
             imgDates.sort().reverse();
@@ -244,6 +253,7 @@
             });
         }
 
+        // 答案下载逻辑
         function downloadPDF(date, hasPdf) {
             if (hasPdf) { window.location.href = `./${date}.pdf`; } else { alert("💡 Z 老师温馨提示：\n该题暂未上传独立答案文件，学生可直接点击上方图片放大查看！"); }
         }
