@@ -36,27 +36,9 @@
         .ask-box-card { background: linear-gradient(135deg, #ffffff, #f4f9ff); border: 1px solid rgba(0,113,227,0.1); text-align: left; padding: 20px; border-radius: 16px; margin-top: 30px; }
         .ask-title { font-size: 16px; color: #1d1d1f; font-weight: bold; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
         .ask-btn { background: #0071e3; color: white; border: none; width: 100%; padding: 14px; border-radius: 12px; font-size: 15px; font-weight: bold; margin-top: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(0,113,227,0.2); }
-        
-        #auth-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(245, 245, 247, 0.96); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); z-index: 9999; display: flex; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; }
-        .auth-box { background: white; padding: 30px 24px; border-radius: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); text-align: center; max-width: 360px; width: 100%; border: 1px solid rgba(0,0,0,0.03); }
-        .auth-icon { font-size: 40px; margin-bottom: 15px; display: block; }
-        .auth-title { font-size: 18px; color: #1d1d1f; font-weight: bold; margin-bottom: 8px; }
-        .auth-subtitle { font-size: 13px; color: #86868b; margin-bottom: 20px; }
-        .auth-input { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid #d2d2d7; font-size: 16px; text-align: center; box-sizing: border-box; margin-bottom: 15px; outline: none; }
-        .auth-btn { width: 100%; background: #0071e3; color: white; border: none; padding: 14px; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; }
     </style>
 </head>
 <body>
-
-    <div id="auth-overlay">
-        <div class="auth-box">
-            <span class="auth-icon">🔒</span>
-            <div class="auth-title">访问受限</div>
-            <div class="auth-subtitle">请输入 Z 老师专属访问密码</div>
-            <input type="password" id="password-input" class="auth-input" placeholder="请输入班级暗号" onkeydown="if(event.keyCode===13) checkPassword()">
-            <button class="auth-btn" onclick="checkPassword()">验证并进入</button>
-        </div>
-    </div>
 
     <div class="header">📅 z老师的数学每日一题</div>
 
@@ -93,9 +75,6 @@
     <script>
         const GITHUB_USER = 'appleman159'; 
         const GITHUB_REPO = 'daily-math';
-        const CORRECT_PASSWORD = '678'; 
-        
-        // 🌟 启用全新的缓存防护隔离区密钥，瞬间作废并洗刷掉手机里卡死的旧脏数据！
         const CACHE_KEY_V2 = 'z_math_tree_cache_v2';
 
         const fallbackTree = [
@@ -106,24 +85,9 @@
             { path: 'resources/资料-课后习题答案(2019人A版).pdf', type: 'blob' }
         ];
 
-        function checkPassword() {
-            const input = document.getElementById('password-input').value;
-            if (input === CORRECT_PASSWORD) {
-                localStorage.setItem('tim_math_auth', 'passed');
-                document.getElementById('auth-overlay').style.display = 'none';
-                loadGitHubData();
-            } else {
-                localStorage.removeItem('tim_math_auth');
-                alert("❌ 密码错误！\n请重新输入，或者询问 Z 老师。");
-                document.getElementById('password-input').value = '';
-            }
-        }
-
+        // 🚀 网页加载完毕后，直接开始拉取和组装数据，彻底告别中间商赚差价
         window.onload = function() {
-            if (localStorage.getItem('tim_math_auth') === 'passed') {
-                document.getElementById('auth-overlay').style.display = 'none';
-                loadGitHubData();
-            }
+            loadGitHubData();
         }
 
         function switchTab(pageId, btnEl) {
@@ -165,7 +129,6 @@
             if (cached) {
                 try { 
                     const parsed = JSON.parse(cached);
-                    // 🌟 核心防御升级：如果缓存里的数据不包含新版文件夹格式，判定为过期垃圾，立刻强制清空投降，使用兜底大名单
                     if(Array.isArray(parsed) && parsed.some(item => item.path.includes('/'))) {
                         parseAndRender(parsed); 
                     } else {
@@ -204,7 +167,6 @@
             const todayStr = new Date().toISOString().slice(0,10).replace(/-/g,"");
             const timestamp = new Date().getTime();
 
-            // 1. 组装讲义卡片
             const resourceBox = document.getElementById('resource-box');
             if (resourceFiles.length > 0) {
                 resourceBox.innerHTML = '';
@@ -224,7 +186,6 @@
                 resourceBox.innerHTML = '<div class="empty-state"><span class="empty-icon">📂</span><strong>暂无资料</strong><br><span style="font-size:13px;color:#b0b0b5;">老师正在连夜整理高考核心提分秘籍，敬请期待！</span></div>';
             }
 
-            // 2. 组装每日一题卡片
             const previewBox = document.getElementById('preview-box'); 
             const todayBox = document.getElementById('today-box'); 
             const historyBox = document.getElementById('history-box'); 
