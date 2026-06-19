@@ -77,7 +77,17 @@
     <script>
         const GITHUB_USER = 'appleman159'; 
         const GITHUB_REPO = 'daily-math';
-        const CACHE_KEY_V2 = 'z_math_tree_cache_v3';
+        const CACHE_KEY_V4 = 'z_math_tree_cache_v4';
+
+        // 🛡️ 终极兜底大名单：包含当前所有已知文件，做双保险
+        const fallbackTree = [
+            { path: 'images/20260619.jpg', type: 'blob' },
+            { path: 'images/20260618.jpg', type: 'blob' },
+            { path: 'images/20260617.jpg', type: 'blob' },
+            { path: 'images/20260616.jpg', type: 'blob' },
+            { path: 'images/20260615.jpg', type: 'blob' },
+            { path: 'resources/资料-课后习题答案(2019人A版).pdf', type: 'blob' }
+        ];
 
         window.onload = function() {
             loadGitHubData();
@@ -114,27 +124,38 @@
             })
             .then(data => {
                 if (data && Array.isArray(data.tree)) {
-                    localStorage.setItem(CACHE_KEY_V2, JSON.stringify(data.tree));
+                    localStorage.setItem(CACHE_KEY_V4, JSON.stringify(data.tree));
                     parseAndRender(data.tree);
                 } else {
-                    runBlindProbe();
+                    useFallback();
                 }
             })
             .catch(() => {
-                // 🛡️ 核心飞跃：一旦遭遇限流，0秒拒绝白屏，直接跨越API屏障启动全自动时间轴盲测！
-                runBlindProbe();
+                // 🚀 终极修正：不再直接跳过缓存跑盲测！先读取包含所有新PDF的本地生存缓存，没有再盲测！
+                useFallback();
             });
         }
 
+        function useFallback() {
+            console.log("正在调取本地安全缓存防线...");
+            const cached = localStorage.getItem(CACHE_KEY_V4);
+            if (cached) {
+                try { 
+                    const parsed = JSON.parse(cached);
+                    if(Array.isArray(parsed) && parsed.length > 0) {
+                        parseAndRender(parsed); 
+                        return;
+                    }
+                } catch(e) {}
+            }
+            // 绝境情况下（无缓存且API被锁），直接利用兜底数据解析渲染，并对图片执行时间轴推演
+            parseAndRender(fallbackTree);
+            runBlindProbe();
+        }
+
         function runBlindProbe() {
-            console.log("已激活智能时间轴防限流盲测模式...");
             const todayStr = getTodayStr();
             const timestamp = new Date().getTime();
-            
-            // 强行把已知的硬核干货资料渲染出来
-            renderResources(['资料-课后习题答案(2019人A版).pdf']);
-
-            // 全自动生成最近 95 天的日期时间轴（向前5天预防，向后90天回溯）
             let autoDates = [];
             for (let i = 5; i >= -90; i--) {
                 const targetDate = new Date();
@@ -145,7 +166,6 @@
                 autoDates.push(`${yyyy}${mm}${dd}`);
             }
 
-            // 发起高强度的静态图片真实性盲测，彻底绕过 GitHub 接口限制
             autoDates.forEach(date => {
                 const imgUrlJpg = `./images/${date}.jpg?t=${timestamp}`;
                 const imgJpg = new Image();
@@ -181,7 +201,7 @@
                 }
             });
 
-            renderResources(resourceFiles.length > 0 ? resourceFiles : ['资料-课后习题答案(2019人A版).pdf']);
+            renderResources(resourceFiles);
 
             imgFiles.forEach(fileName => {
                 const date = fileName.split('.')[0];
@@ -213,7 +233,6 @@
             reOrganizeCards(todayStr);
         }
 
-        // 🚀 核心算法：无论图片加载快慢，DOM在全自动拼装时都会执行严格的重新排序与分流
         function reOrganizeCards(todayStr) {
             const previewBox = document.getElementById('preview-box');
             const todayBox = document.getElementById('today-box');
@@ -257,7 +276,10 @@
 
         function renderResources(list) {
             const resourceBox = document.getElementById('resource-box');
-            if (!list || list.length === 0) return;
+            if (!list || list.length === 0) {
+                resourceBox.innerHTML = '<div class="empty-state"><span class="empty-icon">📂</span><strong>暂无资料</strong><br><span style="font-size:13px;color:#b0b0b5;margin-top:5px;display:block;">老师正在连夜整理高考核心提分秘籍，敬请期待！</span></div>';
+                return;
+            }
             resourceBox.innerHTML = '';
             list.forEach(fileName => {
                 const displayName = fileName.replace('资料-', '').replace('.pdf', '');
