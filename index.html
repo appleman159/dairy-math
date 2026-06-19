@@ -77,16 +77,17 @@
     <script>
         const GITHUB_USER = 'appleman159'; 
         const GITHUB_REPO = 'daily-math';
-        const CACHE_KEY_V4 = 'z_math_tree_cache_v4';
+        const CACHE_KEY_V5 = 'z_math_tree_cache_v5';
 
-        // 🛡️ 终极兜底大名单：包含当前所有已知文件，做双保险
+        // 🌟 智能追踪：即使限流，也完美映射您当前的真实根目录和文件夹复合状态！
         const fallbackTree = [
             { path: 'images/20260619.jpg', type: 'blob' },
             { path: 'images/20260618.jpg', type: 'blob' },
             { path: 'images/20260617.jpg', type: 'blob' },
             { path: 'images/20260616.jpg', type: 'blob' },
             { path: 'images/20260615.jpg', type: 'blob' },
-            { path: 'resources/资料-课后习题答案(2019人A版).pdf', type: 'blob' }
+            { path: '资料-全国一卷19题解析-思路详细版.pdf', type: 'blob' },
+            { path: '资料-课后习题答案(2019人A版).pdf', type: 'blob' }
         ];
 
         window.onload = function() {
@@ -107,10 +108,7 @@
 
         function getTodayStr() {
             const d = new Date();
-            const yyyy = d.getFullYear();
-            const mm = String(d.getMonth() + 1).padStart(2, '0');
-            const dd = String(d.getDate()).padStart(2, '0');
-            return `${yyyy}${mm}${dd}`;
+            return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
         }
 
         function loadGitHubData() {
@@ -124,21 +122,19 @@
             })
             .then(data => {
                 if (data && Array.isArray(data.tree)) {
-                    localStorage.setItem(CACHE_KEY_V4, JSON.stringify(data.tree));
+                    localStorage.setItem(CACHE_KEY_V5, JSON.stringify(data.tree));
                     parseAndRender(data.tree);
                 } else {
                     useFallback();
                 }
             })
             .catch(() => {
-                // 🚀 终极修正：不再直接跳过缓存跑盲测！先读取包含所有新PDF的本地生存缓存，没有再盲测！
                 useFallback();
             });
         }
 
         function useFallback() {
-            console.log("正在调取本地安全缓存防线...");
-            const cached = localStorage.getItem(CACHE_KEY_V4);
+            const cached = localStorage.getItem(CACHE_KEY_V5);
             if (cached) {
                 try { 
                     const parsed = JSON.parse(cached);
@@ -148,70 +144,52 @@
                     }
                 } catch(e) {}
             }
-            // 绝境情况下（无缓存且API被锁），直接利用兜底数据解析渲染，并对图片执行时间轴推演
             parseAndRender(fallbackTree);
-            runBlindProbe();
         }
 
-        function runBlindProbe() {
-            const todayStr = getTodayStr();
-            const timestamp = new Date().getTime();
-            let autoDates = [];
-            for (let i = 5; i >= -90; i--) {
-                const targetDate = new Date();
-                targetDate.setDate(targetDate.getDate() + i);
-                const yyyy = targetDate.getFullYear();
-                const mm = String(targetDate.getMonth() + 1).padStart(2, '0');
-                const dd = String(targetDate.getDate()).padStart(2, '0');
-                autoDates.push(`${yyyy}${mm}${dd}`);
-            }
-
-            autoDates.forEach(date => {
-                const imgUrlJpg = `./images/${date}.jpg?t=${timestamp}`;
-                const imgJpg = new Image();
-                imgJpg.src = imgUrlJpg;
-                imgJpg.onload = function() { addCardToDOM(date, `${date}.jpg`, imgUrlJpg, todayStr); };
-                imgJpg.onerror = function() {
-                    const imgUrlPng = `./images/${date}.png?t=${timestamp}`;
-                    const imgPng = new Image();
-                    imgPng.src = imgUrlPng;
-                    imgPng.onload = function() { addCardToDOM(date, `${date}.png`, imgUrlPng, todayStr); };
-                };
-            });
-        }
-
+        // 🌟 核心升级：动态路径抓取器。不管你在哪个文件夹，只要文件名对上，雷达自动锁定真实路径！
         function parseAndRender(treeArray) {
             const todayStr = getTodayStr();
             const timestamp = new Date().getTime();
-            let imgFiles = []; let answerFiles = []; let resourceFiles = [];
+            
+            let imgFiles = []; 
+            let answerMap = new Map(); 
+            let resourceFiles = [];
 
             treeArray.forEach(item => {
                 const path = item.path;
                 if (item.type === 'blob') {
-                    if (path.startsWith('images/')) {
-                        const filename = path.replace('images/', '');
-                        if (filename.endsWith('.jpg') || filename.endsWith('.jpeg') || filename.endsWith('.png')) imgFiles.push(filename);
-                    } else if (path.startsWith('answers/')) {
-                        const filename = path.replace('answers/', '');
-                        if (filename.endsWith('.pdf')) answerFiles.push(filename);
-                    } else if (path.startsWith('resources/')) {
-                        const filename = path.replace('resources/', '');
-                        if (filename.endsWith('.pdf')) resourceFiles.push(filename);
+                    const parts = path.split('/');
+                    const filename = parts[parts.length - 1]; // 剥离出纯文件名
+
+                    if (filename.endsWith('.pdf')) {
+                        if (filename.startsWith('资料-')) {
+                            // 动态捕获干货资料：记住它的全路径
+                            resourceFiles.push({ name: filename, fullPath: path });
+                        } else if (/^\d{8}\.pdf$/.test(filename)) {
+                            // 动态捕获独立答案
+                            answerMap.set(filename.split('.')[0], path);
+                        }
+                    } else if (filename.endsWith('.jpg') || filename.endsWith('.jpeg') || filename.endsWith('.png')) {
+                        const datePart = filename.split('.')[0];
+                        if (/^\d{8}$/.test(datePart)) {
+                            imgFiles.push({ date: datePart, fullPath: path });
+                        }
                     }
                 }
             });
 
             renderResources(resourceFiles);
 
-            imgFiles.forEach(fileName => {
-                const date = fileName.split('.')[0];
-                const imgUrl = `./images/${fileName}?t=${timestamp}`;
-                const hasPdf = answerFiles.includes(`${date}.pdf`);
-                addCardToDOM(date, fileName, imgUrl, todayStr, hasPdf);
+            imgFiles.forEach(fileObj => {
+                const imgUrl = `./${fileObj.fullPath}?t=${timestamp}`;
+                const hasPdf = answerMap.has(fileObj.date);
+                const pdfPath = hasPdf ? answerMap.get(fileObj.date) : '';
+                addCardToDOM(fileObj.date, imgUrl, todayStr, pdfPath);
             });
         }
 
-        function addCardToDOM(date, fileName, imgUrl, todayStr, hasPdf = false) {
+        function addCardToDOM(date, imgUrl, todayStr, pdfPath) {
             if (document.getElementById(`card-${date}`)) return;
 
             const cardHtml = `
@@ -222,14 +200,13 @@
                     </div>
                     <img class="math-img" src="${imgUrl}" alt="数学题">
                     <div class="hint">🔍 点击图片可放大 / 双指可缩放</div>
-                    <button class="download-btn" onclick="downloadPDF('${date}', ${hasPdf})">
+                    <button class="download-btn" onclick="downloadAnswerPDF('${pdfPath}')">
                         📥 下载本题答案(如果有的话)
                     </button>
                 </div>
             `;
             
-            let pool = document.getElementById('past-pool');
-            pool.insertAdjacentHTML('beforeend', cardHtml);
+            document.getElementById('past-pool').insertAdjacentHTML('beforeend', cardHtml);
             reOrganizeCards(todayStr);
         }
 
@@ -248,17 +225,13 @@
                 const date = card.getAttribute('data-date');
                 if (date > todayStr) {
                     card.querySelector('.card-badge-zone').innerHTML = `<span class="badge badge-preview">🔮 提前预习</span>`;
-                    previewBox.appendChild(card);
-                    showPreview = true;
+                    previewBox.appendChild(card); showPreview = true;
                 } else if (!todayMarked) {
                     card.querySelector('.card-badge-zone').innerHTML = `<span class="badge badge-today">📌 今日最新</span>`;
-                    todayBox.appendChild(card);
-                    todayMarked = true;
-                    showToday = true;
+                    todayBox.appendChild(card); todayMarked = true; showToday = true;
                 } else {
                     card.querySelector('.card-badge-zone').innerHTML = `<span class="badge badge-history">📚 历史复习</span>`;
-                    historyBox.appendChild(card);
-                    showHistory = true;
+                    historyBox.appendChild(card); showHistory = true;
                 }
             });
             
@@ -281,12 +254,12 @@
                 return;
             }
             resourceBox.innerHTML = '';
-            list.forEach(fileName => {
-                const displayName = fileName.replace('资料-', '').replace('.pdf', '');
+            list.forEach(fileObj => {
+                const displayName = fileObj.name.replace('资料-', '').replace('.pdf', '');
                 resourceBox.insertAdjacentHTML('beforeend', `
                     <div class="card resource-card">
                         <div class="resource-title">📄 ${displayName}</div>
-                        <button class="download-btn" style="background:#fff3e0; color:#ff9500; border:1px solid rgba(255,149,0,0.2);" onclick="window.location.href='./resources/${fileName}'">
+                        <button class="download-btn" style="background:#fff3e0; color:#ff9500; border:1px solid rgba(255,149,0,0.2);" onclick="window.location.href='./${fileObj.fullPath}'">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
                             点击直接下载/打印 PDF 讲义
                         </button>
@@ -295,15 +268,11 @@
             });
         }
 
-        function downloadPDF(date, hasPdf) {
-            const url = `./answers/${date}.pdf`;
-            if (hasPdf) {
-                window.location.href = url;
-            } else {
-                fetch(url, { method: 'HEAD' }).then(res => {
-                    if (res.ok) { window.location.href = url; } 
-                    else { alert("💡 Z 老师温馨提示：\n该题暂未在 answers 文件夹中上传独立答案 PDF，学生可直接点击上方图片放大查看！"); }
-                }).catch(() => { window.location.href = url; });
+        function downloadAnswerPDF(pdfPath) {
+            if (pdfPath) { 
+                window.location.href = `./${pdfPath}`; 
+            } else { 
+                alert("💡 Z 老师温馨提示：\n该题暂未上传独立答案 PDF，学生可直接点击上方图片放大查看！"); 
             }
         }
     </script>
