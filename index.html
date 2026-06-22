@@ -76,10 +76,9 @@
 
     <script>
         const GITHUB_USER = 'appleman159'; 
-        const GITHUB_REPO = 'daily-math';
+        const GITHUB_REPO = 'dairy-math';
         const CACHE_KEY_V5 = 'z_math_tree_cache_v5';
 
-        // 🌟 智能追踪：即使限流，也完美映射您当前的真实根目录和文件夹复合状态！
         const fallbackTree = [
             { path: 'images/20260619.jpg', type: 'blob' },
             { path: 'images/20260618.jpg', type: 'blob' },
@@ -147,7 +146,6 @@
             parseAndRender(fallbackTree);
         }
 
-        // 🌟 核心升级：动态路径抓取器。不管你在哪个文件夹，只要文件名对上，雷达自动锁定真实路径！
         function parseAndRender(treeArray) {
             const todayStr = getTodayStr();
             const timestamp = new Date().getTime();
@@ -160,14 +158,12 @@
                 const path = item.path;
                 if (item.type === 'blob') {
                     const parts = path.split('/');
-                    const filename = parts[parts.length - 1]; // 剥离出纯文件名
+                    const filename = parts[parts.length - 1];
 
                     if (filename.endsWith('.pdf')) {
                         if (filename.startsWith('资料-')) {
-                            // 动态捕获干货资料：记住它的全路径
                             resourceFiles.push({ name: filename, fullPath: path });
                         } else if (/^\d{8}\.pdf$/.test(filename)) {
-                            // 动态捕获独立答案
                             answerMap.set(filename.split('.')[0], path);
                         }
                     } else if (filename.endsWith('.jpg') || filename.endsWith('.jpeg') || filename.endsWith('.png')) {
