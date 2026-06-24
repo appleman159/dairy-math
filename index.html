@@ -159,14 +159,15 @@
                 if (item.type === 'blob') {
                     const parts = path.split('/');
                     const filename = parts[parts.length - 1];
+                    const lowerName = filename.toLowerCase(); // 🌟 大小写自适应防错
 
-                    if (filename.endsWith('.pdf')) {
+                    if (lowerName.endsWith('.pdf')) {
                         if (filename.startsWith('资料-')) {
                             resourceFiles.push({ name: filename, fullPath: path });
-                        } else if (/^\d{8}\.pdf$/.test(filename)) {
+                        } else if (/^\d{8}\.pdf$/.test(lowerName)) {
                             answerMap.set(filename.split('.')[0], path);
                         }
-                    } else if (filename.endsWith('.jpg') || filename.endsWith('.jpeg') || filename.endsWith('.png')) {
+                    } else if (lowerName.endsWith('.jpg') || lowerName.endsWith('.jpeg') || lowerName.endsWith('.png')) {
                         const datePart = filename.split('.')[0];
                         if (/^\d{8}$/.test(datePart)) {
                             imgFiles.push({ date: datePart, fullPath: path });
@@ -177,15 +178,19 @@
 
             renderResources(resourceFiles);
 
+            // 先全部把卡片安全的塞进隐藏暂存区，浏览器在这个阶段能够稳定无干扰地发起图片下载请求
             imgFiles.forEach(fileObj => {
                 const imgUrl = `./${fileObj.fullPath}?t=${timestamp}`;
                 const hasPdf = answerMap.has(fileObj.date);
                 const pdfPath = hasPdf ? answerMap.get(fileObj.date) : '';
-                addCardToDOM(fileObj.date, imgUrl, todayStr, pdfPath);
+                addCardToDOM(fileObj.date, imgUrl, pdfPath);
             });
+
+            // 🌟【关键飞跃】：等所有卡片都加载完后，统一指挥执行唯一一次分类搬运！绝不再打断图片请求生命周期！
+            reOrganizeCards(todayStr);
         }
 
-        function addCardToDOM(date, imgUrl, todayStr, pdfPath) {
+        function addCardToDOM(date, imgUrl, pdfPath) {
             if (document.getElementById(`card-${date}`)) return;
 
             const cardHtml = `
@@ -201,9 +206,7 @@
                     </button>
                 </div>
             `;
-            
             document.getElementById('past-pool').insertAdjacentHTML('beforeend', cardHtml);
-            reOrganizeCards(todayStr);
         }
 
         function reOrganizeCards(todayStr) {
