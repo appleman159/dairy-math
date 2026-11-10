@@ -33,6 +33,11 @@
         .empty-icon { font-size: 48px; margin-bottom: 12px; display: block; }
         .footer { margin-top: auto; padding: 30px 0; color: #86868b; font-size: 12px; text-align: center; width: 100%; background-color: #f5f5f7; }
         
+        /* 课件专区专属样式 */
+        .cw-latest-card { background: linear-gradient(135deg, #f0f7ff 0%, #e0effe 100%); border: 1.5px solid #bae0fd; border-radius: 16px; padding: 18px; text-align: left; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,113,227,0.08); }
+        .cw-item-card { background: white; border-radius: 12px; padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border: 1px solid rgba(0,0,0,0.04); box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
+        .cw-open-btn { background: #0071e3; color: white; border: none; padding: 10px 18px; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+
         .ask-box-card { background: linear-gradient(135deg, #ffffff, #f4f9ff); border: 1px solid rgba(0,113,227,0.1); text-align: left; padding: 20px; border-radius: 16px; margin-top: 30px; }
         .ask-title { font-size: 16px; color: #1d1d1f; font-weight: bold; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
         .ask-btn { background: #0071e3; color: white; border: none; width: 100%; padding: 14px; border-radius: 12px; font-size: 15px; font-weight: bold; margin-top: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(0,113,227,0.2); }
@@ -44,10 +49,12 @@
 
     <div class="tab-container">
         <div class="tab-btn active" onclick="switchTab('math-page', this)">📅 每日一题</div>
+        <div class="tab-btn" onclick="switchTab('courseware-page', this)">📊 课堂课件</div>
         <div class="tab-btn" onclick="switchTab('resource-page', this)">📂 提分干货</div>
     </div>
 
     <div class="container">
+        <!-- 每日一题模块 -->
         <div id="math-page" class="page-content active">
             <div id="today-section" style="display:none;"><div class="section-title">📌 今日最新题目</div><div id="today-box"></div></div>
             <div id="preview-section" style="display:none;"><div class="section-title">🔮 提前预习通道</div><div id="preview-box"></div></div>
@@ -65,6 +72,22 @@
             </div>
         </div>
 
+        <!-- 课堂课件模块（自动更新） -->
+        <div id="courseware-page" class="page-content">
+            <div class="section-title">📌 今日最新课件</div>
+            <div id="cw-latest-box">
+                <div class="empty-state" style="padding: 30px 20px;">
+                    <span class="empty-icon">⏳</span>正在同步课件列表...
+                </div>
+            </div>
+
+            <div id="cw-history-section" style="display:none;">
+                <div class="section-title">📁 往期课件归档</div>
+                <div id="cw-history-box"></div>
+            </div>
+        </div>
+
+        <!-- 提分干货模块 -->
         <div id="resource-page" class="page-content">
             <div id="resource-box"></div>
         </div>
@@ -107,12 +130,7 @@
 
         function getTodayStr() {
             const d = new Date();
-            return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
-        }
-
-        function loadGitHubData() {
-            const timestamp = new Date().getTime();
-            const apiUrl = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/git/trees/main?recursive=1&_=${timestamp}`;
+            return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`; }  function loadGitHubData() { const timestamp = new Date().getTime(); const apiUrl = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/git/trees/main?recursive=1&_=${timestamp}`;
             
             fetch(apiUrl)
             .then(res => {
@@ -153,21 +171,29 @@
             let imgFiles = []; 
             let answerMap = new Map(); 
             let resourceFiles = [];
+            let coursewareFiles = [];
 
             treeArray.forEach(item => {
                 const path = item.path;
                 if (item.type === 'blob') {
                     const parts = path.split('/');
                     const filename = parts[parts.length - 1];
-                    const lowerName = filename.toLowerCase(); // 🌟 大小写自适应防错
+                    const lowerName = filename.toLowerCase();
 
-                    if (lowerName.endsWith('.pdf')) {
+                    // 1. 扫描课件目录 (courseware 文件夹下的 html 文件，排除根目录 index.html)
+                    if (path.startsWith('courseware/') && lowerName.endsWith('.html')) {
+                        coursewareFiles.push({ name: filename, fullPath: path });
+                    }
+                    // 2. 扫描资料 PDF
+                    else if (lowerName.endsWith('.pdf')) {
                         if (filename.startsWith('资料-')) {
                             resourceFiles.push({ name: filename, fullPath: path });
                         } else if (/^\d{8}\.pdf$/.test(lowerName)) {
                             answerMap.set(filename.split('.')[0], path);
                         }
-                    } else if (lowerName.endsWith('.jpg') || lowerName.endsWith('.jpeg') || lowerName.endsWith('.png')) {
+                    } 
+                    // 3. 扫描每日一题图片
+                    else if (lowerName.endsWith('.jpg') || lowerName.endsWith('.jpeg') || lowerName.endsWith('.png')) {
                         const datePart = filename.split('.')[0];
                         if (/^\d{8}$/.test(datePart)) {
                             imgFiles.push({ date: datePart, fullPath: path });
@@ -177,8 +203,8 @@
             });
 
             renderResources(resourceFiles);
+            renderCourseware(coursewareFiles);
 
-            // 先全部把卡片安全的塞进隐藏暂存区，浏览器在这个阶段能够稳定无干扰地发起图片下载请求
             imgFiles.forEach(fileObj => {
                 const imgUrl = `./${fileObj.fullPath}?t=${timestamp}`;
                 const hasPdf = answerMap.has(fileObj.date);
@@ -186,94 +212,29 @@
                 addCardToDOM(fileObj.date, imgUrl, pdfPath);
             });
 
-            // 🌟【关键飞跃】：等所有卡片都加载完后，统一指挥执行唯一一次分类搬运！绝不再打断图片请求生命周期！
             reOrganizeCards(todayStr);
         }
 
-        function addCardToDOM(date, imgUrl, pdfPath) {
-            if (document.getElementById(`card-${date}`)) return;
+        /* 渲染课件专区列表 */
+        function renderCourseware(cwList) {
+            const latestBox = document.getElementById('cw-latest-box');
+            const historySection = document.getElementById('cw-history-section');
+            const historyBox = document.getElementById('cw-history-box');
 
-            const cardHtml = `
-                <div id="card-${date}" class="card dynamic-card" data-date="${date}">
-                    <div class="card-header">
-                        <div class="card-date">${formatDateStr(date)}</div>
-                        <div class="card-badge-zone"></div>
-                    </div>
-                    <img class="math-img" src="${imgUrl}" alt="数学题">
-                    <div class="hint">🔍 点击图片可放大 / 双指可缩放</div>
-                    <button class="download-btn" onclick="downloadAnswerPDF('${pdfPath}')">
-                        📥 下载本题答案(如果有的话)
-                    </button>
-                </div>
-            `;
-            document.getElementById('past-pool').insertAdjacentHTML('beforeend', cardHtml);
-        }
-
-        function reOrganizeCards(todayStr) {
-            const previewBox = document.getElementById('preview-box');
-            const todayBox = document.getElementById('today-box');
-            const historyBox = document.getElementById('history-box');
-            
-            const cards = Array.from(document.querySelectorAll('.dynamic-card'));
-            cards.sort((a, b) => b.getAttribute('data-date') - a.getAttribute('data-date'));
-            
-            let todayMarked = false;
-            let showPreview = false, showToday = false, showHistory = false;
-            
-            cards.forEach(card => {
-                const date = card.getAttribute('data-date');
-                if (date > todayStr) {
-                    card.querySelector('.card-badge-zone').innerHTML = `<span class="badge badge-preview">🔮 提前预习</span>`;
-                    previewBox.appendChild(card); showPreview = true;
-                } else if (!todayMarked) {
-                    card.querySelector('.card-badge-zone').innerHTML = `<span class="badge badge-today">📌 今日最新</span>`;
-                    todayBox.appendChild(card); todayMarked = true; showToday = true;
-                } else {
-                    card.querySelector('.card-badge-zone').innerHTML = `<span class="badge badge-history">📚 历史复习</span>`;
-                    historyBox.appendChild(card); showHistory = true;
-                }
-            });
-            
-            document.getElementById('preview-section').style.display = showPreview ? 'block' : 'none';
-            document.getElementById('today-section').style.display = showToday ? 'block' : 'none';
-            document.getElementById('history-section').style.display = showHistory ? 'block' : 'none';
-            
-            document.querySelectorAll('.math-img').forEach(img => {
-                if (!img.hasViewer) {
-                    new Viewer(img, { navbar: false, title: false, toolbar: { zoomIn: 1, zoomOut: 1, oneToOne: 1, reset: 1 } });
-                    img.hasViewer = true;
-                }
-            });
-        }
-
-        function renderResources(list) {
-            const resourceBox = document.getElementById('resource-box');
-            if (!list || list.length === 0) {
-                resourceBox.innerHTML = '<div class="empty-state"><span class="empty-icon">📂</span><strong>暂无资料</strong><br><span style="font-size:13px;color:#b0b0b5;margin-top:5px;display:block;">老师正在连夜整理高考核心提分秘籍，敬请期待！</span></div>';
+            if (!cwList || cwList.length === 0) {
+                latestBox.innerHTML = '<div class="empty-state"><span class="empty-icon">📊</span><strong>暂无课件发布</strong><br><span style="font-size:13px;color:#b0b0b5;margin-top:5px;display:block;">老师稍后会上传互动课件，敬请期待！</span></div>';
+                historySection.style.display = 'none';
                 return;
             }
-            resourceBox.innerHTML = '';
-            list.forEach(fileObj => {
-                const displayName = fileObj.name.replace('资料-', '').replace('.pdf', '');
-                resourceBox.insertAdjacentHTML('beforeend', `
-                    <div class="card resource-card">
-                        <div class="resource-title">📄 ${displayName}</div>
-                        <button class="download-btn" style="background:#fff3e0; color:#ff9500; border:1px solid rgba(255,149,0,0.2);" onclick="window.location.href='./${fileObj.fullPath}'">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-                            点击直接下载/打印 PDF 讲义
-                        </button>
-                    </div>
-                `);
-            });
-        }
 
-        function downloadAnswerPDF(pdfPath) {
-            if (pdfPath) { 
-                window.location.href = `./${pdfPath}`; 
-            } else { 
-                alert("💡 Z 老师温馨提示：\n该题暂未上传独立答案 PDF，学生可直接点击上方图片放大查看！"); 
-            }
-        }
-    </script>
-</body>
-</html>
+            // 按文件名倒序（日期命名的文件，最新日期排在首位）
+            cwList.sort((a, b) => b.name.localeCompare(a.name));
+
+            const latest = cwList[0];
+            const latestTitle = latest.name.replace('.html', '');
+            
+            // 渲染置顶最新课件
+            latestBox.innerHTML = `
+                <div class="cw-latest-card">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+                        <span style="background: #0071e3; color: white; font-size: 11px; padding: 3px 8px; border-radius: 6
