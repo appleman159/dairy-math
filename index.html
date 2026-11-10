@@ -88,7 +88,7 @@ body { margin: 0; padding: 0; background-color: #f5f5f7; display: flex; flex-dir
 <script>
 const GITHUB_USER = 'appleman159';
 const GITHUB_REPO = 'dairy-math';
-const CACHE_KEY_V6 = 'z_math_tree_cache_v6';
+const CACHE_KEY_V7 = 'z_math_tree_cache_v7';
 
 const fallbackTree = [
 { path: 'courseware/26.11.10.html', type: 'blob' },
@@ -135,7 +135,7 @@ return res.json();
 })
 .then(function(data) {
 if (data && Array.isArray(data.tree)) {
-localStorage.setItem(CACHE_KEY_V6, JSON.stringify(data.tree));
+localStorage.setItem(CACHE_KEY_V7, JSON.stringify(data.tree));
 parseAndRender(data.tree);
 } else {
 useFallback();
@@ -147,7 +147,7 @@ useFallback();
 }
 
 function useFallback() {
-var cached = localStorage.getItem(CACHE_KEY_V6);
+var cached = localStorage.getItem(CACHE_KEY_V7);
 if (cached) {
 try {
 var parsed = JSON.parse(cached);
@@ -228,12 +228,10 @@ var latest = cwList[0];
 var latestTitle = latest.name.replace(/\.html$/i, '');
 
 latestBox.innerHTML = '<div class="cw-latest-card">' +
-'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">' +
+'<div style="margin-bottom:8px;">' +
 '<span style="background:#0071e3;color:white;font-size:11px;padding:3px 8px;border-radius:6px;font-weight:bold;">最新推送</span>' +
-'<span style="font-size:12px;color:#0071e3;font-weight:600;">⚡ 点击直接全屏运行</span>' +
 '</div>' +
-'<div style="font-size:18px;font-weight:bold;color:#1d1d1f;margin-bottom:6px;">📊 ' + latestTitle + '</div>' +
-'<div style="font-size:13px;color:#64748b;line-height:1.4;margin-bottom:14px;">专为希沃大屏与手机端定制，点击下方按钮即可进入互动课件。</div>' +
+'<div style="font-size:18px;font-weight:bold;color:#1d1d1f;margin-bottom:14px;">📊 ' + latestTitle + '</div>' +
 '<a href="./' + encodeURI(latest.fullPath) + '" target="_blank" class="cw-open-btn" style="width:100%;box-sizing:border-box;justify-content:center;padding:12px;">🚀 立即打开最新课件</a>' +
 '</div>';
 
@@ -244,10 +242,7 @@ cwList.slice(1).forEach(function(item) {
 var title = item.name.replace(/\.html$/i, '');
 historyBox.insertAdjacentHTML('beforeend',
 '<div class="cw-item-card">' +
-'<div>' +
 '<div style="font-size:15px;font-weight:600;color:#1d1d1f;">📄 ' + title + '</div>' +
-'<div style="font-size:12px;color:#86868b;margin-top:2px;">互动数学课件</div>' +
-'</div>' +
 '<a href="./' + encodeURI(item.fullPath) + '" target="_blank" class="cw-open-btn" style="padding:8px 14px;font-size:13px;">打开 ↗</a>' +
 '</div>'
 );
