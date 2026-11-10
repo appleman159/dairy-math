@@ -1,240 +1,351 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>z老师的数学每日一题</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.6/viewer.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.6/viewer.min.js"></script>
-    <style>
-        body { margin: 0; padding: 0; background-color: #f5f5f7; display: flex; flex-direction: column; align-items: center; min-height: 100vh; font-family: -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; }
-        .header { background: linear-gradient(135deg, #0071e3, #005bb5); color: white; width: 100%; text-align: center; padding: 18px 0; font-size: 20px; font-weight: bold; box-shadow: 0 4px 12px rgba(0,71,227,0.15); position: sticky; top: 0; z-index: 100; letter-spacing: 1px; }
-        .tab-container { display: flex; background: white; width: 100%; max-width: 600px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); position: sticky; top: 60px; z-index: 99; }
-        .tab-btn { flex: 1; text-align: center; padding: 14px 0; font-size: 15px; font-weight: 600; color: #86868b; cursor: pointer; transition: all 0.25s ease; border-bottom: 3px solid transparent; }
-        .tab-btn.active { color: #0071e3; border-bottom-color: #0071e3; background-color: rgba(0,113,227,0.02); }
-        .container { max-width: 600px; width: 100%; padding: 15px; box-sizing: border-box; }
-        .page-content { display: none; }
-        .page-content.active { display: block; }
-        .section-title { font-size: 16px; color: #1d1d1f; margin: 15px 0 12px 5px; font-weight: 600; display: flex; align-items: center; }
-        .section-title::before { content: ""; inline-size: 4px; block-size: 16px; background-color: #0071e3; margin-right: 8px; border-radius: 2px; }
-        .card { background: white; border-radius: 16px; padding: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); text-align: center; margin-bottom: 20px; border: 1px solid rgba(0,0,0,0.02); }
-        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px dashed #e5e5ea; padding-bottom: 8px; }
-        .card-date { font-size: 15px; color: #1d1d1f; font-weight: bold; }
-        .badge { font-size: 11px; padding: 3px 8px; border-radius: 20px; font-weight: bold; }
-        .badge-today { background-color: #e3f2fd; color: #0071e3; }
-        .badge-preview { background-color: #e8f5e9; color: #4caf50; }
-        .badge-history { background-color: #f4f4f5; color: #666667; }
-        .math-img { max-width: 100%; height: auto; border-radius: 8px; display: block; margin: 0 auto; background-color: #fafafa; cursor: zoom-in; }
-        .hint { font-size: 12px; color: #86868b; text-align: center; margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 4px; }
-        .download-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; margin-top: 15px; width: 100%; background: #f5f5f7; color: #0071e3; border: none; padding: 12px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; border: 1px solid rgba(0,113,227,0.15); transition: all 0.2s; }
-        .resource-card { text-align: left; padding: 18px; border-left: 5px solid #ff9500; }
-        .resource-title { font-size: 16px; color: #1d1d1f; font-weight: bold; margin-bottom: 6px; }
-        .empty-state { text-align: center; padding: 60px 20px; color: #86868b; font-size: 15px; }
-        .empty-icon { font-size: 48px; margin-bottom: 12px; display: block; }
-        .footer { margin-top: auto; padding: 30px 0; color: #86868b; font-size: 12px; text-align: center; width: 100%; background-color: #f5f5f7; }
-        
-        /* 课件专区专属样式 */
-        .cw-latest-card { background: linear-gradient(135deg, #f0f7ff 0%, #e0effe 100%); border: 1.5px solid #bae0fd; border-radius: 16px; padding: 18px; text-align: left; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,113,227,0.08); }
-        .cw-item-card { background: white; border-radius: 12px; padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border: 1px solid rgba(0,0,0,0.04); box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
-        .cw-open-btn { background: #0071e3; color: white; border: none; padding: 10px 18px; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
-
-        .ask-box-card { background: linear-gradient(135deg, #ffffff, #f4f9ff); border: 1px solid rgba(0,113,227,0.1); text-align: left; padding: 20px; border-radius: 16px; margin-top: 30px; }
-        .ask-title { font-size: 16px; color: #1d1d1f; font-weight: bold; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
-        .ask-btn { background: #0071e3; color: white; border: none; width: 100%; padding: 14px; border-radius: 12px; font-size: 15px; font-weight: bold; margin-top: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(0,113,227,0.2); }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>z老师的数学每日一题</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.6/viewer.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.6/viewer.min.js"></script>
+<style>
+body { margin: 0; padding: 0; background-color: #f5f5f7; display: flex; flex-direction: column; align-items: center; min-height: 100vh; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+.header { background: linear-gradient(135deg, #0071e3, #005bb5); color: white; width: 100%; text-align: center; padding: 18px 0; font-size: 20px; font-weight: bold; box-shadow: 0 4px 12px rgba(0,71,227,0.15); position: sticky; top: 0; z-index: 100; letter-spacing: 1px; }
+.tab-container { display: flex; background: white; width: 100%; max-width: 600px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); position: sticky; top: 60px; z-index: 99; }
+.tab-btn { flex: 1; text-align: center; padding: 14px 0; font-size: 15px; font-weight: 600; color: #86868b; cursor: pointer; transition: all 0.25s ease; border-bottom: 3px solid transparent; user-select: none; }
+.tab-btn.active { color: #0071e3; border-bottom-color: #0071e3; background-color: rgba(0,113,227,0.04); }
+.container { max-width: 600px; width: 100%; padding: 15px; box-sizing: border-box; }
+.page-content { display: none; }
+.page-content.active { display: block; }
+.section-title { font-size: 16px; color: #1d1d1f; margin: 15px 0 12px 5px; font-weight: 600; display: flex; align-items: center; }
+.section-title::before { content: ""; width: 4px; height: 16px; background-color: #0071e3; margin-right: 8px; border-radius: 2px; display: inline-block; }
+.card { background: white; border-radius: 16px; padding: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); text-align: center; margin-bottom: 20px; border: 1px solid rgba(0,0,0,0.02); }
+.card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px dashed #e5e5ea; padding-bottom: 8px; }
+.card-date { font-size: 15px; color: #1d1d1f; font-weight: bold; }
+.badge { font-size: 11px; padding: 3px 8px; border-radius: 20px; font-weight: bold; }
+.badge-today { background-color: #e3f2fd; color: #0071e3; }
+.badge-preview { background-color: #e8f5e9; color: #4caf50; }
+.badge-history { background-color: #f4f4f5; color: #666667; }
+.math-img { max-width: 100%; height: auto; border-radius: 8px; display: block; margin: 0 auto; background-color: #fafafa; cursor: zoom-in; }
+.hint { font-size: 12px; color: #86868b; text-align: center; margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 4px; }
+.download-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; margin-top: 15px; width: 100%; background: #f5f5f7; color: #0071e3; padding: 12px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; border: 1px solid rgba(0,113,227,0.15); transition: all 0.2s; box-sizing: border-box; }
+.resource-card { text-align: left; padding: 18px; border-left: 5px solid #ff9500; }
+.resource-title { font-size: 16px; color: #1d1d1f; font-weight: bold; margin-bottom: 6px; }
+.empty-state { text-align: center; padding: 50px 20px; color: #86868b; font-size: 15px; }
+.empty-icon { font-size: 42px; margin-bottom: 10px; display: block; }
+.footer { margin-top: auto; padding: 30px 0; color: #86868b; font-size: 12px; text-align: center; width: 100%; background-color: #f5f5f7; }
+.cw-latest-card { background: linear-gradient(135deg, #f0f7ff 0%, #e0effe 100%); border: 1.5px solid #bae0fd; border-radius: 16px; padding: 18px; text-align: left; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,113,227,0.08); }
+.cw-item-card { background: white; border-radius: 12px; padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border: 1px solid rgba(0,0,0,0.04); box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
+.cw-open-btn { background: #0071e3; color: white; border: none; padding: 10px 18px; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+.ask-box-card { background: linear-gradient(135deg, #ffffff, #f4f9ff); border: 1px solid rgba(0,113,227,0.1); text-align: left; padding: 20px; border-radius: 16px; margin-top: 30px; }
+.ask-title { font-size: 16px; color: #1d1d1f; font-weight: bold; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+.ask-btn { background: #0071e3; color: white; border: none; width: 100%; padding: 14px; border-radius: 12px; font-size: 15px; font-weight: bold; margin-top: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(0,113,227,0.2); }
+</style>
 </head>
 <body>
 
-    <div class="header">📅 z老师的数学每日一题</div>
+<div class="header">📅 z老师的数学每日一题</div>
 
-    <div class="tab-container">
-        <div class="tab-btn active" onclick="switchTab('math-page', this)">📅 每日一题</div>
-        <div class="tab-btn" onclick="switchTab('courseware-page', this)">📊 课堂课件</div>
-        <div class="tab-btn" onclick="switchTab('resource-page', this)">📂 提分干货</div>
-    </div>
+<div class="tab-container">
+<div class="tab-btn active" id="btn-math" onclick="switchTab('math-page', this)">📅 每日一题</div>
+<div class="tab-btn" id="btn-cw" onclick="switchTab('courseware-page', this)">📊 课堂课件</div>
+<div class="tab-btn" id="btn-res" onclick="switchTab('resource-page', this)">📂 提分干货</div>
+</div>
 
-    <div class="container">
-        <!-- 每日一题模块 -->
-        <div id="math-page" class="page-content active">
-            <div id="today-section" style="display:none;"><div class="section-title">📌 今日最新题目</div><div id="today-box"></div></div>
-            <div id="preview-section" style="display:none;"><div class="section-title">🔮 提前预习通道</div><div id="preview-box"></div></div>
-            <div id="history-section" style="display:none;"><div class="section-title">📚 往期复习</div><div id="history-box"></div></div>
-            
-            <div class="card ask-box-card">
-                <div class="ask-title">💬 班级匿名数学答疑箱</div>
-                <div style="font-size: 13px; color: #666; line-height: 1.5; margin-top: 6px;">
-                    做题卡壳了？步骤看不懂？点击下方按钮即可进入答疑箱。支持<strong>匿名打字</strong>或<strong>直接拍摄错题照片</strong>提交，Z 老师收到后会为你在线解答！
-                </div>
-                <button class="ask-btn" onclick="window.location.href='#'">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                    点击进入匿名提交疑问 (支持传图)
-                </button>
-            </div>
-        </div>
+<div class="container">
+<div id="math-page" class="page-content active">
+<div id="today-section" style="display:none;"><div class="section-title">📌 今日最新题目</div><div id="today-box"></div></div>
+<div id="preview-section" style="display:none;"><div class="section-title">🔮 提前预习通道</div><div id="preview-box"></div></div>
+<div id="history-section" style="display:none;"><div class="section-title">📚 往期复习</div><div id="history-box"></div></div>
 
-        <!-- 课堂课件模块（自动更新） -->
-        <div id="courseware-page" class="page-content">
-            <div class="section-title">📌 今日最新课件</div>
-            <div id="cw-latest-box">
-                <div class="empty-state" style="padding: 30px 20px;">
-                    <span class="empty-icon">⏳</span>正在同步课件列表...
-                </div>
-            </div>
+<div class="card ask-box-card">
+<div class="ask-title">💬 班级匿名数学答疑箱</div>
+<div style="font-size: 13px; color: #666; line-height: 1.5; margin-top: 6px;">
+做题卡壳了？步骤看不懂？点击下方按钮即可进入答疑箱。支持<strong>匿名打字</strong>或<strong>直接拍摄错题照片</strong>提交，Z 老师收到后会为你在线解答！
+</div>
+<button class="ask-btn" onclick="window.location.href='#'">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+点击进入匿名提交疑问 (支持传图)
+</button>
+</div>
+</div>
 
-            <div id="cw-history-section" style="display:none;">
-                <div class="section-title">📁 往期课件归档</div>
-                <div id="cw-history-box"></div>
-            </div>
-        </div>
+<div id="courseware-page" class="page-content">
+<div class="section-title">📌 今日最新课件</div>
+<div id="cw-latest-box"></div>
+<div id="cw-history-section" style="display:none;">
+<div class="section-title">📁 往期课件归档</div>
+<div id="cw-history-box"></div>
+</div>
+</div>
 
-        <!-- 提分干货模块 -->
-        <div id="resource-page" class="page-content">
-            <div id="resource-box"></div>
-        </div>
-    </div>
+<div id="resource-page" class="page-content">
+<div id="resource-box"></div>
+</div>
+</div>
 
-    <div class="footer">锲而舍之，朽木不折；锲而不舍，金石可镂</div>
+<div class="footer">锲而舍之，朽木不折；锲而不舍，金石可镂</div>
+<div id="past-pool" style="display:none;"></div>
 
-    <div id="past-pool" style="display:none;"></div>
+<script>
+const GITHUB_USER = 'appleman159';
+const GITHUB_REPO = 'dairy-math';
+const CACHE_KEY_V6 = 'z_math_tree_cache_v6';
 
-    <script>
-        const GITHUB_USER = 'appleman159'; 
-        const GITHUB_REPO = 'dairy-math';
-        const CACHE_KEY_V5 = 'z_math_tree_cache_v5';
+const fallbackTree = [
+{ path: 'courseware/26.11.10.html', type: 'blob' },
+{ path: '椭圆定义_希沃86寸宽屏版.html', type: 'blob' },
+{ path: 'images/20260709.jpg', type: 'blob' },
+{ path: 'images/20260708.jpg', type: 'blob' },
+{ path: 'images/20260619.jpg', type: 'blob' },
+{ path: 'images/20260618.jpg', type: 'blob' },
+{ path: 'images/20260617.jpg', type: 'blob' },
+{ path: 'images/20260616.jpg', type: 'blob' },
+{ path: 'images/20260615.jpg', type: 'blob' },
+{ path: '资料-全国一卷19题解析-思路详细版.pdf', type: 'blob' },
+{ path: '资料-课后习题答案(2019人A版).pdf', type: 'blob' }
+];
 
-        const fallbackTree = [
-            { path: 'images/20260619.jpg', type: 'blob' },
-            { path: 'images/20260618.jpg', type: 'blob' },
-            { path: 'images/20260617.jpg', type: 'blob' },
-            { path: 'images/20260616.jpg', type: 'blob' },
-            { path: 'images/20260615.jpg', type: 'blob' },
-            { path: '资料-全国一卷19题解析-思路详细版.pdf', type: 'blob' },
-            { path: '资料-课后习题答案(2019人A版).pdf', type: 'blob' }
-        ];
+function switchTab(pageId, btnEl) {
+document.querySelectorAll('.page-content').forEach(function(p) { p.classList.remove('active'); });
+document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+var target = document.getElementById(pageId);
+if (target) target.classList.add('active');
+if (btnEl) btnEl.classList.add('active');
+window.scrollTo(0, 0);
+}
 
-        window.onload = function() {
-            loadGitHubData();
-        }
+function formatDateStr(dStr) {
+return dStr.substring(0,4) + '年' + dStr.substring(4,6) + '月' + dStr.substring(6,8) + '日';
+}
 
-        function switchTab(pageId, btnEl) {
-            document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(pageId).classList.add('active');
-            btnEl.classList.add('active');
-            window.scrollTo(0, 0);
-        }
+function getTodayStr() {
+var d = new Date();
+var m = String(d.getMonth() + 1).padStart(2, '0');
+var day = String(d.getDate()).padStart(2, '0');
+return '' + d.getFullYear() + m + day;
+}
 
-        function formatDateStr(dStr) {
-            return dStr.substring(0,4) + '年' + dStr.substring(4,6) + '月' + dStr.substring(6,8) + '日';
-        }
+function loadGitHubData() {
+var timestamp = new Date().getTime();
+var apiUrl = 'https://api.github.com/repos/' + GITHUB_USER + '/' + GITHUB_REPO + '/git/trees/main?recursive=1&_=' + timestamp;
 
-        function getTodayStr() {
-            const d = new Date();
-            return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`; }  function loadGitHubData() { const timestamp = new Date().getTime(); const apiUrl = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/git/trees/main?recursive=1&_=${timestamp}`;
-            
-            fetch(apiUrl)
-            .then(res => {
-                if (!res.ok) throw new Error('Throttled');
-                return res.json();
-            })
-            .then(data => {
-                if (data && Array.isArray(data.tree)) {
-                    localStorage.setItem(CACHE_KEY_V5, JSON.stringify(data.tree));
-                    parseAndRender(data.tree);
-                } else {
-                    useFallback();
-                }
-            })
-            .catch(() => {
-                useFallback();
-            });
-        }
+fetch(apiUrl)
+.then(function(res) {
+if (!res.ok) throw new Error('Throttled');
+return res.json();
+})
+.then(function(data) {
+if (data && Array.isArray(data.tree)) {
+localStorage.setItem(CACHE_KEY_V6, JSON.stringify(data.tree));
+parseAndRender(data.tree);
+} else {
+useFallback();
+}
+})
+.catch(function() {
+useFallback();
+});
+}
 
-        function useFallback() {
-            const cached = localStorage.getItem(CACHE_KEY_V5);
-            if (cached) {
-                try { 
-                    const parsed = JSON.parse(cached);
-                    if(Array.isArray(parsed) && parsed.length > 0) {
-                        parseAndRender(parsed); 
-                        return;
-                    }
-                } catch(e) {}
-            }
-            parseAndRender(fallbackTree);
-        }
+function useFallback() {
+var cached = localStorage.getItem(CACHE_KEY_V6);
+if (cached) {
+try {
+var parsed = JSON.parse(cached);
+if (Array.isArray(parsed) && parsed.length > 0) {
+parseAndRender(parsed);
+return;
+}
+} catch(e) {}
+}
+parseAndRender(fallbackTree);
+}
 
-        function parseAndRender(treeArray) {
-            const todayStr = getTodayStr();
-            const timestamp = new Date().getTime();
-            
-            let imgFiles = []; 
-            let answerMap = new Map(); 
-            let resourceFiles = [];
-            let coursewareFiles = [];
+function parseAndRender(treeArray) {
+var todayStr = getTodayStr();
+var timestamp = new Date().getTime();
 
-            treeArray.forEach(item => {
-                const path = item.path;
-                if (item.type === 'blob') {
-                    const parts = path.split('/');
-                    const filename = parts[parts.length - 1];
-                    const lowerName = filename.toLowerCase();
+var imgFiles = [];
+var answerMap = new Map();
+var resourceFiles = [];
+var coursewareFiles = [];
 
-                    // 1. 扫描课件目录 (courseware 文件夹下的 html 文件，排除根目录 index.html)
-                    if (path.startsWith('courseware/') && lowerName.endsWith('.html')) {
-                        coursewareFiles.push({ name: filename, fullPath: path });
-                    }
-                    // 2. 扫描资料 PDF
-                    else if (lowerName.endsWith('.pdf')) {
-                        if (filename.startsWith('资料-')) {
-                            resourceFiles.push({ name: filename, fullPath: path });
-                        } else if (/^\d{8}\.pdf$/.test(lowerName)) {
-                            answerMap.set(filename.split('.')[0], path);
-                        }
-                    } 
-                    // 3. 扫描每日一题图片
-                    else if (lowerName.endsWith('.jpg') || lowerName.endsWith('.jpeg') || lowerName.endsWith('.png')) {
-                        const datePart = filename.split('.')[0];
-                        if (/^\d{8}$/.test(datePart)) {
-                            imgFiles.push({ date: datePart, fullPath: path });
-                        }
-                    }
-                }
-            });
+treeArray.forEach(function(item) {
+var path = item.path;
+if (item.type === 'blob') {
+var parts = path.split('/');
+var filename = parts[parts.length - 1];
+var lowerName = filename.toLowerCase();
 
-            renderResources(resourceFiles);
-            renderCourseware(coursewareFiles);
+if (lowerName.endsWith('.html') && lowerName !== 'index.html') {
+coursewareFiles.push({ name: filename, fullPath: path });
+} else if (lowerName.endsWith('.pdf')) {
+if (filename.indexOf('资料-') === 0) {
+resourceFiles.push({ name: filename, fullPath: path });
+} else if (/^\d{8}\.pdf$/.test(lowerName)) {
+answerMap.set(filename.split('.')[0], path);
+}
+} else if (lowerName.endsWith('.jpg') || lowerName.endsWith('.jpeg') || lowerName.endsWith('.png')) {
+var datePart = filename.split('.')[0];
+if (/^\d{8}$/.test(datePart)) {
+imgFiles.push({ date: datePart, fullPath: path });
+}
+}
+}
+});
 
-            imgFiles.forEach(fileObj => {
-                const imgUrl = `./${fileObj.fullPath}?t=${timestamp}`;
-                const hasPdf = answerMap.has(fileObj.date);
-                const pdfPath = hasPdf ? answerMap.get(fileObj.date) : '';
-                addCardToDOM(fileObj.date, imgUrl, pdfPath);
-            });
+renderResources(resourceFiles);
+renderCourseware(coursewareFiles);
 
-            reOrganizeCards(todayStr);
-        }
+imgFiles.forEach(function(fileObj) {
+var imgUrl = './' + fileObj.fullPath + '?t=' + timestamp;
+var hasPdf = answerMap.has(fileObj.date);
+var pdfPath = hasPdf ? answerMap.get(fileObj.date) : '';
+addCardToDOM(fileObj.date, imgUrl, pdfPath);
+});
 
-        /* 渲染课件专区列表 */
-        function renderCourseware(cwList) {
-            const latestBox = document.getElementById('cw-latest-box');
-            const historySection = document.getElementById('cw-history-section');
-            const historyBox = document.getElementById('cw-history-box');
+reOrganizeCards(todayStr);
+}
 
-            if (!cwList || cwList.length === 0) {
-                latestBox.innerHTML = '<div class="empty-state"><span class="empty-icon">📊</span><strong>暂无课件发布</strong><br><span style="font-size:13px;color:#b0b0b5;margin-top:5px;display:block;">老师稍后会上传互动课件，敬请期待！</span></div>';
-                historySection.style.display = 'none';
-                return;
-            }
+function renderCourseware(cwList) {
+var latestBox = document.getElementById('cw-latest-box');
+var historySection = document.getElementById('cw-history-section');
+var historyBox = document.getElementById('cw-history-box');
 
-            // 按文件名倒序（日期命名的文件，最新日期排在首位）
-            cwList.sort((a, b) => b.name.localeCompare(a.name));
+if (!cwList || cwList.length === 0) {
+latestBox.innerHTML = '<div class="empty-state"><span class="empty-icon">📊</span><strong>暂无课件发布</strong></div>';
+historySection.style.display = 'none';
+return;
+}
 
-            const latest = cwList[0];
-            const latestTitle = latest.name.replace('.html', '');
-            
-            // 渲染置顶最新课件
-            latestBox.innerHTML = `
-                <div class="cw-latest-card">
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
-                        <span style="background: #0071e3; color: white; font-size: 11px; padding: 3px 8px; border-radius: 6
+cwList.sort(function(a, b) {
+var aInFolder = a.fullPath.indexOf('courseware/') === 0 ? 1 : 0;
+var bInFolder = b.fullPath.indexOf('courseware/') === 0 ? 1 : 0;
+if (aInFolder !== bInFolder) return bInFolder - aInFolder;
+return b.name.localeCompare(a.name);
+});
+
+var latest = cwList[0];
+var latestTitle = latest.name.replace(/\.html$/i, '');
+
+latestBox.innerHTML = '<div class="cw-latest-card">' +
+'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">' +
+'<span style="background:#0071e3;color:white;font-size:11px;padding:3px 8px;border-radius:6px;font-weight:bold;">最新推送</span>' +
+'<span style="font-size:12px;color:#0071e3;font-weight:600;">⚡ 点击直接全屏运行</span>' +
+'</div>' +
+'<div style="font-size:18px;font-weight:bold;color:#1d1d1f;margin-bottom:6px;">📊 ' + latestTitle + '</div>' +
+'<div style="font-size:13px;color:#64748b;line-height:1.4;margin-bottom:14px;">专为希沃大屏与手机端定制，点击下方按钮即可进入互动课件。</div>' +
+'<a href="./' + encodeURI(latest.fullPath) + '" target="_blank" class="cw-open-btn" style="width:100%;box-sizing:border-box;justify-content:center;padding:12px;">🚀 立即打开最新课件</a>' +
+'</div>';
+
+if (cwList.length > 1) {
+historySection.style.display = 'block';
+historyBox.innerHTML = '';
+cwList.slice(1).forEach(function(item) {
+var title = item.name.replace(/\.html$/i, '');
+historyBox.insertAdjacentHTML('beforeend',
+'<div class="cw-item-card">' +
+'<div>' +
+'<div style="font-size:15px;font-weight:600;color:#1d1d1f;">📄 ' + title + '</div>' +
+'<div style="font-size:12px;color:#86868b;margin-top:2px;">互动数学课件</div>' +
+'</div>' +
+'<a href="./' + encodeURI(item.fullPath) + '" target="_blank" class="cw-open-btn" style="padding:8px 14px;font-size:13px;">打开 ↗</a>' +
+'</div>'
+);
+});
+} else {
+historySection.style.display = 'none';
+}
+}
+
+function addCardToDOM(date, imgUrl, pdfPath) {
+if (document.getElementById('card-' + date)) return;
+var cardHtml = '<div id="card-' + date + '" class="card dynamic-card" data-date="' + date + '">' +
+'<div class="card-header">' +
+'<div class="card-date">' + formatDateStr(date) + '</div>' +
+'<div class="card-badge-zone"></div>' +
+'</div>' +
+'<img class="math-img" src="' + imgUrl + '" alt="数学题">' +
+'<div class="hint">🔍 点击图片可放大 / 双指可缩放</div>' +
+'<button class="download-btn" onclick="downloadAnswerPDF(\'' + pdfPath + '\')">📥 下载本题答案(如果有的话)</button>' +
+'</div>';
+document.getElementById('past-pool').insertAdjacentHTML('beforeend', cardHtml);
+}
+
+function reOrganizeCards(todayStr) {
+var previewBox = document.getElementById('preview-box');
+var todayBox = document.getElementById('today-box');
+var historyBox = document.getElementById('history-box');
+
+var cards = Array.from(document.querySelectorAll('.dynamic-card'));
+cards.sort(function(a, b) { return b.getAttribute('data-date') - a.getAttribute('data-date'); });
+
+var todayMarked = false;
+var showPreview = false, showToday = false, showHistory = false;
+
+cards.forEach(function(card) {
+var date = card.getAttribute('data-date');
+if (date > todayStr) {
+card.querySelector('.card-badge-zone').innerHTML = '<span class="badge badge-preview">🔮 提前预习</span>';
+previewBox.appendChild(card);
+showPreview = true;
+} else if (!todayMarked) {
+card.querySelector('.card-badge-zone').innerHTML = '<span class="badge badge-today">📌 今日最新</span>';
+todayBox.appendChild(card);
+todayMarked = true;
+showToday = true;
+} else {
+card.querySelector('.card-badge-zone').innerHTML = '<span class="badge badge-history">📚 历史复习</span>';
+historyBox.appendChild(card);
+showHistory = true;
+}
+});
+
+document.getElementById('preview-section').style.display = showPreview ? 'block' : 'none';
+document.getElementById('today-section').style.display = showToday ? 'block' : 'none';
+document.getElementById('history-section').style.display = showHistory ? 'block' : 'none';
+
+if (typeof Viewer !== 'undefined') {
+document.querySelectorAll('.math-img').forEach(function(img) {
+if (!img.hasViewer) {
+new Viewer(img, { navbar: false, title: false, toolbar: { zoomIn: 1, zoomOut: 1, oneToOne: 1, reset: 1 } });
+img.hasViewer = true;
+}
+});
+}
+}
+
+function renderResources(list) {
+var resourceBox = document.getElementById('resource-box');
+if (!list || list.length === 0) {
+resourceBox.innerHTML = '<div class="empty-state"><span class="empty-icon">📂</span><strong>暂无资料</strong></div>';
+return;
+}
+resourceBox.innerHTML = '';
+list.forEach(function(fileObj) {
+var displayName = fileObj.name.replace('资料-', '').replace(/\.pdf$/i, '');
+resourceBox.insertAdjacentHTML('beforeend',
+'<div class="card resource-card">' +
+'<div class="resource-title">📄 ' + displayName + '</div>' +
+'<button class="download-btn" style="background:#fff3e0;color:#ff9500;border:1px solid rgba(255,149,0,0.2);" onclick="window.location.href=\'./' + encodeURI(fileObj.fullPath) + '\'">' +
+'点击直接下载/打印 PDF 讲义' +
+'</button>' +
+'</div>'
+);
+});
+}
+
+function downloadAnswerPDF(pdfPath) {
+if (pdfPath) {
+window.location.href = './' + pdfPath;
+} else {
+alert("💡 Z 老师温馨提示：\n该题暂未上传独立答案 PDF，学生可直接点击上方图片放大查看！");
+}
+}
+
+window.addEventListener('DOMContentLoaded', function() {
+parseAndRender(fallbackTree);
+loadGitHubData();
+});
+</script>
+</body>
+</html>
