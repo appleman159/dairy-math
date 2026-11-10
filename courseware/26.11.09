@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Z老师微课堂：复数模的最值探究与几何意义</title>
+<style>
+* { box-sizing: border-box; }
+body { margin: 0; padding: 12px; background-color: #f5f5f7; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; color: #1d1d1f; line-height: 1.6; }
+.container { max-width: 680px; margin: 0 auto; }
+.header-card { background: linear-gradient(135deg, #0071e3, #005bb5); color: white; border-radius: 16px; padding: 22px 18px; margin-bottom: 16px; box-shadow: 0 4px 15px rgba(0,113,227,0.2); }
+.header-title { font-size: 20px; font-weight: bold; margin-bottom: 6px; }
+.header-subtitle { font-size: 13px; opacity: 0.9; }
+.card { background: white; border-radius: 14px; padding: 18px 16px; margin-bottom: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.04); border: 1px solid rgba(0,0,0,0.03); }
+.card-title { font-size: 16px; font-weight: bold; color: #0071e3; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; border-bottom: 2px solid #f0f5ff; padding-bottom: 8px; }
+.sub-title { font-size: 14px; font-weight: bold; color: #333; margin: 12px 0 6px 0; }
+p { margin: 8px 0; font-size: 14px; color: #333; }
+.math-block { background: #f8fafc; border-left: 4px solid #0071e3; padding: 10px 14px; margin: 10px 0; border-radius: 0 8px 8px 0; font-family: "Times New Roman", Times, serif; font-size: 15px; overflow-x: auto; }
+.highlight { color: #d70000; font-weight: bold; }
+.tag { display: inline-block; background: #e3f2fd; color: #0071e3; font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: bold; margin-right: 6px; }
+.tip-box { background: #fff9e6; border: 1px solid #ffe58f; padding: 12px; border-radius: 8px; font-size: 13px; color: #8c6d1f; margin: 10px 0; }
+.footer { text-align: center; font-size: 12px; color: #86868b; padding: 20px 0; }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- 顶部导语 -->
+  <div class="header-card">
+    <div class="header-title">📖 专题微课：复数模的最值与几何意义</div>
+    <div class="header-subtitle">主讲：Z老师 | 针对高一复数几何意义难点突破</div>
+  </div>
+
+  <!-- 原题再现 -->
+  <div class="card">
+    <div class="card-title">📌 原题呈现</div>
+    <p><strong>已知复数 $z$ 满足 $|z|=1$，则 $|z-1-i|$ 的取值范围是（ &nbsp;&nbsp;&nbsp;&nbsp; ）</strong></p>
+    <p>A. $[\sqrt{2}-1, \sqrt{2}+1]$ &nbsp;&nbsp;&nbsp;&nbsp; B. $[0, \sqrt{2}+1]$</p>
+    <p>C. $[\sqrt{2}-1, \sqrt{2}]$ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; D. $[1, 3]$</p>
+    <p><strong>正确答案：</strong> <span class="highlight">A</span></p>
+  </div>
+
+  <!-- 知识储备 -->
+  <div class="card">
+    <div class="card-title">🧠 核心知识储备</div>
+    <p>1. <strong>复数的几何意义（复平面）</strong>：复数 $z = x + yi$ ($x,y \in \mathbb{R}$) 与复平面上的点 $P(x, y)$ 或向量 $\vec{OP}$ 一一对应。</p>
+    <p>2. <strong>模的几何意义</strong>：</p>
+    <div class="math-block">
+      $|z| = \sqrt{x^2+y^2}$ 表示点 $P(x,y)$ 到原点 $O(0,0)$ 的距离。<br>
+      $|z_1 - z_2|$ 表示复数 $z_1, z_2$ 在复平面上对应的两点 $P_1, P_2$ 之间的距离。
+    </div>
+  </div>
+
+  <!-- 解法详析 -->
+  <div class="card">
+    <div class="card-title">💡 经典解法详析</div>
+    
+    <div class="sub-title"><span class="tag">解法一</span> 几何法（秒杀大招：动点到定点的距离）</div>
+    <p>将所求式子变形：$|z - (1+i)|$。</p>
+    <p>设复数 $z$ 对应的点为 $P(x, y)$，则条件 $|z|=1$ 表示点 $P$ 在<strong>以原点 $O(0,0)$ 为圆心，半径 $R=1$ 的单位圆</strong>上。</p>
+    <p>令定点 $A(1, 1)$，则 $|z-1-i|$ 就转化为<strong>圆上的动点 $P$ 到定点 $A(1, 1)$ 的距离 $|PA|$</strong>。</p>
+    <p><strong>计算定点 $A$ 到圆心 $O$ 的距离：</strong></p>
+    <div class="math-block">
+      $|OA| = \sqrt{1^2 + 1^2} = \sqrt{2}$
+    </div>
+    <p><strong>求最大、最小值：</strong></p>
+    <div class="math-block">
+      $|PA|_{\min} = |OA| - R = \sqrt{2} - 1$<br>
+      $|PA|_{\max} = |OA| + R = \sqrt{2} + 1$
+    </div>
+    <p>因此，取值范围为 $[\sqrt{2}-1, \sqrt{2}+1]$，故选 A。</p>
+
+    <div class="sub-title"><span class="tag">解法二</span> 代数三角换元法（适合不擅长几何直观的同学）</div>
+    <p>设 $z = \cos\theta + i\sin\theta$（其中 $\theta \in [0, 2\pi)$），满足 $|z| = \sqrt{\cos^2\theta + \sin^2\theta} = 1$。</p>
+    <p>代入所求表达式：</p>
+    <div class="math-block">
+      $|z - 1 - i| = |(\cos\theta - 1) + (\sin\theta - 1)i\}$<br>
+      $= \sqrt{(\cos\theta - 1)^2 + (\sin\theta - 1)^2}$<br>
+      $= \sqrt{\cos^2\theta - 2\cos\theta + 1 + \sin^2\theta - 2\sin\theta + 1}$<br>
+      $= \sqrt{2 - 2(\cos\theta + \sin\theta)}$
+    </div>
+    <p>因为 $\cos\theta + \sin\theta = \sqrt{2}\sin(\theta + \frac{\pi}{4})$，其取值范围为 $[-\sqrt{2}, \sqrt{2}]$。</p>
+    <p>当 $\cos\theta + \sin\theta = \sqrt{2}$ 时，最小值为 $\sqrt{2 - 2\sqrt{2}} = \sqrt{(\sqrt{2}-1)^2} = \sqrt{2}-1$；</p>
+    <p>当 $\cos\theta + \sin\theta = -\sqrt{2}$ 时，最大值为 $\sqrt{2 + 2\sqrt{2}} = \sqrt{(\sqrt{2}+1)^2} = \sqrt{2}+1$。</p>
+    <p>故取值范围为 $[\sqrt{2}-1, \sqrt{2}+1]$。</p>
+  </div>
+
+  <!-- 易错警示 -->
+  <div class="card">
+    <div class="card-title">⚠️ 易错警示与思维误区</div>
+    <div class="tip-box">
+      <strong>误区提醒：</strong>部分同学容易把 $|z-1-i|$ 错误地理解为 $|z| - |1+i|$，从而算成 $1 - \sqrt{2}$ 甚至带入绝对值出错。切记：<strong>模的运算没有像绝对值那样的线性拆分性质（$|a-b| \neq ||a|-|b||$ 恒成立，只能利用三角不等式粗略放缩）</strong>。对于圆周上的动点距离，用“圆心距加减半径”的几何法是最稳妥、最不容易出错的！
+    </div>
+  </div>
+
+  <!-- 拓展提升 -->
+  <div class="card">
+    <div class="card-title">🚀 举一反三·课后拓展题</div>
+    
+    <div class="sub-title">【拓展题 1】（直线与圆距离变式）</div>
+    <p>已知复数 $z$ 满足 $|z-2-2i| = 1$，求 $|z|$ 的取值范围。</p>
+    <div class="tip-box">
+      <strong>💡 提示：</strong>$|z|$ 表示圆上动点 $P$ 到原点 $O(0,0)$ 的距离。圆心为 $C(2,2)$，半径 $R=1$，圆心距 $|OC| = \sqrt{2^2+2^2} = 2\sqrt{2} = \sqrt{8}$。因此 $|z|$ 的范围是 $[2\sqrt{2}-1, 2\sqrt{2}+1]$。
+    </div>
+
+    <div class="sub-title">【拓展题 2】（两圆动点距离极值）</div>
+    <p>已知复数 $z_1, z_2$ 满足 $|z_1|=1$， $|z_2 - 3 - 4i| = 2$，则 $|z_1 - z_2|$ 的最小值为多少？</p>
+    <div class="tip-box">
+      <strong>💡 提示：</strong>$z_1$ 在以原点 $O_1(0,0)$ 为圆心、半径 $R_1=1$ 的圆上；$z_2$ 在以 $O_2(3,4)$ 为圆心、半径 $R_2=2$ 的圆上。两圆圆心距 $|O_1 O_2| = \sqrt{3^2+4^2} = 5$。两圆外离，故两点间距离的最小值为 $|O_1 O_2| - R_1 - R_2 = 5 - 1 - 2 = 2$。
+    </div>
+  </div>
+
+  <div class="footer">
+    Z 老师高一数学微课 · 每天进步一点点 🌟
+  </div>
+
+</div>
+
+</body>
+</html>
