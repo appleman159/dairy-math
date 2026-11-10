@@ -3,119 +3,711 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Z老师微课堂：复数模的最值探究与几何意义</title>
+<title>复数模的最值与几何意义 - 手机互动微课</title>
 <style>
-* { box-sizing: border-box; }
-body { margin: 0; padding: 12px; background-color: #f5f5f7; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; color: #1d1d1f; line-height: 1.6; }
-.container { max-width: 680px; margin: 0 auto; }
-.header-card { background: linear-gradient(135deg, #0071e3, #005bb5); color: white; border-radius: 16px; padding: 22px 18px; margin-bottom: 16px; box-shadow: 0 4px 15px rgba(0,113,227,0.2); }
-.header-title { font-size: 20px; font-weight: bold; margin-bottom: 6px; }
-.header-subtitle { font-size: 13px; opacity: 0.9; }
-.card { background: white; border-radius: 14px; padding: 18px 16px; margin-bottom: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.04); border: 1px solid rgba(0,0,0,0.03); }
-.card-title { font-size: 16px; font-weight: bold; color: #0071e3; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; border-bottom: 2px solid #f0f5ff; padding-bottom: 8px; }
-.sub-title { font-size: 14px; font-weight: bold; color: #333; margin: 12px 0 6px 0; }
-p { margin: 8px 0; font-size: 14px; color: #333; }
-.math-block { background: #f8fafc; border-left: 4px solid #0071e3; padding: 10px 14px; margin: 10px 0; border-radius: 0 8px 8px 0; font-family: "Times New Roman", Times, serif; font-size: 15px; overflow-x: auto; }
-.highlight { color: #d70000; font-weight: bold; }
-.tag { display: inline-block; background: #e3f2fd; color: #0071e3; font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: bold; margin-right: 6px; }
-.tip-box { background: #fff9e6; border: 1px solid #ffe58f; padding: 12px; border-radius: 8px; font-size: 13px; color: #8c6d1f; margin: 10px 0; }
-.footer { text-align: center; font-size: 12px; color: #86868b; padding: 20px 0; }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    margin: 0; padding: 12px;
+    background-color: #f4f6f9;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+    color: #1e293b; line-height: 1.68;
+  }
+  .container { max-width: 560px; margin: 0 auto; padding-bottom: 36px; }
+  
+  /* 顶部横幅 */
+  .banner {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: #fff; border-radius: 16px; padding: 18px;
+    margin-bottom: 14px; box-shadow: 0 4px 14px rgba(37, 99, 235, 0.22);
+  }
+  .banner-tag {
+    display: inline-block; background: rgba(255,255,255,0.22);
+    font-size: 12px; padding: 2px 9px; border-radius: 6px; margin-bottom: 6px; font-weight: 600;
+  }
+  .banner-title { font-size: 20px; font-weight: 800; margin: 0 0 4px 0; }
+  .banner-sub { font-size: 13px; opacity: 0.92; margin: 0; }
+
+  /* 通用卡片 */
+  .card {
+    background: #ffffff; border-radius: 16px; padding: 16px;
+    margin-bottom: 14px; box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+    border: 1px solid #e2e8f0;
+  }
+  .card-title {
+    font-size: 16px; font-weight: 700; color: #1e40af;
+    margin: 0 0 12px 0; padding-bottom: 8px;
+    border-bottom: 2px solid #eff6ff; display: flex; align-items: center; gap: 6px;
+  }
+
+  /* 专业原生数学根号与公式排版（100%带顶横线） */
+  .m {
+    font-family: "Times New Roman", "STIX Two Math", Georgia, serif;
+    font-size: 1.06em;
+    letter-spacing: 0.2px;
+  }
+  .m i { font-style: italic; }
+  .rad {
+    display: inline-flex;
+    align-items: baseline;
+    vertical-align: baseline;
+    font-family: "Times New Roman", Georgia, serif;
+    white-space: nowrap;
+  }
+  .rad::before {
+    content: "√";
+    font-size: 1.12em;
+    line-height: 1;
+    margin-right: 0.5px;
+    font-weight: normal;
+  }
+  .rad > span {
+    border-top: 1.3px solid currentColor;
+    padding: 0 2px;
+    line-height: 1.15;
+    display: inline-block;
+  }
+  .vec {
+    display: inline-block;
+    position: relative;
+    padding-top: 2px;
+  }
+  .vec::before {
+    content: "→";
+    position: absolute;
+    top: -7px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 0.72em;
+    line-height: 1;
+    font-style: normal;
+  }
+
+  .formula-box {
+    background: #f8fafc; border-left: 4px solid #3b82f6;
+    padding: 11px 13px; border-radius: 0 8px 8px 0;
+    margin: 8px 0; font-size: 14.5px; color: #0f172a; overflow-x: auto;
+    line-height: 1.85;
+  }
+  .hl-red { color: #dc2626; font-weight: 700; }
+  .hl-blue { color: #2563eb; font-weight: 700; }
+  .hl-green { color: #059669; font-weight: 700; }
+  .hl-amber { color: #d97706; font-weight: 700; }
+
+  /* 知识点精细拆解卡片样式 */
+  .kp-item {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+  }
+  .kp-item:last-child { margin-bottom: 0; }
+  .kp-head {
+    font-size: 14.5px;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .kp-num {
+    background: #2563eb;
+    color: #fff;
+    font-size: 11.5px;
+    padding: 1px 7px;
+    border-radius: 20px;
+    font-weight: 700;
+  }
+  .kp-body {
+    font-size: 13.8px;
+    color: #334155;
+  }
+  .kp-list {
+    margin: 4px 0 0 0;
+    padding-left: 18px;
+  }
+  .kp-list li {
+    margin-bottom: 4px;
+  }
+
+  /* 选项网格 */
+  .options-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 0;
+  }
+  .opt-btn {
+    background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 10px;
+    padding: 11px 12px; font-size: 15px; font-weight: 600; color: #1e293b;
+    text-align: left; cursor: pointer; transition: all 0.2s;
+  }
+  .opt-btn.correct { background: #ecfdf5; border-color: #10b981; color: #065f46; }
+  .opt-btn.wrong { background: #fef2f2; border-color: #f87171; color: #991b1b; }
+
+  /* SVG 图形容器（支持手指直接拖拽） */
+  .svg-wrap {
+    width: 100%; background: #ffffff; border: 1.5px solid #cbd5e1;
+    border-radius: 12px; overflow: hidden; margin: 10px 0;
+    position: relative;
+    touch-action: none; /* 关键：禁止触摸画布时页面上下滚动，实现丝滑拖拽动点 */
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  svg { display: block; width: 100%; height: auto; }
+  .drag-hint-pill {
+    position: absolute; top: 8px; left: 8px;
+    background: rgba(30, 64, 175, 0.88); color: #fff;
+    font-size: 11.5px; font-weight: 600; padding: 3px 9px;
+    border-radius: 20px; pointer-events: none;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+  }
+  #pt-p, #pt-p-hit { cursor: grab; }
+  #pt-p:active, #pt-p-hit:active { cursor: grabbing; }
+
+  /* 互动控制区 */
+  .ctrl-panel {
+    background: #eff6ff; border-radius: 12px; padding: 12px; margin-top: 8px;
+  }
+  .status-bar {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 13px; font-weight: 700; margin-bottom: 8px; color: #1e3a8a;
+    flex-wrap: wrap; gap: 4px;
+  }
+  .slider-row {
+    display: flex; align-items: center; gap: 10px;
+  }
+  input[type="range"] {
+    flex: 1; accent-color: #2563eb; height: 6px; cursor: pointer;
+  }
+  .btn-play {
+    background: #2563eb; color: #fff; border: none; border-radius: 8px;
+    padding: 7px 14px; font-size: 13px; font-weight: 700; cursor: pointer;
+    white-space: nowrap;
+  }
+  .btn-play:active { transform: scale(0.97); }
+
+  /* 分步展开按钮 */
+  .toggle-btn {
+    width: 100%; background: #f1f5f9; color: #1e40af;
+    border: 1px dashed #93c5fd; border-radius: 10px;
+    padding: 10px; font-size: 14px; font-weight: 700;
+    cursor: pointer; margin-top: 8px; text-align: center;
+  }
+  .hidden-box { display: none; margin-top: 12px; padding-top: 10px; border-top: 1px dashed #e2e8f0; }
+  .hidden-box.show { display: block; }
+
+  .badge {
+    display: inline-block; font-size: 11.5px; font-weight: 700;
+    padding: 2px 8px; border-radius: 4px; margin-right: 6px;
+    background: #dbeafe; color: #1d4ed8;
+  }
+  .warn-box {
+    background: #fffbeb; border: 1px solid #fde68a; border-radius: 10px;
+    padding: 12px; font-size: 13.5px; color: #92400e; margin-top: 10px;
+  }
 </style>
 </head>
 <body>
 
 <div class="container">
 
-  <!-- 顶部导语 -->
-  <div class="header-card">
-    <div class="header-title">📖 专题微课：复数模的最值与几何意义</div>
-    <div class="header-subtitle">主讲：Z老师 | 针对高一复数几何意义难点突破</div>
+  <!-- 顶部标题 -->
+  <div class="banner">
+    <div class="banner-tag">📱 手机互动微课 · 考点全解与动态探究</div>
+    <div class="banner-title">复数模的最值与几何意义</div>
+    <div class="banner-sub">主讲：Z老师 ｜ 直接用手指拖动圆上的点 P，直观秒懂最值原理</div>
   </div>
 
-  <!-- 原题再现 -->
+  <!-- 1. 原题呈现与自测 -->
   <div class="card">
-    <div class="card-title">📌 原题呈现</div>
-    <p><strong>已知复数 $z$ 满足 $|z|=1$，则 $|z-1-i|$ 的取值范围是（ &nbsp;&nbsp;&nbsp;&nbsp; ）</strong></p>
-    <p>A. $[\sqrt{2}-1, \sqrt{2}+1]$ &nbsp;&nbsp;&nbsp;&nbsp; B. $[0, \sqrt{2}+1]$</p>
-    <p>C. $[\sqrt{2}-1, \sqrt{2}]$ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; D. $[1, 3]$</p>
-    <p><strong>正确答案：</strong> <span class="highlight">A</span></p>
+    <div class="card-title">📌 一、原题再现（先点击选项测一测）</div>
+    <div style="font-size: 15.5px; font-weight: 600;">
+      1. 已知复数 <span class="m"><i>z</i></span> 满足 <span class="m">|<i>z</i>| = 1</span>，则 <span class="m">|<i>z</i> &minus; 1 &minus; <i>i</i>|</span> 的取值范围是（ &nbsp;&nbsp; ）
+    </div>
+    <div class="options-grid" id="opt-group">
+      <button class="opt-btn" onclick="checkAns(this, true)">A. <span class="m">[<span class="rad"><span>2</span></span> &minus; 1, <span class="rad"><span>2</span></span> + 1]</span></button>
+      <button class="opt-btn" onclick="checkAns(this, false)">B. <span class="m">[0, <span class="rad"><span>2</span></span> + 1]</span></button>
+      <button class="opt-btn" onclick="checkAns(this, false)">C. <span class="m">[<span class="rad"><span>2</span></span> &minus; 1, <span class="rad"><span>2</span></span>]</span></button>
+      <button class="opt-btn" onclick="checkAns(this, false)">D. <span class="m">[1, 3]</span></button>
+    </div>
+    <div id="ans-feedback" style="font-size: 13.5px; display: none; padding: 9px 12px; border-radius: 8px;"></div>
   </div>
 
-  <!-- 知识储备 -->
+  <!-- 2. 本题核心知识点地毯式梳理（新增详尽版） -->
   <div class="card">
-    <div class="card-title">🧠 核心知识储备</div>
-    <p>1. <strong>复数的几何意义（复平面）</strong>：复数 $z = x + yi$ ($x,y \in \mathbb{R}$) 与复平面上的点 $P(x, y)$ 或向量 $\vec{OP}$ 一一对应。</p>
-    <p>2. <strong>模的几何意义</strong>：</p>
-    <div class="math-block">
-      $|z| = \sqrt{x^2+y^2}$ 表示点 $P(x,y)$ 到原点 $O(0,0)$ 的距离。<br>
-      $|z_1 - z_2|$ 表示复数 $z_1, z_2$ 在复平面上对应的两点 $P_1, P_2$ 之间的距离。
+    <div class="card-title">📚 二、本题必备核心知识点梳理（建议熟记）</div>
+
+    <div class="kp-item">
+      <div class="kp-head"><span class="kp-num">考点 1</span>复数的代数形式与复平面点的对应</div>
+      <div class="kp-body">
+        任意复数都可设为代数形式 <span class="m"><i>z</i> = <i>x</i> + <i>y</i><i>i</i></span>（其中 <span class="m"><i>x</i>, <i>y</i> &in; <b>R</b></span>）：
+        <ul class="kp-list">
+          <li><strong>实部</strong>为 <span class="m"><i>x</i></span>（对应横坐标），<strong>虚部</strong>为 <span class="m"><i>y</i></span>（对应纵坐标，注意虚部不含 <span class="m"><i>i</i></span>）。</li>
+          <li><strong>一一对应关系</strong>：复数 <span class="m"><i>z</i> = <i>x</i> + <i>y</i><i>i</i></span> &harr; 复平面内的点 <span class="m"><i>P</i>(<i>x</i>, <i>y</i>)</span> &harr; 平面向量 <span class="m"><span class="vec"><i>OP</i></span> = (<i>x</i>, <i>y</i>)</span>。</li>
+          <li>例如：复数 <span class="m">1 + <i>i</i></span> 对应定点 <span class="m"><i>A</i>(1, 1)</span>；复数 <span class="m">2 &minus; 3<i>i</i></span> 对应定点 <span class="m">(2, &minus;3)</span>。</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="kp-item">
+      <div class="kp-head"><span class="kp-num">考点 2</span>复数模的计算公式与几何意义</div>
+      <div class="kp-body">
+        <strong>① 单个复数的模 <span class="m">|<i>z</i>|</span>：</strong>若 <span class="m"><i>z</i> = <i>x</i> + <i>y</i><i>i</i></span>，由勾股定理得：
+        <div class="formula-box">
+          <span class="m">|<i>z</i>| = |<i>x</i> + <i>y</i><i>i</i>| = <span class="rad"><span><i>x</i><sup>2</sup> + <i>y</i><sup>2</sup></span></span></span>（即实部平方 + 虚部平方再开方）
+        </div>
+        • <strong>几何意义</strong>：表示复平面内的点 <span class="m"><i>P</i>(<i>x</i>, <i>y</i>)</span> 到<strong>坐标原点 <span class="m"><i>O</i>(0, 0)</span> 的距离 <span class="m">|<i>OP</i>|</span></strong>。<br><br>
+        <strong>② 两个复数差的模 <span class="m">|<i>z</i><sub>1</sub> &minus; <i>z</i><sub>2</sub>|</span>（高频重点！）：</strong><br>
+        设 <span class="m"><i>z</i> = <i>x</i> + <i>y</i><i>i</i></span> 对应动点 <span class="m"><i>P</i>(<i>x</i>, <i>y</i>)</span>，复数 <span class="m"><i>z</i><sub>0</sub> = <i>a</i> + <i>b</i><i>i</i></span> 对应定点 <span class="m"><i>A</i>(<i>a</i>, <i>b</i>)</span>，则：
+        <div class="formula-box">
+          <span class="m">|<i>z</i> &minus; <i>z</i><sub>0</sub>| = |(<i>x</i> &minus; <i>a</i>) + (<i>y</i> &minus; <i>b</i>)<i>i</i>| = <span class="rad"><span>(<i>x</i> &minus; <i>a</i>)<sup>2</sup> + (<i>y</i> &minus; <i>b</i>)<sup>2</sup></span></span> = |<i>PA</i>|</span>
+        </div>
+        • <strong>几何意义</strong>：<span class="hl-blue">表示复平面上两点 <span class="m"><i>P</i>(<i>x</i>, <i>y</i>)</span> 与 <span class="m"><i>A</i>(<i>a</i>, <i>b</i>)</span> 之间的距离！</span><br>
+        • <strong>避坑关键（先提负号化标准差形式）</strong>：遇到 <span class="m">|<i>z</i> &minus; 1 &minus; <i>i</i>|</span>，必须先用括号把后面的数括起来写成 <strong><span class="m">|<i>z</i> &minus; (1 + <i>i</i>)|</span></strong>，才能看出定点是 <span class="m">(1, 1)</span> 而不是 <span class="m">(&minus;1, &minus;1)</span>！同理，<span class="m">|<i>z</i> + 2 &minus; <i>i</i>| = |<i>z</i> &minus; (&minus;2 + <i>i</i>)|</span> 对应定点 <span class="m">(&minus;2, 1)</span>。
+      </div>
+    </div>
+
+    <div class="kp-item">
+      <div class="kp-head"><span class="kp-num">考点 3</span>复数模的方程与圆的标准方程的转化</div>
+      <div class="kp-body">
+        我们在解析几何中学过：圆心为 <span class="m"><i>C</i>(<i>a</i>, <i>b</i>)</span>、半径为 <span class="m"><i>R</i></span> 的<strong>圆的标准方程</strong>为：
+        <div class="formula-box">
+          <span class="m">(<i>x</i> &minus; <i>a</i>)<sup>2</sup> + (<i>y</i> &minus; <i>b</i>)<sup>2</sup> = <i>R</i><sup>2</sup> &nbsp;&hArr;&nbsp; <span class="rad"><span>(<i>x</i> &minus; <i>a</i>)<sup>2</sup> + (<i>y</i> &minus; <i>b</i>)<sup>2</sup></span></span> = <i>R</i></span>
+        </div>
+        对比复数模长公式，立刻得到复数中的<strong>圆轨迹三大结论</strong>：
+        <ul class="kp-list">
+          <li><strong>单位圆</strong>：<span class="m">|<i>z</i>| = 1 &hArr; <span class="rad"><span><i>x</i><sup>2</sup> + <i>y</i><sup>2</sup></span></span> = 1 &hArr; <i>x</i><sup>2</sup> + <i>y</i><sup>2</sup> = 1</span>，表示以<strong>原点 <span class="m"><i>O</i>(0,0)</span> 为圆心、半径 <span class="m"><i>R</i> = 1</span></strong> 的圆。</li>
+          <li><strong>一般圆</strong>：<span class="m">|<i>z</i> &minus; (<i>a</i> + <i>b</i><i>i</i>)| = <i>R</i> &hArr; (<i>x</i> &minus; <i>a</i>)<sup>2</sup> + (<i>y</i> &minus; <i>b</i>)<sup>2</sup> = <i>R</i><sup>2</sup></span>，表示以 <strong><span class="m"><i>C</i>(<i>a</i>, <i>b</i>)</span> 为圆心、半径为 <span class="m"><i>R</i></span></strong> 的圆。</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="kp-item">
+      <div class="kp-head"><span class="kp-num">考点 4</span>圆上动点到定点距离的最值定理（穿心线法则）</div>
+      <div class="kp-body">
+        已知圆心为 <span class="m"><i>C</i></span>、半径为 <span class="m"><i>R</i></span> 的圆，以及平面内一定点 <span class="m"><i>A</i></span>，记<strong>圆心到定点的距离（圆心距）为 <span class="m"><i>d</i> = |<i>CA</i>|</span></strong>。当动点 <span class="m"><i>P</i></span> 在圆周上运动时：
+        <div class="formula-box">
+          • <strong>最短距离</strong>：<span class="hl-green m">|<i>PA</i>|<sub>min</sub> = |<i>d</i> &minus; <i>R</i>|</span>（当 <span class="m"><i>P</i></span> 位于线段 <span class="m"><i>CA</i></span> 与圆的交点时取得，此时 <span class="m"><i>C</i>, <i>P</i>, <i>A</i></span> 三点同向共线）<br>
+          • <strong>最长距离</strong>：<span class="hl-red m">|<i>PA</i>|<sub>max</sub> = <i>d</i> + <i>R</i></span>（当 <span class="m"><i>P</i></span> 位于线段 <span class="m"><i>AC</i></span> 延长线与圆的交点时取得，此时 <span class="m"><i>P</i>, <i>C</i>, <i>A</i></span> 三点反向共线）
+        </div>
+        <strong>口诀记忆</strong>：<span class="hl-blue">“先算圆心距 d，再加减半径 R；共线穿心取极值，范围闭区间 [d &minus; R, d + R]”</span>。
+      </div>
+    </div>
+
+    <div class="kp-item">
+      <div class="kp-head"><span class="kp-num">考点 5</span>复数模的三角不等式（几何意义：三角形两边之和/差）</div>
+      <div class="kp-body">
+        对于任意两个复数 <span class="m"><i>z</i><sub>1</sub>, <i>z</i><sub>2</sub></span>，在复平面内构成三角形（或共线），由“三角形两边之差小于第三边、两边之和大于第三边”恒有：
+        <div class="formula-box">
+          <span class="m">||<i>z</i><sub>1</sub>| &minus; |<i>z</i><sub>2</sub>|| &le; |<i>z</i><sub>1</sub> &plusmn; <i>z</i><sub>2</sub>| &le; |<i>z</i><sub>1</sub>| + |<i>z</i><sub>2</sub>|</span>
+        </div>
+        • 左边等号在两向量同向（减法）或反向（加法）时取到；右边等号在反向（减法）或同向（加法）时取到。
+      </div>
     </div>
   </div>
 
-  <!-- 解法详析 -->
+  <!-- 3. 动态几何实验室（支持手指直接拖动圆上动点 P） -->
   <div class="card">
-    <div class="card-title">💡 经典解法详析</div>
-    
-    <div class="sub-title"><span class="tag">解法一</span> 几何法（秒杀大招：动点到定点的距离）</div>
-    <p>将所求式子变形：$|z - (1+i)|$。</p>
-    <p>设复数 $z$ 对应的点为 $P(x, y)$，则条件 $|z|=1$ 表示点 $P$ 在<strong>以原点 $O(0,0)$ 为圆心，半径 $R=1$ 的单位圆</strong>上。</p>
-    <p>令定点 $A(1, 1)$，则 $|z-1-i|$ 就转化为<strong>圆上的动点 $P$ 到定点 $A(1, 1)$ 的距离 $|PA|$</strong>。</p>
-    <p><strong>计算定点 $A$ 到圆心 $O$ 的距离：</strong></p>
-    <div class="math-block">
-      $|OA| = \sqrt{1^2 + 1^2} = \sqrt{2}$
+    <div class="card-title">🎨 三、动态几何探究（请直接用手指拖动蓝点 P）</div>
+    <div style="font-size: 13.5px; color: #475569; margin-bottom: 6px;">
+      • <strong>操作方法</strong>：用手指直接按住图中的<strong>蓝色圆点 <span class="m"><i>P</i></span></strong> 沿单位圆拖动（或拖动下方滑块），实时观察动点坐标 <span class="m"><i>P</i>(<i>x</i>, <i>y</i>)</span> 与红色线段长度 <span class="m">|<i>PA</i>|</span> 的变化！
     </div>
-    <p><strong>求最大、最小值：</strong></p>
-    <div class="math-block">
-      $|PA|_{\min} = |OA| - R = \sqrt{2} - 1$<br>
-      $|PA|_{\max} = |OA| + R = \sqrt{2} + 1$
-    </div>
-    <p>因此，取值范围为 $[\sqrt{2}-1, \sqrt{2}+1]$，故选 A。</p>
 
-    <div class="sub-title"><span class="tag">解法二</span> 代数三角换元法（适合不擅长几何直观的同学）</div>
-    <p>设 $z = \cos\theta + i\sin\theta$（其中 $\theta \in [0, 2\pi)$），满足 $|z| = \sqrt{\cos^2\theta + \sin^2\theta} = 1$。</p>
-    <p>代入所求表达式：</p>
-    <div class="math-block">
-      $|z - 1 - i| = |(\cos\theta - 1) + (\sin\theta - 1)i|$<br>
-      $= \sqrt{(\cos\theta - 1)^2 + (\sin\theta - 1)^2}$<br>
-      $= \sqrt{\cos^2\theta - 2\cos\theta + 1 + \sin^2\theta - 2\sin\theta + 1}$<br>
-      $= \sqrt{2 - 2(\cos\theta + \sin\theta)}$
+    <div class="svg-wrap" id="svg-container">
+      <div class="drag-hint-pill">👆 手指按住蓝点 P 可直接拖动</div>
+      <svg viewBox="0 0 360 320" id="main-svg">
+        <defs>
+          <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#f1f5f9" stroke-width="1"/>
+          </pattern>
+        </defs>
+        <rect width="360" height="320" fill="url(#grid)" />
+
+        <!-- 坐标轴：原点O设在 (160, 190)，1单位 = 80px -->
+        <line x1="20" y1="190" x2="340" y2="190" stroke="#94a3b8" stroke-width="1.5" />
+        <line x1="160" y1="20" x2="160" y2="300" stroke="#94a3b8" stroke-width="1.5" />
+        <polygon points="340,190 332,186 332,194" fill="#94a3b8"/>
+        <polygon points="160,20 156,28 164,28" fill="#94a3b8"/>
+        <text x="328" y="208" font-size="13" fill="#64748b" font-family="Times New Roman" font-style="italic" font-weight="bold">x</text>
+        <text x="168" y="30" font-size="13" fill="#64748b" font-family="Times New Roman" font-style="italic" font-weight="bold">y</text>
+        <text x="142" y="206" font-size="12.5" fill="#64748b" font-weight="bold">O(0,0)</text>
+
+        <!-- 穿心虚线（O与A连线所在直线 y = x） -->
+        <line x1="80" y1="270" x2="310" y2="40" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="5,5" />
+        <text x="262" y="54" font-size="11" fill="#64748b">穿心线 y = x</text>
+
+        <!-- 单位圆 x² + y² = 1 -->
+        <circle cx="160" cy="190" r="80" fill="rgba(37,99,235,0.05)" stroke="#2563eb" stroke-width="2.2" />
+        <text x="52" y="182" font-size="11.5" fill="#2563eb" font-weight="bold">x²+y²=1 (R=1)</text>
+
+        <!-- 最小值点 P1 (√2/2, √2/2) 与 最大值点 P2 (-√2/2, -√2/2) -->
+        <circle cx="216.6" cy="133.4" r="4.5" fill="#10b981" />
+        <text x="166" y="130" font-size="11.5" fill="#059669" font-weight="bold">P₁(最小)</text>
+        <circle cx="103.4" cy="246.6" r="4.5" fill="#f59e0b" />
+        <text x="46" y="262" font-size="11.5" fill="#d97706" font-weight="bold">P₂(最大)</text>
+
+        <!-- 定点 A(1,1) -> (240, 110) -->
+        <line x1="240" y1="190" x2="240" y2="110" stroke="#fca5a5" stroke-width="1" stroke-dasharray="3,3" />
+        <line x1="160" y1="110" x2="240" y2="110" stroke="#fca5a5" stroke-width="1" stroke-dasharray="3,3" />
+        <circle cx="240" cy="110" r="5.5" fill="#dc2626" />
+        <text x="248" y="108" font-size="13" fill="#dc2626" font-weight="bold">A(1, 1)</text>
+
+        <!-- 半径 OP 连线 -->
+        <line id="line-op" x1="160" y1="190" x2="240" y2="190" stroke="#60a5fa" stroke-width="1.8" />
+
+        <!-- 动态距离连线 PA -->
+        <line id="line-pa" x1="240" y1="190" x2="240" y2="110" stroke="#dc2626" stroke-width="2.8" />
+
+        <!-- 动点 P 的外圈呼吸光环（提示可拖动） -->
+        <circle id="pt-p-halo" cx="240" cy="190" r="14" fill="rgba(37, 99, 235, 0.18)" />
+        <!-- 动点 P 实体 -->
+        <circle id="pt-p" cx="240" cy="190" r="8" fill="#2563eb" stroke="#ffffff" stroke-width="2.5" />
+        <!-- 透明加大触控热区（半径28px，方便手机手指轻松按住拖动） -->
+        <circle id="pt-p-hit" cx="240" cy="190" r="28" fill="transparent" />
+        <text id="txt-p" x="250" y="195" font-size="13" fill="#1e40af" font-weight="bold">P</text>
+      </svg>
     </div>
-    <p>因为 $\cos\theta + \sin\theta = \sqrt{2}\sin(\theta + \frac{\pi}{4})$，其取值范围为 $[-\sqrt{2}, \sqrt{2}]$。</p>
-    <p>当 $\cos\theta + \sin\theta = \sqrt{2}$ 时，最小值为 $\sqrt{2 - 2\sqrt{2}} = \sqrt{(\sqrt{2}-1)^2} = \sqrt{2}-1$；</p>
-    <p>当 $\cos\theta + \sin\theta = -\sqrt{2}$ 时，最大值为 $\sqrt{2 + 2\sqrt{2}} = \sqrt{(\sqrt{2}+1)^2} = \sqrt{2}+1$。</p>
-    <p>故取值范围为 $[\sqrt{2}-1, \sqrt{2}+1]$。</p>
+
+    <!-- 实时坐标与控制面板 -->
+    <div class="ctrl-panel">
+      <div class="status-bar">
+        <span id="coord-label">动点 P(0.97, 0.26)</span>
+        <span id="dist-label" class="hl-red">当前距离 |PA| = 0.742</span>
+      </div>
+      <div class="slider-row">
+        <input type="range" id="angle-slider" min="0" max="360" value="15" oninput="updateAngle(this.value)">
+        <button class="btn-play" id="play-btn" onclick="togglePlay()">▶ 自动演示</button>
+      </div>
+      <div style="display: flex; gap: 8px; margin-top: 8px;">
+        <button onclick="stopAndJump(45)" style="flex:1; padding:7px; font-size:12px; font-weight:bold; border-radius:6px; border:1px solid #10b981; background:#ecfdf5; color:#065f46; cursor:pointer;">
+          📍 跳至最小值点 P₁
+        </button>
+        <button onclick="stopAndJump(225)" style="flex:1; padding:7px; font-size:12px; font-weight:bold; border-radius:6px; border:1px solid #f59e0b; background:#fffbeb; color:#92400e; cursor:pointer;">
+          📍 跳至最大值点 P₂
+        </button>
+      </div>
+    </div>
   </div>
 
-  <!-- 易错警示 -->
+  <!-- 4. 三种经典解法详析（已去掉三角形式，改为代数设 z=x+yi 结合圆的方程） -->
   <div class="card">
-    <div class="card-title">⚠️ 易错警示与思维误区</div>
-    <div class="tip-box">
-      <strong>误区提醒：</strong>部分同学容易把 $|z-1-i|$ 错误地理解为 $|z| - |1+i|$，从而算成 $1 - \sqrt{2}$ 甚至带入绝对值出错。切记：<strong>模的运算没有像绝对值那样的线性拆分性质（$|a-b| \neq ||a|-|b||$ 恒成立，只能利用三角不等式粗略放缩）</strong>。对于圆周上的动点距离，用“圆心距加减半径”的几何法是最稳妥、最不容易出错的！
+    <div class="card-title">💡 四、三种方法透彻解析（代数圆方程 + 几何法）</div>
+
+    <!-- 解法一：设 z = x + yi 代入模长公式转化为圆的方程 -->
+    <div style="margin-bottom: 16px;">
+      <div style="font-weight: 700; font-size: 14.5px; margin-bottom: 6px;">
+        <span class="badge">解法一</span>代数坐标法（设 <span class="m"><i>z</i> = <i>x</i> + <i>y</i><i>i</i></span> 代入模长公式 + 圆的方程）
+      </div>
+      <div style="font-size: 14px; color: #334155;">
+        <strong>第一步（设复数代数形式）：</strong><br>
+        设复数 <span class="m"><i>z</i> = <i>x</i> + <i>y</i><i>i</i></span>（其中 <span class="m"><i>x</i>, <i>y</i> &in; <b>R</b></span>），在直角坐标系中对应动点 <span class="m"><i>P</i>(<i>x</i>, <i>y</i>)</span>。<br><br>
+        <strong>第二步（翻译已知条件 <span class="m">|<i>z</i>| = 1</span> 为圆的方程）：</strong><br>
+        由复数模长公式 <span class="m">|<i>z</i>| = <span class="rad"><span><i>x</i><sup>2</sup> + <i>y</i><sup>2</sup></span></span> = 1</span>，两边平方得：
+        <div class="formula-box">
+          <span class="m"><i>x</i><sup>2</sup> + <i>y</i><sup>2</sup> = 1</span>
+        </div>
+        这说明点 <span class="m"><i>P</i>(<i>x</i>, <i>y</i>)</span> 的轨迹是以<strong>原点 <span class="m"><i>O</i>(0, 0)</span> 为圆心、半径 <span class="m"><i>R</i> = 1</span> 的圆</strong>。<br><br>
+        <strong>第三步（代入所求模长公式）：</strong><br>
+        将 <span class="m"><i>z</i> = <i>x</i> + <i>y</i><i>i</i></span> 代入所求式子，合并实部与虚部：
+        <div class="formula-box">
+          <span class="m">|<i>z</i> &minus; 1 &minus; <i>i</i>| = |(<i>x</i> + <i>y</i><i>i</i>) &minus; 1 &minus; <i>i</i>| = |(<i>x</i> &minus; 1) + (<i>y</i> &minus; 1)<i>i</i>|</span><br>
+          <span class="m">= <span class="rad"><span>(<i>x</i> &minus; 1)<sup>2</sup> + (<i>y</i> &minus; 1)<sup>2</sup></span></span></span>
+        </div>
+        <strong>第四步（利用两点距离与圆的性质求最值）：</strong><br>
+        观察发现，式子 <span class="m"><span class="rad"><span>(<i>x</i> &minus; 1)<sup>2</sup> + (<i>y</i> &minus; 1)<sup>2</sup></span></span></span> 正好是圆 <span class="m"><i>x</i><sup>2</sup> + <i>y</i><sup>2</sup> = 1</span> 上的动点 <span class="m"><i>P</i>(<i>x</i>, <i>y</i>)</span> 到定点 <span class="m"><i>A</i>(1, 1)</span> 的距离 <span class="m">|<i>PA</i>|</span>！<br>
+        计算圆心 <span class="m"><i>O</i>(0,0)</span> 到定点 <span class="m"><i>A</i>(1,1)</span> 的圆心距：
+        <div class="formula-box">
+          <span class="m"><i>d</i> = |<i>OA</i>| = <span class="rad"><span>(1 &minus; 0)<sup>2</sup> + (1 &minus; 0)<sup>2</sup></span></span> = <span class="rad"><span>2</span></span></span>
+        </div>
+        因为 <span class="m"><i>d</i> = <span class="rad"><span>2</span></span> &gt; <i>R</i> = 1</span>（定点 <span class="m"><i>A</i></span> 在圆外），根据“圆上动点到定点距离最值结论”：<br>
+        • 最小值：<span class="hl-green m">|<i>PA</i>|<sub>min</sub> = <i>d</i> &minus; <i>R</i> = <span class="rad"><span>2</span></span> &minus; 1</span><br>
+        • 最大值：<span class="hl-red m">|<i>PA</i>|<sub>max</sub> = <i>d</i> + <i>R</i> = <span class="rad"><span>2</span></span> + 1</span><br>
+        故 <span class="m">|<i>z</i> &minus; 1 &minus; <i>i</i>|</span> 的取值范围是 <strong class="m">[<span class="rad"><span>2</span></span> &minus; 1, <span class="rad"><span>2</span></span> + 1]</strong>，选 <strong>A</strong>。
+      </div>
+    </div>
+
+    <!-- 解法二：纯几何意义秒杀法 -->
+    <div style="border-top: 1px solid #f1f5f9; padding-top: 14px; margin-bottom: 16px;">
+      <div style="font-weight: 700; font-size: 14.5px; margin-bottom: 6px;">
+        <span class="badge">解法二</span>复数几何意义直接秒杀法（不设 <span class="m"><i>x</i>, <i>y</i></span>，考场 10 秒出答案）
+      </div>
+      <div style="font-size: 14px; color: #334155;">
+        1. <strong>看轨迹</strong>：<span class="m">|<i>z</i>| = |<i>z</i> &minus; 0| = 1</span> 直接表示复数 <span class="m"><i>z</i></span> 对应的点 <span class="m"><i>P</i></span> 在以原点 <span class="m"><i>O</i>(0,0)</span> 为圆心、半径 <span class="m"><i>R</i> = 1</span> 的单位圆上。<br>
+        2. <strong>看目标</strong>：将原式添括号变形为 <span class="m">|<i>z</i> &minus; (1 + <i>i</i>)|</span>，直接表示点 <span class="m"><i>P</i></span> 到定点 <span class="m"><i>A</i>(1, 1)</span> 的距离。<br>
+        3. <strong>算圆心距加减半径</strong>：<span class="m"><i>d</i> = |<i>OA</i>| = <span class="rad"><span>1<sup>2</sup> + 1<sup>2</sup></span></span> = <span class="rad"><span>2</span></span></span>，直接写出范围 <span class="m">[<i>d</i> &minus; <i>R</i>, <i>d</i> + <i>R</i>] = [<span class="rad"><span>2</span></span> &minus; 1, <span class="rad"><span>2</span></span> + 1]</span>。
+      </div>
+    </div>
+
+    <!-- 解法三：纯代数消元法（拓展视野） -->
+    <div style="border-top: 1px solid #f1f5f9; padding-top: 14px;">
+      <div style="font-weight: 700; font-size: 14.5px; margin-bottom: 6px;">
+        <span class="badge">解法三</span>纯代数展开 + 均值不等式法（深化代数基本功）
+      </div>
+      <div style="font-size: 14px; color: #334155;">
+        把 <span class="m"><i>x</i><sup>2</sup> + <i>y</i><sup>2</sup> = 1</span> 代入根号内展开：
+        <div class="formula-box">
+          <span class="m">|<i>z</i> &minus; 1 &minus; <i>i</i>| = <span class="rad"><span>(<i>x</i> &minus; 1)<sup>2</sup> + (<i>y</i> &minus; 1)<sup>2</sup></span></span> = <span class="rad"><span>(<i>x</i><sup>2</sup> + <i>y</i><sup>2</sup>) &minus; 2(<i>x</i> + <i>y</i>) + 2</span></span> = <span class="rad"><span>3 &minus; 2(<i>x</i> + <i>y</i>)</span></span></span>
+        </div>
+        只需求出 <span class="m"><i>x</i> + <i>y</i></span> 的范围即可！由完全平方非负性 <span class="m">(<i>x</i> &minus; <i>y</i>)<sup>2</sup> &ge; 0</span> 可得 <span class="m">2<i>xy</i> &le; <i>x</i><sup>2</sup> + <i>y</i><sup>2</sup></span>，因此：
+        <div class="formula-box">
+          <span class="m">(<i>x</i> + <i>y</i>)<sup>2</sup> = <i>x</i><sup>2</sup> + <i>y</i><sup>2</sup> + 2<i>xy</i> &le; 2(<i>x</i><sup>2</sup> + <i>y</i><sup>2</sup>) = 2 &nbsp;&rArr;&nbsp; &minus;<span class="rad"><span>2</span></span> &le; <i>x</i> + <i>y</i> &le; <span class="rad"><span>2</span></span></span>
+        </div>
+        • 当 <span class="m"><i>x</i> = <i>y</i> = <span class="rad"><span>2</span></span> / 2</span> 时，<span class="m"><i>x</i> + <i>y</i></span> 取最大值 <span class="m"><span class="rad"><span>2</span></span></span>，原式取最小值 <span class="m"><span class="rad"><span>3 &minus; 2<span class="rad"><span>2</span></span></span></span> = <span class="rad"><span>(<span class="rad"><span>2</span></span> &minus; 1)<sup>2</sup></span></span> = <span class="rad"><span>2</span></span> &minus; 1</span>；<br>
+        • 当 <span class="m"><i>x</i> = <i>y</i> = &minus;<span class="rad"><span>2</span></span> / 2</span> 时，<span class="m"><i>x</i> + <i>y</i></span> 取最小值 <span class="m">&minus;<span class="rad"><span>2</span></span></span>，原式取最大值 <span class="m"><span class="rad"><span>3 + 2<span class="rad"><span>2</span></span></span></span> = <span class="rad"><span>(<span class="rad"><span>2</span></span> + 1)<sup>2</sup></span></span> = <span class="rad"><span>2</span></span> + 1</span>。
+      </div>
+    </div>
+
+    <div class="warn-box">
+      <strong>⚠️ 常见错误警示：</strong><br>
+      很多同学看到 <span class="m">|<i>z</i> &minus; 1 &minus; <i>i</i>|</span> 会直接错算成 <span class="m">|<i>z</i>| &minus; |1| &minus; |<i>i</i>| = 1 &minus; 1 &minus; 1 = &minus;1</span>，或者误以为定点是 <span class="m">(&minus;1, &minus;1)</span>。切记：<br>
+      1. <strong>模长永远非负（<span class="m">|<i>z</i>| &ge; 0</span>）</strong>，且不能直接把绝对值号拆开分配给每一项；<br>
+      2. 必须写成标准差形式 <strong><span class="m">|<i>z</i> &minus; <i>z</i><sub>0</sub>|</span></strong>，即 <span class="m">|<i>z</i> &minus; (1 + <i>i</i>)|</span>，才能准确找出定点 <span class="m"><i>A</i>(1, 1)</span>！
     </div>
   </div>
 
-  <!-- 拓展提升 -->
+  <!-- 5. 举一反三拓展题 -->
   <div class="card">
-    <div class="card-title">🚀 举一反三·课后拓展题</div>
-    
-    <div class="sub-title">【拓展题 1】（直线与圆距离变式）</div>
-    <p>已知复数 $z$ 满足 $|z-2-2i| = 1$，求 $|z|$ 的取值范围。</p>
-    <div class="tip-box">
-      <strong>💡 提示：</strong>$|z|$ 表示圆上动点 $P$ 到原点 $O(0,0)$ 的距离。圆心为 $C(2,2)$，半径 $R=1$，圆心距 $|OC| = \sqrt{2^2+2^2} = 2\sqrt{2} = \sqrt{8}$。因此 $|z|$ 的范围是 $[2\sqrt{2}-1, 2\sqrt{2}+1]$。
+    <div class="card-title">🚀 五、举一反三 · 变式巩固训练</div>
+
+    <!-- 拓展题 1 -->
+    <div style="margin-bottom: 16px;">
+      <div style="font-weight: 700; font-size: 14.5px; color: #0f172a;">
+        【变式 1（圆心不在原点）】已知复数 <span class="m"><i>z</i></span> 满足 <span class="m">|<i>z</i> &minus; 2 &minus; 2<i>i</i>| = 1</span>，求 <span class="m">|<i>z</i>|</span> 的取值范围。
+      </div>
+      <button class="toggle-btn" onclick="toggleBox('ext1', this)">👀 点击展开双解与几何图示</button>
+      <div id="ext1" class="hidden-box">
+        <div class="svg-wrap" style="touch-action: auto;">
+          <svg viewBox="0 0 320 220">
+            <rect width="320" height="220" fill="#f8fafc"/>
+            <line x1="20" y1="180" x2="300" y2="180" stroke="#94a3b8" stroke-width="1.5"/>
+            <line x1="60" y1="20" x2="60" y2="205" stroke="#94a3b8" stroke-width="1.5"/>
+            <text x="42" y="196" font-size="12" fill="#64748b" font-weight="bold">O(0,0)</text>
+            <line x1="60" y1="180" x2="200" y2="40" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="4,4"/>
+            <circle cx="150" cy="90" r="45" fill="rgba(37,99,235,0.08)" stroke="#2563eb" stroke-width="2"/>
+            <circle cx="150" cy="90" r="4" fill="#dc2626"/>
+            <text x="156" y="94" font-size="12" fill="#dc2626" font-weight="bold">C(2,2)</text>
+            <line x1="60" y1="180" x2="150" y2="90" stroke="#dc2626" stroke-width="2"/>
+            <circle cx="118.2" cy="121.8" r="4" fill="#10b981"/>
+            <circle cx="181.8" cy="58.2" r="4" fill="#f59e0b"/>
+            <text x="192" y="138" font-size="12" fill="#1e40af" font-weight="bold">圆心距 d = 2√2</text>
+            <text x="192" y="156" font-size="12" fill="#1e40af" font-weight="bold">半径 R = 1</text>
+          </svg>
+        </div>
+        <div style="font-size: 14px; color: #334155;">
+          • <strong>设 <span class="m"><i>z</i> = <i>x</i> + <i>y</i><i>i</i></span> 化圆方程</strong>：条件 <span class="m">|(<i>x</i> &minus; 2) + (<i>y</i> &minus; 2)<i>i</i>| = 1 &hArr; (<i>x</i> &minus; 2)<sup>2</sup> + (<i>y</i> &minus; 2)<sup>2</sup> = 1</span>，表示以 <span class="m"><i>C</i>(2, 2)</span> 为圆心、半径 <span class="m"><i>R</i> = 1</span> 的圆。<br>
+          • <strong>看所求目标</strong>：<span class="m">|<i>z</i>| = <span class="rad"><span><i>x</i><sup>2</sup> + <i>y</i><sup>2</sup></span></span></span> 表示圆上动点 <span class="m"><i>P</i>(<i>x</i>, <i>y</i>)</span> 到原点 <span class="m"><i>O</i>(0,0)</span> 的距离。<br>
+          • <strong>算圆心距</strong>：<span class="m"><i>d</i> = |<i>OC</i>| = <span class="rad"><span>2<sup>2</sup> + 2<sup>2</sup></span></span> = <span class="rad"><span>8</span></span> = 2<span class="rad"><span>2</span></span></span>。<br>
+          • <strong>结论</strong>：取值范围是 <span class="hl-blue m">[<i>d</i> &minus; <i>R</i>, <i>d</i> + <i>R</i>] = [2<span class="rad"><span>2</span></span> &minus; 1, 2<span class="rad"><span>2</span></span> + 1]</span>。
+        </div>
+      </div>
     </div>
 
-    <div class="sub-title">【拓展题 2】（两圆动点距离极值）</div>
-    <p>已知复数 $z_1, z_2$ 满足 $|z_1|=1$， $|z_2 - 3 - 4i| = 2$，则 $|z_1 - z_2|$ 的最小值为多少？</p>
-    <div class="tip-box">
-      <strong>💡 提示：</strong>$z_1$ 在以原点 $O_1(0,0)$ 为圆心、半径 $R_1=1$ 的圆上；$z_2$ 在以 $O_2(3,4)$ 为圆心、半径 $R_2=2$ 的圆上。两圆圆心距 $|O_1 O_2| = \sqrt{3^2+4^2} = 5$。两圆外离，故两点间距离的最小值为 $|O_1 O_2| - R_1 - R_2 = 5 - 1 - 2 = 2$。
+    <!-- 拓展题 2 -->
+    <div style="border-top: 1px solid #f1f5f9; padding-top: 14px;">
+      <div style="font-weight: 700; font-size: 14.5px; color: #0f172a;">
+        【变式 2（加号符号陷阱 + 距离平方）】已知复数 <span class="m"><i>z</i></span> 满足 <span class="m">|<i>z</i> + 1 &minus; 2<i>i</i>| = 2</span>，求 <span class="m">|<i>z</i> &minus; 2 + 2<i>i</i>|</span> 的最小值与最大值。
+      </div>
+      <button class="toggle-btn" onclick="toggleBox('ext2', this)">👀 点击展开解析与几何图示</button>
+      <div id="ext2" class="hidden-box">
+        <div class="svg-wrap" style="touch-action: auto;">
+          <svg viewBox="0 0 320 230">
+            <rect width="320" height="230" fill="#f8fafc"/>
+            <!-- 原点 O(140, 125)，1单位 = 25px -->
+            <line x1="20" y1="125" x2="300" y2="125" stroke="#94a3b8" stroke-width="1.5"/>
+            <line x1="140" y1="15" x2="140" y2="215" stroke="#94a3b8" stroke-width="1.5"/>
+            <text x="144" y="138" font-size="11" fill="#64748b" font-weight="bold">O</text>
+            <!-- 圆心 C(-1, 2) -> (140-25, 125-50) = (115, 75), R=2 -> 50px -->
+            <circle cx="115" cy="75" r="50" fill="rgba(37,99,235,0.08)" stroke="#2563eb" stroke-width="2"/>
+            <circle cx="115" cy="75" r="4" fill="#2563eb"/>
+            <text x="58" y="72" font-size="11.5" fill="#1e40af" font-weight="bold">C(-1, 2) R=2</text>
+            <!-- 定点 A(2, -2) -> (140+50, 125+50) = (190, 175) -->
+            <circle cx="190" cy="175" r="4.5" fill="#dc2626"/>
+            <text x="198" y="180" font-size="12" fill="#dc2626" font-weight="bold">A(2, -2)</text>
+            <!-- 穿心线与CA连线 -->
+            <line x1="75" y1="21.7" x2="205" y2="195" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="4,4"/>
+            <line x1="115" y1="75" x2="190" y2="175" stroke="#dc2626" stroke-width="2"/>
+            <!-- 最短点 P1 (115 + 30, 75 + 40) = (145, 115) -->
+            <circle cx="145" cy="115" r="4.5" fill="#10b981"/>
+            <!-- 最长点 P2 (115 - 30, 75 - 40) = (85, 35) -->
+            <circle cx="85" cy="35" r="4.5" fill="#f59e0b"/>
+            <text x="180" y="105" font-size="12" fill="#059669" font-weight="bold">|CA| = 5, R = 2</text>
+          </svg>
+        </div>
+        <div style="font-size: 14px; color: #334155;">
+          • <strong>第一步（设 <span class="m"><i>z</i> = <i>x</i> + <i>y</i><i>i</i></span> 找圆心与半径）</strong>：<br>
+          &nbsp;&nbsp;<span class="m">|<i>z</i> + 1 &minus; 2<i>i</i>| = |(<i>x</i> + 1) + (<i>y</i> &minus; 2)<i>i</i>| = 2 &hArr; (<i>x</i> + 1)<sup>2</sup> + (<i>y</i> &minus; 2)<sup>2</sup> = 4</span>。<br>
+          &nbsp;&nbsp;所以动点 <span class="m"><i>P</i>(<i>x</i>, <i>y</i>)</span> 在以 <strong><span class="m"><i>C</i>(&minus;1, 2)</span> 为圆心、半径 <span class="m"><i>R</i> = 2</span></strong> 的圆上。<br>
+          • <strong>第二步（化所求式子找定点）</strong>：<br>
+          &nbsp;&nbsp;<span class="m">|<i>z</i> &minus; 2 + 2<i>i</i>| = |(<i>x</i> &minus; 2) + (<i>y</i> + 2)<i>i</i>| = <span class="rad"><span>(<i>x</i> &minus; 2)<sup>2</sup> + (<i>y</i> &minus; (&minus;2))<sup>2</sup></span></span></span>，表示动点 <span class="m"><i>P</i></span> 到<strong>定点 <span class="m"><i>A</i>(2, &minus;2)</span></strong> 的距离。<br>
+          • <strong>第三步（算圆心距 <span class="m"><i>d</i> = |<i>CA</i>|</span>）</strong>：<br>
+          &nbsp;&nbsp;<span class="m"><i>d</i> = |<i>CA</i>| = <span class="rad"><span>(2 &minus; (&minus;1))<sup>2</sup> + (&minus;2 &minus; 2)<sup>2</sup></span></span> = <span class="rad"><span>3<sup>2</sup> + (&minus;4)<sup>2</sup></span></span> = 5</span>。<br>
+          • <strong>结论</strong>：<br>
+          &nbsp;&nbsp;<span class="hl-green m">最小值 = <i>d</i> &minus; <i>R</i> = 5 &minus; 2 = 3</span>；<span class="hl-red m">最大值 = <i>d</i> + <i>R</i> = 5 + 2 = 7</span>。
+        </div>
+      </div>
     </div>
-  </div>
-
-  <div class="footer">
-    Z 老师高一数学微课 · 每天进步一点点 🌟
   </div>
 
 </div>
+
+<script>
+  // 1. 选择题交互反馈
+  function checkAns(btn, isCorrect) {
+    var btns = document.querySelectorAll('#opt-group .opt-btn');
+    btns.forEach(function(b) { b.classList.remove('correct', 'wrong'); });
+    var fb = document.getElementById('ans-feedback');
+    fb.style.display = 'block';
+    if (isCorrect) {
+      btn.classList.add('correct');
+      fb.style.background = '#ecfdf5';
+      fb.style.color = '#065f46';
+      fb.innerHTML = '✅ <strong>回答正确！</strong> 圆心距 <span class="m"><i>d</i> = |<i>OA</i>| = <span class="rad"><span>2</span></span></span>，半径 <span class="m"><i>R</i> = 1</span>，故距离范围为 <span class="m">[<span class="rad"><span>2</span></span> &minus; 1, <span class="rad"><span>2</span></span> + 1]</span>。';
+    } else {
+      btn.classList.add('wrong');
+      fb.style.background = '#fef2f2';
+      fb.style.color = '#991b1b';
+      fb.innerHTML = '❌ <strong>再想一想！</strong> 试着用手指拖动下方图中的蓝点 P，观察 |PA| 最小和最大分别是多少？';
+    }
+  }
+
+  // 2. 动态几何图：支持手指直接拖动点 P + 滑块联动 + 极值磁吸
+  var ox = 160, oy = 190, R = 80;
+  var timer = null;
+  var currentDeg = 15;
+  var isDragging = false;
+
+  function updateAngle(deg) {
+    currentDeg = ((parseFloat(deg) % 360) + 360) % 360;
+    document.getElementById('angle-slider').value = Math.round(currentDeg);
+    var rad = currentDeg * Math.PI / 180;
+
+    var px = ox + R * Math.cos(rad);
+    var py = oy - R * Math.sin(rad);
+
+    document.getElementById('line-op').setAttribute('x2', px);
+    document.getElementById('line-op').setAttribute('y2', py);
+    document.getElementById('line-pa').setAttribute('x1', px);
+    document.getElementById('line-pa').setAttribute('y1', py);
+    document.getElementById('pt-p').setAttribute('cx', px);
+    document.getElementById('pt-p').setAttribute('cy', py);
+    document.getElementById('pt-p-halo').setAttribute('cx', px);
+    document.getElementById('pt-p-halo').setAttribute('cy', py);
+    document.getElementById('pt-p-hit').setAttribute('cx', px);
+    document.getElementById('pt-p-hit').setAttribute('cy', py);
+    document.getElementById('txt-p').setAttribute('x', px + 10);
+    document.getElementById('txt-p').setAttribute('y', py + 4);
+
+    var mathX = Math.cos(rad);
+    var mathY = Math.sin(rad);
+    var dist = Math.sqrt(Math.pow(mathX - 1, 2) + Math.pow(mathY - 1, 2));
+
+    var xStr = (mathX >= 0 ? mathX.toFixed(2) : mathX.toFixed(2));
+    var yStr = (mathY >= 0 ? mathY.toFixed(2) : mathY.toFixed(2));
+    document.getElementById('coord-label').innerText = '动点 P(' + xStr + ', ' + yStr + ')';
+
+    var distEl = document.getElementById('dist-label');
+    if (Math.abs(currentDeg - 45) <= 2.5) {
+      distEl.innerHTML = '🌟 最小值 |PA| = <span class="m"><span class="rad"><span>2</span></span>&minus;1</span> &approx; 0.414';
+      distEl.style.color = '#059669';
+    } else if (Math.abs(currentDeg - 225) <= 2.5) {
+      distEl.innerHTML = '🔥 最大值 |PA| = <span class="m"><span class="rad"><span>2</span></span>+1</span> &approx; 2.414';
+      distEl.style.color = '#d97706';
+    } else {
+      distEl.innerText = '当前距离 |PA| = ' + dist.toFixed(3);
+      distEl.style.color = '#dc2626';
+    }
+  }
+
+  function stopPlayIfRunning() {
+    if (timer) {
+      clearInterval(timer);
+      timer = null;
+      document.getElementById('play-btn').innerText = '▶ 自动演示';
+    }
+  }
+
+  function stopAndJump(deg) {
+    stopPlayIfRunning();
+    updateAngle(deg);
+  }
+
+  function togglePlay() {
+    var btn = document.getElementById('play-btn');
+    if (timer) {
+      clearInterval(timer);
+      timer = null;
+      btn.innerText = '▶ 自动演示';
+    } else {
+      btn.innerText = '⏸ 暂停演示';
+      timer = setInterval(function() {
+        var next = (currentDeg + 1.5) % 360;
+        updateAngle(next);
+      }, 30);
+    }
+  }
+
+  // 手指/鼠标在画布上直接拖拽点 P 的坐标转换逻辑
+  var svgEl = document.getElementById('main-svg');
+
+  function pointerToAngle(clientX, clientY) {
+    var rect = svgEl.getBoundingClientRect();
+    var scaleX = 360 / rect.width;
+    var scaleY = 320 / rect.height;
+    var svgX = (clientX - rect.left) * scaleX;
+    var svgY = (clientY - rect.top) * scaleY;
+
+    var dx = svgX - ox;
+    var dy = oy - svgY; // 数学坐标系y向上为正
+    var rad = Math.atan2(dy, dx);
+    var deg = rad * 180 / Math.PI;
+    if (deg < 0) deg += 360;
+
+    // 靠近 45°（最小）或 225°（最大）时提供轻微吸附手感，方便学生精准停在最值点
+    if (Math.abs(deg - 45) < 4) deg = 45;
+    if (Math.abs(deg - 225) < 4) deg = 225;
+
+    updateAngle(deg);
+  }
+
+  // 支持 Pointer Events (兼容所有现代手机触屏与电脑鼠标)
+  svgEl.addEventListener('pointerdown', function(e) {
+    stopPlayIfRunning();
+    isDragging = true;
+    if (svgEl.setPointerCapture) {
+      try { svgEl.setPointerCapture(e.pointerId); } catch(err) {}
+    }
+    pointerToAngle(e.clientX, e.clientY);
+  });
+
+  svgEl.addEventListener('pointermove', function(e) {
+    if (!isDragging) return;
+    e.preventDefault();
+    pointerToAngle(e.clientX, e.clientY);
+  });
+
+  svgEl.addEventListener('pointerup', function(e) {
+    isDragging = false;
+  });
+
+  svgEl.addEventListener('pointercancel', function(e) {
+    isDragging = false;
+  });
+
+  // 3. 展开/收起拓展题解析
+  function toggleBox(id, btn) {
+    var box = document.getElementById(id);
+    if (box.classList.contains('show')) {
+      box.classList.remove('show');
+      btn.innerText = '👀 点击展开解析与几何图示';
+    } else {
+      box.classList.add('show');
+      btn.innerText = '🔼 收起解析与图示';
+    }
+  }
+
+  // 初始化位置
+  updateAngle(15);
+</script>
 
 </body>
 </html>
