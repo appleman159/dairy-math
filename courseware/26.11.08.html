@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+html_content = """<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
@@ -109,39 +109,36 @@
     position: absolute; left: 0; right: 0; top: 2px; font-weight: 600;
   }
 
-  /* 知识点精细拆解卡片 */
-  .kp-item {
+  /* 折叠型知识点手风琴样式 */
+  .acc-item {
     background: #f8fafc; border: 1px solid #e2e8f0;
-    border-radius: 12px; padding: 12px 14px; margin-bottom: 12px;
+    border-radius: 12px; margin-bottom: 10px; overflow: hidden;
   }
-  .kp-item:last-child { margin-bottom: 0; }
-  .kp-head {
-    font-size: 14.5px; font-weight: 700; color: #0f172a;
-    margin-bottom: 6px; display: flex; align-items: center; gap: 6px;
+  .acc-item:last-child { margin-bottom: 0; }
+  .acc-head {
+    padding: 12px 14px; font-size: 14.5px; font-weight: 700; color: #0f172a;
+    display: flex; justify-content: space-between; align-items: center;
+    cursor: pointer; user-select: none; background: #f8fafc;
+    transition: background 0.2s;
   }
+  .acc-head:active { background: #eff6ff; }
+  .acc-title-left { display: flex; align-items: center; gap: 7px; }
   .kp-num {
     background: #2563eb; color: #fff; font-size: 11.5px;
     padding: 1px 8px; border-radius: 20px; font-weight: 700; white-space: nowrap;
   }
-  .kp-body { font-size: 13.8px; color: #334155; }
+  .acc-arrow {
+    font-size: 12px; color: #2563eb; font-weight: 700;
+    transition: transform 0.25s ease; white-space: nowrap; margin-left: 6px;
+  }
+  .acc-item.open .acc-arrow { transform: rotate(180deg); }
+  .acc-body {
+    display: none; padding: 12px 14px; font-size: 13.8px; color: #334155;
+    background: #ffffff; border-top: 1px dashed #cbd5e1;
+  }
+  .acc-item.open .acc-body { display: block; }
   .kp-list { margin: 4px 0 0 0; padding-left: 18px; }
   .kp-list li { margin-bottom: 5px; }
-
-  /* 交互模式切换选项卡 */
-  .mode-tabs {
-    display: flex; gap: 6px; margin-bottom: 10px;
-    background: #f1f5f9; padding: 5px; border-radius: 12px;
-  }
-  .mode-tab {
-    flex: 1; text-align: center; padding: 8px 4px;
-    font-size: 13px; font-weight: 700; color: #475569;
-    border-radius: 8px; cursor: pointer; transition: all 0.2s;
-    border: none; background: transparent;
-  }
-  .mode-tab.active {
-    background: #2563eb; color: #ffffff;
-    box-shadow: 0 2px 6px rgba(37,99,235,0.25);
-  }
 
   /* SVG 图形容器（支持手指直接拖拽） */
   .svg-wrap {
@@ -159,12 +156,12 @@
     border-radius: 20px; pointer-events: none;
     box-shadow: 0 2px 6px rgba(0,0,0,0.12);
   }
-  #pt-p, #pt-p-hit { cursor: grab; }
-  #pt-p:active, #pt-p-hit:active { cursor: grabbing; }
+  .grab-pt { cursor: grab; }
+  .grab-pt:active { cursor: grabbing; }
 
   /* 互动控制区 */
   .ctrl-panel {
-    background: #eff6ff; border-radius: 12px; padding: 12px; margin-top: 8px;
+    background: #eff6ff; border-radius: 12px; padding: 11px 12px; margin: 6px 0 12px 0;
   }
   .status-bar {
     display: flex; justify-content: space-between; align-items: center;
@@ -175,11 +172,11 @@
   input[type="range"] { flex: 1; accent-color: #2563eb; height: 6px; cursor: pointer; }
   .btn-play {
     background: #2563eb; color: #fff; border: none; border-radius: 8px;
-    padding: 7px 14px; font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap;
+    padding: 6px 12px; font-size: 12.5px; font-weight: 700; cursor: pointer; white-space: nowrap;
   }
   .jump-row { display: flex; gap: 8px; margin-top: 8px; }
   .jump-btn {
-    flex: 1; padding: 7px 6px; font-size: 12px; font-weight: 700;
+    flex: 1; padding: 6px 6px; font-size: 12px; font-weight: 700;
     border-radius: 6px; cursor: pointer; text-align: center;
   }
 
@@ -218,13 +215,13 @@
   <!-- 顶部标题 -->
   <div class="banner">
     <div class="banner-tag">📱 手机互动微课 · 零基础保姆级拆解</div>
-    <div class="banner-title">圆上动点的三大最值问题（斜率·截距·距离）</div>
-    <div class="banner-sub">主讲：Z老师 ｜ 手指拖动圆上动点 P，结合参数方程与几何意义彻底搞懂！</div>
+    <div class="banner-title">圆上动点的三大最值模型（斜率·截距·距离）</div>
+    <div class="banner-sub">主讲：Z老师 ｜ 每一问均配独立动态图，手指拖动点 P 直观秒懂！</div>
   </div>
 
   <!-- 一、原题呈现与点击看答案 -->
   <div class="card">
-    <div class="card-title">📌 一、原题呈现（做完后点击横线核对答案）</div>
+    <div class="card-title">📌 一、原题呈现（做完后点击蓝色横线核对答案）</div>
     <div style="font-size: 15px; font-weight: 700; margin-bottom: 10px; color: #0f172a;">
       已知点 <span class="m"><i>P</i>(<i>x</i>, <i>y</i>)</span> 在圆 <span class="m">(<i>x</i> &minus; 2)<sup>2</sup> + (<i>y</i> &minus; 1)<sup>2</sup> = 1</span> 上运动.
     </div>
@@ -249,285 +246,292 @@
     <div style="font-size: 12px; color: #64748b; text-align: right;">💡 提示：点击蓝色遮罩可单独显示/隐藏每个空的答案</div>
   </div>
 
-  <!-- 二、零基础必备知识点地毯式复习 -->
+  <!-- 二、折叠型必备知识点复习（按需展开） -->
   <div class="card">
-    <div class="card-title">📚 二、做题前必背的 5 大核心知识点（基础薄弱必看）</div>
+    <div class="card-title" style="justify-content: space-between;">
+      <span>📚 二、必备核心知识点（点击条目按需展开）</span>
+      <button onclick="toggleAllKp(this)" style="background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; border-radius:6px; padding:3px 8px; font-size:12px; font-weight:700; cursor:pointer;">全部展开</button>
+    </div>
+    <div style="font-size: 12.5px; color: #64748b; margin-bottom: 8px;">
+      👇 哪个知识点忘了就点开哪个看，掌握了可以收起：
+    </div>
 
-    <!-- 知识点 1：圆的标准方程与圆上点的参数坐标 -->
-    <div class="kp-item">
-      <div class="kp-head"><span class="kp-num">知识 1</span>圆的标准方程与圆上点的【参数坐标形式】</div>
-      <div class="kp-body">
+    <!-- 折叠知识 1 -->
+    <div class="acc-item" id="kp1">
+      <div class="acc-head" onclick="toggleKp('kp1')">
+        <div class="acc-title-left"><span class="kp-num">知识 1</span>圆的标准方程与【参数坐标形式】</div>
+        <span class="acc-arrow">▼ 展开</span>
+      </div>
+      <div class="acc-body">
         <strong>① 读出圆心和半径：</strong><br>
-        圆的标准方程为 <span class="m">(<i>x</i> &minus; <i>a</i>)<sup>2</sup> + (<i>y</i> &minus; <i>b</i>)<sup>2</sup> = <i>R</i><sup>2</sup></span>，其圆心为 <span class="m"><i>C</i>(<i>a</i>, <i>b</i>)</span>，半径为 <span class="m"><i>R</i></span>。<br>
-        • 本题中：<span class="m">(<i>x</i> &minus; 2)<sup>2</sup> + (<i>y</i> &minus; 1)<sup>2</sup> = 1</span>，所以<strong>圆心 <span class="m"><i>C</i>(2, 1)</span>，半径 <span class="m"><i>R</i> = 1</span></strong>。<br><br>
-        <strong>② 什么是圆上点的参数坐标？（为什么能这么设？）</strong><br>
-        因为 <span class="m">cos<sup>2</sup><i>&theta;</i> + sin<sup>2</sup><i>&theta;</i> = 1</span> 恒成立！对于圆 <span class="m">(<i>x</i> &minus; <i>a</i>)<sup>2</sup> + (<i>y</i> &minus; <i>b</i>)<sup>2</sup> = <i>R</i><sup>2</sup></span>，我们可以令：
+        圆的标准方程为 <span class="m">(<i>x</i> &minus; <i>a</i>)<sup>2</sup> + (<i>y</i> &minus; <i>b</i>)<sup>2</sup> = <i>R</i><sup>2</sup></span>，圆心为 <span class="m"><i>C</i>(<i>a</i>, <i>b</i>)</span>，半径为 <span class="m"><i>R</i></span>。<br>
+        • 本题中：<span class="m">(<i>x</i> &minus; 2)<sup>2</sup> + (<i>y</i> &minus; 1)<sup>2</sup> = 1</span>，故<strong>圆心 <span class="m"><i>C</i>(2, 1)</span>，半径 <span class="m"><i>R</i> = 1</span></strong>。<br><br>
+        <strong>② 圆上点的参数坐标（为什么能这么设？）：</strong><br>
+        因为 <span class="m">cos<sup>2</sup><i>&theta;</i> + sin<sup>2</sup><i>&theta;</i> = 1</span> 恒成立！对于圆 <span class="m">(<i>x</i> &minus; <i>a</i>)<sup>2</sup> + (<i>y</i> &minus; <i>b</i>)<sup>2</sup> = <i>R</i><sup>2</sup></span>，可令 <span class="m"><i>x</i> &minus; <i>a</i> = <i>R</i>cos<i>&theta;</i></span>，<span class="m"><i>y</i> &minus; <i>b</i> = <i>R</i>sin<i>&theta;</i></span>，移项得圆上任意点 <span class="m"><i>P</i>(<i>x</i>, <i>y</i>)</span> 的参数坐标：
         <div class="formula-box">
-          <span class="m"><i>x</i> &minus; <i>a</i> = <i>R</i>cos<i>&theta;</i>，&nbsp; <i>y</i> &minus; <i>b</i> = <i>R</i>sin<i>&theta;</i> &nbsp;（其中参数 <i>&theta;</i> &in; [0, 2&pi;) 为旋转角）</span>
+          <span class="hl-purple m"><i>x</i> = <i>a</i> + <i>R</i>cos<i>&theta;</i>，&nbsp; <i>y</i> = <i>b</i> + <i>R</i>sin<i>&theta;</i> &nbsp;（<i>&theta;</i> &in; [0, 2&pi;)）</span>
         </div>
-        移项后，圆上任意一点 <span class="m"><i>P</i>(<i>x</i>, <i>y</i>)</span> 的坐标都可以用<strong>只含一个角度 <span class="m"><i>&theta;</i></span> 的参数坐标</strong>表示为：
-        <div class="formula-box">
-          <span class="hl-purple m"><i>x</i> = <i>a</i> + <i>R</i>cos<i>&theta;</i></span><br>
-          <span class="hl-purple m"><i>y</i> = <i>b</i> + <i>R</i>sin<i>&theta;</i></span>
-        </div>
-        • <strong>本题直接套用</strong>：圆心 <span class="m">(2, 1)</span>、半径 <span class="m"><i>R</i> = 1</span>，故圆上点 <span class="m"><i>P</i></span> 的参数坐标为：<br>
-        &nbsp;&nbsp;<span class="hl-blue m"><i>x</i> = 2 + cos<i>&theta;</i>，&nbsp; <i>y</i> = 1 + sin<i>&theta;</i></span>。<br>
-        • <strong>巨大好处</strong>：把原本两个未知数 <span class="m"><i>x</i>, <i>y</i></span> 变成<strong>只有一个角度变量 <span class="m"><i>&theta;</i></span></strong>，直接转化为三角函数求最值！
+        • <strong>本题直接套用</strong>：<span class="hl-blue m"><i>x</i> = 2 + cos<i>&theta;</i>，&nbsp; <i>y</i> = 1 + sin<i>&theta;</i></span>。<br>
+        • <strong>作用</strong>：把两个未知数 <span class="m"><i>x</i>, <i>y</i></span> 变成<strong>唯一角度变量 <span class="m"><i>&theta;</i></span></strong>，直接化为三角函数求最值！
       </div>
     </div>
 
-    <!-- 知识点 2：点到直线的距离公式与直线与圆相切 -->
-    <div class="kp-item">
-      <div class="kp-head"><span class="kp-num">知识 2</span>点到直线的距离公式 &amp; 直线与圆相切条件</div>
-      <div class="kp-body">
+    <!-- 折叠知识 2 -->
+    <div class="acc-item" id="kp2">
+      <div class="acc-head" onclick="toggleKp('kp2')">
+        <div class="acc-title-left"><span class="kp-num">知识 2</span>点到直线距离公式 &amp; 相切条件 <span class="m"><i>d</i> = <i>R</i></span></div>
+        <span class="acc-arrow">▼ 展开</span>
+      </div>
+      <div class="acc-body">
         • <strong>点到直线距离公式</strong>：点 <span class="m"><i>C</i>(<i>x</i><sub>0</sub>, <i>y</i><sub>0</sub>)</span> 到直线 <span class="m"><i>Ax</i> + <i>By</i> + <i>C</i> = 0</span> 的距离为：
         <div class="formula-box">
           <span class="m"><i>d</i> = <span class="frac"><span class="num">|<i>Ax</i><sub>0</sub> + <i>By</i><sub>0</sub> + <i>C</i>|</span><span class="den"><span class="rad"><span><i>A</i><sup>2</sup> + <i>B</i><sup>2</sup></span></span></span></span></span>
         </div>
         • <strong>直线与圆的位置关系（临界极值条件）</strong>：<br>
-        &nbsp;&nbsp;1. 直线与圆<strong>有公共点（相交或相切）</strong> &hArr; 圆心到直线的距离 <span class="hl-blue m"><i>d</i> &le; <i>R</i></span>；<br>
-        &nbsp;&nbsp;2. 直线与圆<strong>相切（取最大/最小值的临界位置）</strong> &hArr; 圆心到直线的距离 <span class="hl-red m"><i>d</i> = <i>R</i></span>。
+        &nbsp;&nbsp;1. 直线与圆<strong>有公共点（相交或相切）</strong> &hArr; 圆心到直线距离 <span class="hl-blue m"><i>d</i> &le; <i>R</i></span>；<br>
+        &nbsp;&nbsp;2. 直线与圆<strong>相切（取最大/最小值的极端位置）</strong> &hArr; 圆心到直线距离 <span class="hl-red m"><i>d</i> = <i>R</i></span>。
       </div>
     </div>
 
-    <!-- 知识点 3：三角函数辅助角公式 -->
-    <div class="kp-item">
-      <div class="kp-head"><span class="kp-num">知识 3</span>三角函数辅助角公式（合一变形求最值）</div>
-      <div class="kp-body">
-        形如 <span class="m"><i>a</i>sin<i>&theta;</i> + <i>b</i>cos<i>&theta;</i></span> 的式子，可以合成为一个正弦函数：
+    <!-- 折叠知识 3 -->
+    <div class="acc-item" id="kp3">
+      <div class="acc-head" onclick="toggleKp('kp3')">
+        <div class="acc-title-left"><span class="kp-num">知识 3</span>三角函数辅助角公式（合一变形求最值）</div>
+        <span class="acc-arrow">▼ 展开</span>
+      </div>
+      <div class="acc-body">
+        形如 <span class="m"><i>a</i>sin<i>&theta;</i> + <i>b</i>cos<i>&theta;</i></span> 的式子，可合成为一个正弦函数：
         <div class="formula-box">
           <span class="m"><i>a</i>sin<i>&theta;</i> + <i>b</i>cos<i>&theta;</i> = <span class="rad"><span><i>a</i><sup>2</sup> + <i>b</i><sup>2</sup></span></span> sin(<i>&theta;</i> + <i>&phi;</i>) &nbsp;&in;&nbsp; [&minus;<span class="rad"><span><i>a</i><sup>2</sup> + <i>b</i><sup>2</sup></span></span>, &nbsp;<span class="rad"><span><i>a</i><sup>2</sup> + <i>b</i><sup>2</sup></span></span>]</span>
         </div>
         • <strong>最常用的两个特例（必背）</strong>：<br>
-        &nbsp;&nbsp;① <span class="m">sin<i>&theta;</i> + cos<i>&theta;</i> = <span class="rad"><span>2</span></span>sin(<i>&theta;</i> + <span class="frac"><span class="num">&pi;</span><span class="den">4</span></span>)</span>，最大值为 <span class="hl-red m"><span class="rad"><span>2</span></span></span>，最小值为 <span class="hl-green m">&minus;<span class="rad"><span>2</span></span></span>；<br>
-        &nbsp;&nbsp;② <span class="m">2cos<i>&theta;</i> + sin<i>&theta;</i> = <span class="rad"><span>2<sup>2</sup> + 1<sup>2</sup></span></span>sin(<i>&theta;</i> + <i>&phi;</i>) = <span class="rad"><span>5</span></span>sin(<i>&theta;</i> + <i>&phi;</i>)</span>，最大值为 <span class="hl-red m"><span class="rad"><span>5</span></span></span>，最小值为 <span class="hl-green m">&minus;<span class="rad"><span>5</span></span></span>。
+        &nbsp;&nbsp;① <span class="m">sin<i>&theta;</i> + cos<i>&theta;</i> = <span class="rad"><span>2</span></span>sin(<i>&theta;</i> + <span class="frac"><span class="num">&pi;</span><span class="den">4</span></span>) &in; [&minus;<span class="rad"><span>2</span></span>, <span class="rad"><span>2</span></span>]</span>；<br>
+        &nbsp;&nbsp;② <span class="m">2cos<i>&theta;</i> + sin<i>&theta;</i> = <span class="rad"><span>2<sup>2</sup> + 1<sup>2</sup></span></span>sin(<i>&theta;</i> + <i>&phi;</i>) = <span class="rad"><span>5</span></span>sin(<i>&theta;</i> + <i>&phi;</i>) &in; [&minus;<span class="rad"><span>5</span></span>, <span class="rad"><span>5</span></span>]</span>。
       </div>
     </div>
 
-    <!-- 知识点 4：三大代数式的几何意义翻译表 -->
-    <div class="kp-item">
-      <div class="kp-head"><span class="kp-num">知识 4</span>圆上动点 <span class="m"><i>P</i>(<i>x</i>, <i>y</i>)</span> 三大代数式的【几何意义翻译表】</div>
-      <div class="kp-body">
-        看到以下含有 <span class="m"><i>x</i>, <i>y</i></span> 的式子，脑海中要立刻翻译出它的几何图形：
+    <!-- 折叠知识 4 -->
+    <div class="acc-item" id="kp4">
+      <div class="acc-head" onclick="toggleKp('kp4')">
+        <div class="acc-title-left"><span class="kp-num">知识 4</span>三大代数式（斜率·截距·距离²）几何意义翻译</div>
+        <span class="acc-arrow">▼ 展开</span>
+      </div>
+      <div class="acc-body">
         <ul class="kp-list">
-          <li><strong>① 分式型 <span class="m"><span class="frac"><span class="num"><i>y</i></span><span class="den"><i>x</i></span></span></span>（或 <span class="m"><span class="frac"><span class="num"><i>y</i> &minus; <i>b</i></span><span class="den"><i>x</i> &minus; <i>a</i></span></span></span>）&rarr; 【斜率模型】</strong><br>
-            写成 <span class="m"><i>k</i> = <span class="frac"><span class="num"><i>y</i> &minus; 0</span><span class="den"><i>x</i> &minus; 0</span></span></span>，表示圆上动点 <span class="m"><i>P</i>(<i>x</i>, <i>y</i>)</span> 与<strong>原点 <span class="m"><i>O</i>(0, 0)</span> 连线的斜率 <span class="m"><i>k</i></span></strong>。当直线 <span class="m"><i>OP</i></span> 与圆<strong>相切</strong>时，斜率 <span class="m"><i>k</i></span> 取得最大值和最小值！
+          <li><strong>① 分式型 <span class="m"><span class="frac"><span class="num"><i>y</i> &minus; <i>b</i></span><span class="den"><i>x</i> &minus; <i>a</i></span></span></span> &rarr; 【斜率模型】</strong><br>
+            表示动点 <span class="m"><i>P</i>(<i>x</i>, <i>y</i>)</span> 与定点 <span class="m"><i>M</i>(<i>a</i>, <i>b</i>)</span> 连线的<strong>斜率 <span class="m"><i>k</i></span></strong>（特别地，<span class="m"><span class="frac"><span class="num"><i>y</i></span><span class="den"><i>x</i></span></span> = <span class="frac"><span class="num"><i>y</i> &minus; 0</span><span class="den"><i>x</i> &minus; 0</span></span></span> 是与原点 <span class="m">(0,0)</span> 连线的斜率）。当直线与圆<strong>相切</strong>时斜率取最值！
           </li>
-          <li><strong>② 一次线性型 <span class="m"><i>x</i> + <i>y</i></span>（或 <span class="m"><i>Ax</i> + <i>By</i></span>）&rarr; 【截距模型】</strong><br>
-            设 <span class="m"><i>x</i> + <i>y</i> = <i>t</i></span>，变形为 <span class="m"><i>y</i> = &minus;<i>x</i> + <i>t</i></span>，表示斜率为 <span class="m">&minus;1</span> 的平行直线系在 <span class="m"><i>y</i></span> 轴上的<strong>纵截距 <span class="m"><i>t</i></span></strong>。当直线平移到与圆<strong>相切</strong>时，截距 <span class="m"><i>t</i></span> 取得最大和最小值！
+          <li><strong>② 一次线性型 <span class="m"><i>Ax</i> + <i>By</i></span> &rarr; 【截距模型】</strong><br>
+            设 <span class="m"><i>x</i> + <i>y</i> = <i>t</i></span>，即 <span class="m"><i>y</i> = &minus;<i>x</i> + <i>t</i></span>，表示斜率为 <span class="m">&minus;1</span> 的直线在 <span class="m"><i>y</i></span> 轴上的<strong>纵截距 <span class="m"><i>t</i></span></strong>。当平行线平移到与圆<strong>相切</strong>时截距取最值！
           </li>
-          <li><strong>③ 二次平方和型 <span class="m"><i>x</i><sup>2</sup> + <i>y</i><sup>2</sup></span>（或 <span class="m">(<i>x</i> &minus; <i>a</i>)<sup>2</sup> + (<i>y</i> &minus; <i>b</i>)<sup>2</sup></span>）&rarr; 【距离平方模型】</strong><br>
-            因为点 <span class="m"><i>P</i>(<i>x</i>, <i>y</i>)</span> 到原点 <span class="m"><i>O</i>(0, 0)</span> 的距离为 <span class="m">|<i>OP</i>| = <span class="rad"><span>(<i>x</i> &minus; 0)<sup>2</sup> + (<i>y</i> &minus; 0)<sup>2</sup></span></span> = <span class="rad"><span><i>x</i><sup>2</sup> + <i>y</i><sup>2</sup></span></span></span>，所以 <strong><span class="m"><i>x</i><sup>2</sup> + <i>y</i><sup>2</sup> = |<i>OP</i>|<sup>2</sup></span> 是动点到原点距离的平方</strong>（<span class="hl-red">千万注意：是距离的平方，不是距离本身！</span>）。先用“圆心距 <span class="m">|<i>OC</i>| &plusmn; <i>R</i></span>”算出 <span class="m">|<i>OP</i>|</span> 的最值，最后<strong>平方</strong>即可！
+          <li><strong>③ 二次平方和型 <span class="m">(<i>x</i> &minus; <i>a</i>)<sup>2</sup> + (<i>y</i> &minus; <i>b</i>)<sup>2</sup></span> &rarr; 【距离平方模型】</strong><br>
+            因为两点间距离 <span class="m">|<i>PM</i>| = <span class="rad"><span>(<i>x</i> &minus; <i>a</i>)<sup>2</sup> + (<i>y</i> &minus; <i>b</i>)<sup>2</sup></span></span></span>，所以<strong>没有根号时表示动点 <span class="m"><i>P</i>(<i>x</i>, <i>y</i>)</span> 到定点 <span class="m"><i>M</i>(<i>a</i>, <i>b</i>)</span> 距离的平方 <span class="m">|<i>PM</i>|<sup>2</sup></span></strong>！先用“圆心距 <span class="m"><i>d</i> &plusmn; <i>R</i></span>”算出距离最值，最后<strong>平方</strong>即可！
           </li>
         </ul>
       </div>
     </div>
   </div>
 
-  <!-- 三、三合一动态几何探究实验室（学生可切换3问并亲手拖动点P） -->
+  <!-- ================= 三、第 (1) 题详解 + 专属可拖动几何图 1 ================= -->
   <div class="card">
-    <div class="card-title">🎨 三、动态几何实验室（切换 3 个小问，手指拖动点 P）</div>
-    <div style="font-size: 13px; color: #475569; margin-bottom: 8px;">
-      👇 点击下方按钮切换第 (1)、(2)、(3) 问的几何模型，并<strong>用手指直接按住圆上的蓝点 <span class="m"><i>P</i></span> 拖动</strong>，观察它是如何在相切或穿心时达到最值的！
+    <div class="card-title">🔍 三、第 (1) 题详解：求 <span class="m"><span class="frac"><span class="num"><i>y</i></span><span class="den"><i>x</i></span></span></span> 的最值（配互动图 1）</div>
+    <div style="font-size: 13.5px; color: #475569; margin-bottom: 6px;">
+      • <strong>互动操作</strong>：直接用手指按住下图圆上的<strong>蓝点 <span class="m"><i>P</i></span> 拖动</strong>，观察过原点的红线 <span class="m"><i>OP</i></span> 旋转到与圆<strong>上下相切</strong>（两条虚线）时，斜率 <span class="m"><i>k</i> = <span class="frac"><span class="num"><i>y</i></span><span class="den"><i>x</i></span></span></span> 如何取得最小值 <span class="m">0</span> 和最大值 <span class="m"><span class="frac"><span class="num">4</span><span class="den">3</span></span></span>！
     </div>
 
-    <!-- 3个小问模式切换按钮 -->
-    <div class="mode-tabs">
-      <button class="mode-tab active" id="tab-m1" onclick="switchMode(1)">(1) 斜率 k = y/x</button>
-      <button class="mode-tab" id="tab-m2" onclick="switchMode(2)">(2) 截距 t = x+y</button>
-      <button class="mode-tab" id="tab-m3" onclick="switchMode(3)">(3) 距离² = x²+y²</button>
-    </div>
-
-    <!-- 动态文字说明条 -->
-    <div id="mode-desc" style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:8px 10px; font-size:13px; color:#334155; margin-bottom:8px;">
-      当前演示：<strong>(1) 斜率模型</strong>。红线为过原点 <span class="m"><i>O</i></span> 与动点 <span class="m"><i>P</i></span> 的直线 <span class="m"><i>y</i> = <i>kx</i></span>，两条虚线为相切时的极端位置（<span class="m"><i>k</i><sub>min</sub> = 0</span>，<span class="m"><i>k</i><sub>max</sub> = 4/3</span>）。
-    </div>
-
-    <!-- SVG 互动大画布 -->
-    <div class="svg-wrap" id="svg-container">
-      <div class="drag-hint-pill">👆 手指按住蓝点 P 直接拖动</div>
-      <svg viewBox="0 0 380 300" id="main-svg">
+    <!-- 第 (1) 题专属动态 SVG 图 -->
+    <div class="svg-wrap">
+      <div class="drag-hint-pill">👆 按住蓝点 P 拖动观察斜率 k</div>
+      <svg viewBox="0 0 380 280" id="svg-1">
         <defs>
-          <pattern id="grid" width="35" height="35" patternUnits="userSpaceOnUse">
+          <pattern id="grid1" width="35" height="35" patternUnits="userSpaceOnUse">
             <path d="M 35 0 L 0 0 0 35" fill="none" stroke="#f1f5f9" stroke-width="1"/>
           </pattern>
         </defs>
-        <rect width="380" height="300" fill="url(#grid)" />
+        <rect width="380" height="280" fill="url(#grid1)" />
 
-        <!-- 坐标系设定：原点 O(70, 230)，1单位 = 70px -->
-        <!-- 圆心 C(2, 1) -> (70 + 140, 230 - 70) = (210, 160)，半径 R = 1 -> 70px -->
-
-        <!-- 坐标轴 -->
-        <line x1="15" y1="230" x2="365" y2="230" stroke="#94a3b8" stroke-width="1.6" />
-        <line x1="70" y1="15" x2="70" y2="285" stroke="#94a3b8" stroke-width="1.6" />
-        <polygon points="365,230 357,226 357,234" fill="#94a3b8"/>
+        <!-- 原点 O(70, 220), 1单位=70px, 圆心 C(2,1)->(210, 150), R=70px -->
+        <line x1="15" y1="220" x2="365" y2="220" stroke="#94a3b8" stroke-width="1.6" />
+        <line x1="70" y1="15" x2="70" y2="265" stroke="#94a3b8" stroke-width="1.6" />
+        <polygon points="365,220 357,216 357,224" fill="#94a3b8"/>
         <polygon points="70,15 66,23 74,23" fill="#94a3b8"/>
-        <text x="352" y="248" font-size="13" fill="#64748b" font-family="Times New Roman" font-style="italic" font-weight="bold">x</text>
+        <text x="352" y="238" font-size="13" fill="#64748b" font-family="Times New Roman" font-style="italic" font-weight="bold">x</text>
         <text x="78" y="26" font-size="13" fill="#64748b" font-family="Times New Roman" font-style="italic" font-weight="bold">y</text>
-        <text x="48" y="246" font-size="12" fill="#475569" font-weight="bold">O(0,0)</text>
+        <text x="46" y="236" font-size="12" fill="#475569" font-weight="bold">O(0,0)</text>
 
-        <!-- 刻度标记 -->
-        <line x1="140" y1="227" x2="140" y2="233" stroke="#64748b" stroke-width="1.2"/>
-        <text x="136" y="246" font-size="11" fill="#64748b">1</text>
-        <line x1="210" y1="227" x2="210" y2="233" stroke="#64748b" stroke-width="1.2"/>
-        <text x="206" y="246" font-size="11" fill="#64748b">2</text>
-        <line x1="280" y1="227" x2="280" y2="233" stroke="#64748b" stroke-width="1.2"/>
-        <text x="276" y="246" font-size="11" fill="#64748b">3</text>
-        <line x1="67" y1="160" x2="73" y2="160" stroke="#64748b" stroke-width="1.2"/>
-        <text x="54" y="164" font-size="11" fill="#64748b">1</text>
-        <line x1="67" y1="90" x2="73" y2="90" stroke="#64748b" stroke-width="1.2"/>
-        <text x="54" y="94" font-size="11" fill="#64748b">2</text>
+        <!-- 圆 C(2,1) -->
+        <line x1="210" y1="220" x2="210" y2="150" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="3,3"/>
+        <line x1="70" y1="150" x2="210" y2="150" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="3,3"/>
+        <circle cx="210" cy="150" r="70" fill="rgba(37,99,235,0.05)" stroke="#2563eb" stroke-width="2.2" />
+        <circle cx="210" cy="150" r="4" fill="#1e40af" />
+        <text x="216" y="154" font-size="12" fill="#1e40af" font-weight="bold">C(2,1)</text>
 
-        <!-- 圆 C: (x-2)² + (y-1)² = 1 -->
-        <line x1="210" y1="230" x2="210" y2="160" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="3,3"/>
-        <line x1="70" y1="160" x2="210" y2="160" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="3,3"/>
-        <circle cx="210" cy="160" r="70" fill="rgba(37,99,235,0.05)" stroke="#2563eb" stroke-width="2.2" />
-        <circle cx="210" cy="160" r="4" fill="#1e40af" />
-        <text x="216" y="164" font-size="12" fill="#1e40af" font-weight="bold">C(2,1)</text>
+        <!-- 下相切线 y = 0 -->
+        <line x1="70" y1="220" x2="350" y2="220" stroke="#10b981" stroke-width="2.2" stroke-dasharray="5,5"/>
+        <circle cx="210" cy="220" r="4.5" fill="#10b981"/>
+        <text x="195" y="242" font-size="11.5" fill="#059669" font-weight="bold">下相切 k=0 (2,0)</text>
 
-        <!-- ================= 模式 1 专属图层：斜率 k = y/x ================= -->
-        <g id="layer-m1">
-          <!-- 下相切线 y = 0 (x轴) -->
-          <line x1="70" y1="230" x2="350" y2="230" stroke="#10b981" stroke-width="2" stroke-dasharray="5,5"/>
-          <circle cx="210" cy="230" r="4.5" fill="#10b981"/>
-          <text x="200" y="262" font-size="11.5" fill="#059669" font-weight="bold">相切最小 k=0 (2,0)</text>
+        <!-- 上相切线 y = 4/3 x : 原点(70,220) 到 x=2.3, y=3.067 -> (231, 5.3) -->
+        <line x1="70" y1="220" x2="231" y2="5.3" stroke="#f59e0b" stroke-width="2.2" stroke-dasharray="5,5"/>
+        <!-- 上切点 (1.2, 1.6) -> (154, 108) -->
+        <circle cx="154" cy="108" r="4.5" fill="#f59e0b"/>
+        <text x="80" y="96" font-size="11.5" fill="#d97706" font-weight="bold">上相切 k=4/3</text>
 
-          <!-- 上相切线 y = 4/3 x : 原点(70,230) 到 x=2.4, y=3.2 -> (238, 6) -->
-          <line x1="70" y1="230" x2="238" y2="6" stroke="#f59e0b" stroke-width="2" stroke-dasharray="5,5"/>
-          <!-- 上切点 (6/5, 8/5) = (1.2, 1.6) -> (70+84, 230-112) = (154, 118) -->
-          <circle cx="154" cy="118" r="4.5" fill="#f59e0b"/>
-          <text x="82" y="106" font-size="11.5" fill="#d97706" font-weight="bold">相切最大 k=4/3</text>
+        <!-- 动态割线 OP -->
+        <line id="s1-line-op" x1="70" y1="220" x2="300" y2="100" stroke="#dc2626" stroke-width="2.6"/>
+        <!-- 半径 CP -->
+        <line id="s1-line-cp" x1="210" y1="150" x2="280" y2="150" stroke="#60a5fa" stroke-width="1.6" />
 
-          <!-- 动态割线 OP -->
-          <line id="m1-line-op" x1="70" y1="230" x2="300" y2="100" stroke="#dc2626" stroke-width="2.5"/>
-        </g>
-
-        <!-- ================= 模式 2 专属图层：截距 t = x+y ================= -->
-        <g id="layer-m2" style="display:none;">
-          <!-- 最小相切线 x+y = 3-√2 ≈ 1.586: 过(0, 1.586)->(70, 119) 与 (1.586, 0)->(181, 230) -->
-          <line x1="40" y1="89" x2="221" y2="270" stroke="#10b981" stroke-width="1.8" stroke-dasharray="5,5"/>
-          <!-- 最小切点 (2-√2/2, 1-√2/2) ≈ (1.293, 0.293) -> (160.5, 209.5) -->
-          <circle cx="160.5" cy="209.5" r="4.5" fill="#10b981"/>
-          <text x="96" y="218" font-size="11" fill="#059669" font-weight="bold">P₁(最小相切)</text>
-
-          <!-- 最大相切线 x+y = 3+√2 ≈ 4.414: 过(1, 3.414)->(140, -9) 与 (4, 0.414)->(350, 201) -->
-          <line x1="130" y1="-19" x2="365" y2="216" stroke="#f59e0b" stroke-width="1.8" stroke-dasharray="5,5"/>
-          <!-- 最大切点 (2+√2/2, 1+√2/2) ≈ (2.707, 1.707) -> (259.5, 110.5) -->
-          <circle cx="259.5" cy="110.5" r="4.5" fill="#f59e0b"/>
-          <text x="266" y="108" font-size="11" fill="#d97706" font-weight="bold">P₂(最大相切)</text>
-
-          <!-- 动态平行线 x + y = t (斜率-1) -->
-          <line id="m2-line-t" x1="70" y1="50" x2="320" y2="300" stroke="#dc2626" stroke-width="2.5"/>
-          <!-- y轴截距点 (0, t) -->
-          <circle id="m2-pt-yint" cx="70" cy="100" r="5" fill="#dc2626"/>
-          <text id="m2-txt-yint" x="12" y="104" font-size="11.5" fill="#dc2626" font-weight="bold">截距 t</text>
-        </g>
-
-        <!-- ================= 模式 3 专属图层：距离平方 x²+y² ================= -->
-        <g id="layer-m3" style="display:none;">
-          <!-- 穿心线 OC 延长线：过 O(70,230) 与 C(210,160)，斜率 -0.5 -->
-          <line x1="40" y1="245" x2="350" y2="90" stroke="#94a3b8" stroke-width="1.6" stroke-dasharray="5,5"/>
-          <!-- 最小距离点 P1 (1.106, 0.553) -> (147.4, 191.3) -->
-          <circle cx="147.4" cy="191.3" r="4.5" fill="#10b981"/>
-          <text x="92" y="185" font-size="11" fill="#059669" font-weight="bold">P₁(|OP|最小)</text>
-          <!-- 最大距离点 P2 (2.894, 1.447) -> (272.6, 128.7) -->
-          <circle cx="272.6" cy="128.7" r="4.5" fill="#f59e0b"/>
-          <text x="278" y="138" font-size="11" fill="#d97706" font-weight="bold">P₂(|OP|最大)</text>
-
-          <!-- 动态线段 OP -->
-          <line id="m3-line-op" x1="70" y1="230" x2="280" y2="160" stroke="#dc2626" stroke-width="2.8"/>
-        </g>
-
-        <!-- 半径 CP 连线 -->
-        <line id="line-cp" x1="210" y1="160" x2="280" y2="160" stroke="#60a5fa" stroke-width="1.6" />
-
-        <!-- 动点 P 呼吸光环 + 实体 + 28px透明大触控区 -->
-        <circle id="pt-p-halo" cx="280" cy="160" r="14" fill="rgba(37, 99, 235, 0.18)" />
-        <circle id="pt-p" cx="280" cy="160" r="7.5" fill="#2563eb" stroke="#ffffff" stroke-width="2.5" />
-        <circle id="pt-p-hit" cx="280" cy="160" r="28" fill="transparent" />
-        <text id="txt-p" x="290" y="164" font-size="13" fill="#1e40af" font-weight="bold">P</text>
+        <!-- 动点 P -->
+        <circle id="s1-halo" cx="280" cy="150" r="14" fill="rgba(37, 99, 235, 0.18)" />
+        <circle id="s1-pt" cx="280" cy="150" r="7.5" fill="#2563eb" stroke="#ffffff" stroke-width="2.5" class="grab-pt"/>
+        <circle id="s1-hit" cx="280" cy="150" r="28" fill="transparent" class="grab-pt"/>
+        <text id="s1-txt" x="290" y="154" font-size="13" fill="#1e40af" font-weight="bold">P</text>
       </svg>
     </div>
 
-    <!-- 实时数据与滑块控制面板 -->
     <div class="ctrl-panel">
       <div class="status-bar">
-        <span id="coord-label">P(2+cosθ, 1+sinθ) = (3.00, 1.00)</span>
-        <span id="val-label" class="hl-red">当前 y/x = 0.333</span>
+        <span id="s1-coord">P(2.87, 1.50)</span>
+        <span id="s1-val" class="hl-red">当前斜率 k = y/x = 0.523</span>
       </div>
       <div class="slider-row">
         <span style="font-size:12px; font-weight:bold; color:#1e40af;">参数角 θ:</span>
-        <input type="range" id="angle-slider" min="0" max="360" value="30" oninput="updateAngle(this.value)">
-        <button class="btn-play" id="play-btn" onclick="togglePlay()">▶ 自动旋转</button>
+        <input type="range" id="s1-slider" min="0" max="360" value="30" oninput="updateS1(this.value)">
+        <button class="btn-play" id="s1-play" onclick="togglePlay1()">▶ 自动旋转</button>
       </div>
-      <!-- 快捷跳转极值点按钮（随模式自动切换角度） -->
       <div class="jump-row">
-        <button class="jump-btn" style="border:1px solid #10b981; background:#ecfdf5; color:#065f46;" onclick="jumpToMin()">
-          📍 跳至当前问【最小值位置】
+        <button class="jump-btn" style="border:1px solid #10b981; background:#ecfdf5; color:#065f46;" onclick="stopPlay1(); updateS1(270);">
+          📍 跳至下相切【最小值 k = 0】
         </button>
-        <button class="jump-btn" style="border:1px solid #f59e0b; background:#fffbeb; color:#92400e;" onclick="jumpToMax()">
-          📍 跳至当前问【最大值位置】
+        <button class="jump-btn" style="border:1px solid #f59e0b; background:#fffbeb; color:#92400e;" onclick="stopPlay1(); updateS1(143.13);">
+          📍 跳至上相切【最大值 k = 4/3】
         </button>
       </div>
     </div>
-  </div>
 
-  <!-- 四、第 (1) 题保姆级详解：斜率模型 + 相切最值 -->
-  <div class="card">
-    <div class="card-title">🔍 四、第 (1) 题详解：求 <span class="m"><span class="frac"><span class="num"><i>y</i></span><span class="den"><i>x</i></span></span></span> 的最值（几何意义：斜率 + 相切）</div>
     <div style="font-size: 14px; color: #334155;">
-      <span class="badge badge-geom">核心方法</span><strong>利用斜率的几何意义，直线与圆相切时取最值</strong>
+      <span class="badge badge-geom">几何意义斜率法</span><strong>转化为过原点的直线与圆相切求最值</strong>
       <div class="step-box">
-        <strong>第一步（识别几何意义，转化为直线方程）：</strong><br>
-        令 <span class="m"><i>k</i> = <span class="frac"><span class="num"><i>y</i></span><span class="den"><i>x</i></span></span> = <span class="frac"><span class="num"><i>y</i> &minus; 0</span><span class="den"><i>x</i> &minus; 0</span></span></span>，则 <span class="m"><i>k</i></span> 表示圆上的动点 <span class="m"><i>P</i>(<i>x</i>, <i>y</i>)</span> 与<strong>坐标原点 <span class="m"><i>O</i>(0, 0)</span> 连线的斜率</strong>。<br>
-        将 <span class="m"><i>k</i> = <span class="frac"><span class="num"><i>y</i></span><span class="den"><i>x</i></span></span></span> 变形为过原点的直线方程（一般式）：
+        <strong>第一步（识别几何意义，转化为直线一般式）：</strong><br>
+        令 <span class="m"><i>k</i> = <span class="frac"><span class="num"><i>y</i></span><span class="den"><i>x</i></span></span> = <span class="frac"><span class="num"><i>y</i> &minus; 0</span><span class="den"><i>x</i> &minus; 0</span></span></span>，表示圆上动点 <span class="m"><i>P</i>(<i>x</i>, <i>y</i>)</span> 与<strong>原点 <span class="m"><i>O</i>(0, 0)</span> 连线的斜率</strong>。<br>
+        将 <span class="m"><span class="frac"><span class="num"><i>y</i></span><span class="den"><i>x</i></span></span> = <i>k</i></span> 变形为直线一般式方程：
         <div class="formula-box">
           <span class="m"><i>y</i> = <i>kx</i> &nbsp;&hArr;&nbsp; <i>kx</i> &minus; <i>y</i> = 0</span>
         </div>
-        <strong>第二步（利用直线与圆有公共点列不等式，相切时取极值）：</strong><br>
-        因为点 <span class="m"><i>P</i>(<i>x</i>, <i>y</i>)</span> 既在直线 <span class="m"><i>kx</i> &minus; <i>y</i> = 0</span> 上，又在圆 <span class="m">(<i>x</i> &minus; 2)<sup>2</sup> + (<i>y</i> &minus; 1)<sup>2</sup> = 1</span> 上，说明<strong>直线与圆必有公共点（相交或相切）</strong>！<br>
-        当直线绕原点旋转到与圆<strong>相切</strong>时，斜率 <span class="m"><i>k</i></span> 达到最大和最小。<br>
-        由“圆心 <span class="m"><i>C</i>(2, 1)</span> 到直线 <span class="m"><i>kx</i> &minus; <i>y</i> = 0</span> 的距离 <span class="m"><i>d</i> &le; <i>R</i></span>（相切时 <span class="m"><i>d</i> = <i>R</i> = 1</span>）”得：
+        <strong>第二步（利用直线与圆有公共点列 <span class="m"><i>d</i> &le; <i>R</i></span>，相切时取最值）：</strong><br>
+        如上方动态图所示，当直线绕原点旋转到与圆<strong>相切</strong>时，斜率 <span class="m"><i>k</i></span> 取得最大值和最小值。<br>
+        由圆心 <span class="m"><i>C</i>(2, 1)</span> 到直线 <span class="m"><i>kx</i> &minus; <i>y</i> = 0</span> 的距离 <span class="m"><i>d</i> &le; <i>R</i> = 1</span> 得：
         <div class="formula-box">
           <span class="m"><i>d</i> = <span class="frac"><span class="num">|2<i>k</i> &minus; 1|</span><span class="den"><span class="rad"><span><i>k</i><sup>2</sup> + (&minus;1)<sup>2</sup></span></span></span></span> &le; 1</span>
         </div>
-        <strong>第三步（两边平方解关于 <span class="m"><i>k</i></span> 的方程/不等式）：</strong><br>
-        将分母乘过去：<span class="m">|2<i>k</i> &minus; 1| &le; <span class="rad"><span><i>k</i><sup>2</sup> + 1</span></span></span>，两边同时平方（两边均非负，可直接平方）：
-        <div class="formula-box">
-          <span class="m">(2<i>k</i> &minus; 1)<sup>2</sup> &le; <i>k</i><sup>2</sup> + 1</span><br>
-          <span class="m">4<i>k</i><sup>2</sup> &minus; 4<i>k</i> + 1 &le; <i>k</i><sup>2</sup> + 1</span><br>
-          <span class="m">3<i>k</i><sup>2</sup> &minus; 4<i>k</i> &le; 0 &nbsp;&hArr;&nbsp; <i>k</i>(3<i>k</i> &minus; 4) &le; 0</span>
-        </div>
-        解得：<span class="hl-blue m">0 &le; <i>k</i> &le; <span class="frac"><span class="num">4</span><span class="den">3</span></span></span>。<br>
-        • 当下切线与 <span class="m"><i>x</i></span> 轴重合（切点为 <span class="m">(2, 0)</span>）时，斜率最小：<span class="hl-green m"><i>k</i><sub>min</sub> = 0</span>；<br>
-        • 当上切线与圆相切时，斜率最大：<span class="hl-red m"><i>k</i><sub>max</sub> = <span class="frac"><span class="num">4</span><span class="den">3</span></span></span>。
+        <strong>第三步（两边平方解出 <span class="m"><i>k</i></span> 的范围）：</strong><br>
+        两边同乘分母后平方：<span class="m">(2<i>k</i> &minus; 1)<sup>2</sup> &le; <i>k</i><sup>2</sup> + 1 &hArr; 4<i>k</i><sup>2</sup> &minus; 4<i>k</i> + 1 &le; <i>k</i><sup>2</sup> + 1 &hArr; 3<i>k</i><sup>2</sup> &minus; 4<i>k</i> &le; 0 &hArr; <i>k</i>(3<i>k</i> &minus; 4) &le; 0</span>。<br>
+        解得：<span class="hl-blue m">0 &le; <i>k</i> &le; <span class="frac"><span class="num">4</span><span class="den">3</span></span></span>。故最大值为 <span class="hl-red m"><span class="frac"><span class="num">4</span><span class="den">3</span></span></span>，最小值为 <span class="hl-green m">0</span>。
       </div>
     </div>
   </div>
 
-  <!-- 五、第 (2) 题双解详析：参数坐标+三角函数 vs 截距几何意义 -->
+  <!-- ================= 四、第 (2) 题双解 + 专属可拖动几何图 2 ================= -->
   <div class="card">
-    <div class="card-title">🔍 五、第 (2) 题双解：求 <span class="m"><i>x</i> + <i>y</i></span> 的最值</div>
+    <div class="card-title">🔍 四、第 (2) 题双解：求 <span class="m"><i>x</i> + <i>y</i></span> 的最值（配互动图 2）</div>
+    <div style="font-size: 13.5px; color: #475569; margin-bottom: 6px;">
+      • <strong>互动操作</strong>：直接用手指按住下图圆上的<strong>蓝点 <span class="m"><i>P</i></span> 拖动</strong>，观察斜率为 <span class="m">&minus;1</span> 的红线 <span class="m"><i>x</i> + <i>y</i> = <i>t</i></span> 随点 <span class="m"><i>P</i></span> 平移，当与圆<strong>左下相切</strong>和<strong>右上相切</strong>时，<span class="m"><i>y</i></span> 轴截距 <span class="m"><i>t</i></span> 分别取得最小值 <span class="m">3 &minus; <span class="rad"><span>2</span></span></span> 与最大值 <span class="m">3 + <span class="rad"><span>2</span></span></span>！
+    </div>
+
+    <!-- 第 (2) 题专属动态 SVG 图（截距平移图） -->
+    <div class="svg-wrap">
+      <div class="drag-hint-pill">👆 按住蓝点 P 拖动观察截距 t = x+y</div>
+      <svg viewBox="0 0 380 290" id="svg-2">
+        <defs>
+          <pattern id="grid2" width="35" height="35" patternUnits="userSpaceOnUse">
+            <path d="M 35 0 L 0 0 0 35" fill="none" stroke="#f1f5f9" stroke-width="1"/>
+          </pattern>
+        </defs>
+        <rect width="380" height="290" fill="url(#grid2)" />
+
+        <!-- 原点 O(70, 240), 1单位=50px (缩小比例以便完整显示 y轴截距 t=4.414!) -->
+        <!-- 圆心 C(2,1) -> (70 + 100, 240 - 50) = (170, 190), R = 1 -> 50px -->
+        <line x1="15" y1="240" x2="365" y2="240" stroke="#94a3b8" stroke-width="1.6" />
+        <line x1="70" y1="10" x2="70" y2="275" stroke="#94a3b8" stroke-width="1.6" />
+        <polygon points="365,240 357,236 357,244" fill="#94a3b8"/>
+        <polygon points="70,10 66,18 74,18" fill="#94a3b8"/>
+        <text x="352" y="258" font-size="13" fill="#64748b" font-family="Times New Roman" font-style="italic" font-weight="bold">x</text>
+        <text x="78" y="22" font-size="13" fill="#64748b" font-family="Times New Roman" font-style="italic" font-weight="bold">y</text>
+        <text x="48" y="256" font-size="12" fill="#475569" font-weight="bold">O</text>
+
+        <!-- 圆 C(2,1) -->
+        <line x1="170" y1="240" x2="170" y2="190" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="3,3"/>
+        <line x1="70" y1="190" x2="170" y2="190" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="3,3"/>
+        <circle cx="170" cy="190" r="50" fill="rgba(37,99,235,0.05)" stroke="#2563eb" stroke-width="2.2" />
+        <circle cx="170" cy="190" r="3.5" fill="#1e40af" />
+        <text x="175" y="194" font-size="11.5" fill="#1e40af" font-weight="bold">C(2,1)</text>
+
+        <!-- 最小相切线 x+y = 3-√2 ≈ 1.586: 过(0, 1.586)->(70, 160.7) 与 (1.586, 0)->(149.3, 240) -->
+        <line x1="40" y1="130.7" x2="180" y2="270.7" stroke="#10b981" stroke-width="1.8" stroke-dasharray="5,5"/>
+        <!-- 最小切点 θ=225°: (1.293, 0.293) -> (134.6, 225.4) -->
+        <circle cx="134.6" cy="225.4" r="4.5" fill="#10b981"/>
+        <text x="142" y="232" font-size="11" fill="#059669" font-weight="bold">P₁(最小相切)</text>
+
+        <!-- 最大相切线 x+y = 3+√2 ≈ 4.414: 过(0, 4.414)->(70, 19.3) 与 (4.414, 0)->(290.7, 240) -->
+        <line x1="55" y1="4.3" x2="310" y2="259.3" stroke="#f59e0b" stroke-width="1.8" stroke-dasharray="5,5"/>
+        <!-- 最大切点 θ=45°: (2.707, 1.707) -> (205.4, 154.6) -->
+        <circle cx="205.4" cy="154.6" r="4.5" fill="#f59e0b"/>
+        <text x="212" y="152" font-size="11" fill="#d97706" font-weight="bold">P₂(最大相切)</text>
+
+        <!-- 动态平行线 x + y = t -->
+        <line id="s2-line-t" x1="50" y1="60" x2="300" y2="310" stroke="#dc2626" stroke-width="2.5"/>
+        <!-- y轴上的截距点 (0, t) -->
+        <circle id="s2-yint" cx="70" cy="90" r="5" fill="#dc2626"/>
+        <text id="s2-yint-txt" x="76" y="94" font-size="11.5" fill="#dc2626" font-weight="bold">纵截距 t=3.00</text>
+
+        <!-- 半径 CP -->
+        <line id="s2-line-cp" x1="170" y1="190" x2="220" y2="190" stroke="#60a5fa" stroke-width="1.6" />
+
+        <!-- 动点 P -->
+        <circle id="s2-halo" cx="220" cy="190" r="14" fill="rgba(37, 99, 235, 0.18)" />
+        <circle id="s2-pt" cx="220" cy="190" r="7.5" fill="#2563eb" stroke="#ffffff" stroke-width="2.5" class="grab-pt"/>
+        <circle id="s2-hit" cx="220" cy="190" r="28" fill="transparent" class="grab-pt"/>
+        <text id="s2-txt" x="230" y="194" font-size="13" fill="#1e40af" font-weight="bold">P</text>
+      </svg>
+    </div>
+
+    <div class="ctrl-panel">
+      <div class="status-bar">
+        <span id="s2-coord">P(2+cosθ, 1+sinθ)</span>
+        <span id="s2-val" class="hl-red">当前 x + y = 3.000</span>
+      </div>
+      <div class="slider-row">
+        <span style="font-size:12px; font-weight:bold; color:#1e40af;">参数角 θ:</span>
+        <input type="range" id="s2-slider" min="0" max="360" value="0" oninput="updateS2(this.value)">
+        <button class="btn-play" id="s2-play" onclick="togglePlay2()">▶ 自动旋转</button>
+      </div>
+      <div class="jump-row">
+        <button class="jump-btn" style="border:1px solid #10b981; background:#ecfdf5; color:#065f46;" onclick="stopPlay2(); updateS2(225);">
+          📍 跳至左下相切【最小值 3−√2】
+        </button>
+        <button class="jump-btn" style="border:1px solid #f59e0b; background:#fffbeb; color:#92400e;" onclick="stopPlay2(); updateS2(45);">
+          📍 跳至右上相切【最大值 3+√2】
+        </button>
+      </div>
+    </div>
 
     <!-- 方法一：参数坐标 + 三角函数 -->
     <div style="margin-bottom: 14px;">
       <div><span class="badge badge-param">方法一</span><strong>圆的参数坐标 + 三角函数辅助角公式（无脑代入通法）</strong></div>
       <div class="step-box">
-        <strong>第一步（写出圆上点 <span class="m"><i>P</i></span> 的参数坐标）：</strong><br>
-        由圆方程 <span class="m">(<i>x</i> &minus; 2)<sup>2</sup> + (<i>y</i> &minus; 1)<sup>2</sup> = 1</span>，设点 <span class="m"><i>P</i></span> 的参数坐标为：
+        <strong>第一步（设圆上点 <span class="m"><i>P</i></span> 的参数坐标）：</strong><br>
+        由圆方程 <span class="m">(<i>x</i> &minus; 2)<sup>2</sup> + (<i>y</i> &minus; 1)<sup>2</sup> = 1</span>（圆心 <span class="m">(2,1)</span>，半径 <span class="m"><i>R</i> = 1</span>），设点 <span class="m"><i>P</i></span> 的参数坐标为：
         <div class="formula-box">
           <span class="m"><i>x</i> = 2 + cos<i>&theta;</i>，&nbsp; <i>y</i> = 1 + sin<i>&theta;</i> &nbsp;（<i>&theta;</i> &in; [0, 2&pi;)）</span>
         </div>
         <strong>第二步（代入 <span class="m"><i>x</i> + <i>y</i></span> 并用辅助角公式化简）：</strong>
         <div class="formula-box">
-          <span class="m"><i>x</i> + <i>y</i> = (2 + cos<i>&theta;</i>) + (1 + sin<i>&theta;</i>)</span><br>
-          <span class="m">= 3 + (sin<i>&theta;</i> + cos<i>&theta;</i>)</span><br>
-          <span class="m">= 3 + <span class="rad"><span>2</span></span>sin(<i>&theta;</i> + <span class="frac"><span class="num">&pi;</span><span class="den">4</span></span>)</span>
+          <span class="m"><i>x</i> + <i>y</i> = (2 + cos<i>&theta;</i>) + (1 + sin<i>&theta;</i>) = 3 + (sin<i>&theta;</i> + cos<i>&theta;</i>) = 3 + <span class="rad"><span>2</span></span>sin(<i>&theta;</i> + <span class="frac"><span class="num">&pi;</span><span class="den">4</span></span>)</span>
         </div>
-        <strong>第三步（利用正弦函数的有界性求最值）：</strong><br>
-        因为 <span class="m">sin(<i>&theta;</i> + <span class="frac"><span class="num">&pi;</span><span class="den">4</span></span>) &in; [&minus;1, 1]</span>：<br>
-        • 当 <span class="m">sin(<i>&theta;</i> + <span class="frac"><span class="num">&pi;</span><span class="den">4</span></span>) = 1</span>（即 <span class="m"><i>&theta;</i> = <span class="frac"><span class="num">&pi;</span><span class="den">4</span></span> = 45&deg;</span>）时，最大值为 <span class="hl-red m">3 + <span class="rad"><span>2</span></span></span>；<br>
-        • 当 <span class="m">sin(<i>&theta;</i> + <span class="frac"><span class="num">&pi;</span><span class="den">4</span></span>) = &minus;1</span>（即 <span class="m"><i>&theta;</i> = <span class="frac"><span class="num">5&pi;</span><span class="den">4</span></span> = 225&deg;</span>）时，最小值为 <span class="hl-green m">3 &minus; <span class="rad"><span>2</span></span></span>。
+        <strong>第三步（利用正弦函数有界性 <span class="m">[&minus;1, 1]</span> 求最值）：</strong><br>
+        • 当 <span class="m">sin(<i>&theta;</i> + <span class="frac"><span class="num">&pi;</span><span class="den">4</span></span>) = 1</span>（即 <span class="m"><i>&theta;</i> = 45&deg;</span>）时，最大值为 <span class="hl-red m">3 + <span class="rad"><span>2</span></span></span>；<br>
+        • 当 <span class="m">sin(<i>&theta;</i> + <span class="frac"><span class="num">&pi;</span><span class="den">4</span></span>) = &minus;1</span>（即 <span class="m"><i>&theta;</i> = 225&deg;</span>）时，最小值为 <span class="hl-green m">3 &minus; <span class="rad"><span>2</span></span></span>。
       </div>
     </div>
 
@@ -535,28 +539,94 @@
     <div>
       <div><span class="badge badge-geom">方法二</span><strong>几何意义（直线截距法：平行线与圆相切时截距取极值）</strong></div>
       <div class="step-box">
-        <strong>第一步（设 <span class="m"><i>x</i> + <i>y</i> = <i>t</i></span> 转化为直线截距）：</strong><br>
-        令 <span class="m"><i>x</i> + <i>y</i> = <i>t</i></span>，移项得直线一般式方程：
+        <strong>第一步（设 <span class="m"><i>x</i> + <i>y</i> = <i>t</i></span> 转化为直线纵截距）：</strong><br>
+        令 <span class="m"><i>x</i> + <i>y</i> = <i>t</i></span>，移项得直线一般式：<span class="m"><i>x</i> + <i>y</i> &minus; <i>t</i> = 0</span>（即 <span class="m"><i>y</i> = &minus;<i>x</i> + <i>t</i></span>，<span class="m"><i>t</i></span> 为直线在 <span class="m"><i>y</i></span> 轴上的纵截距）。<br>
+        <strong>第二步（利用直线与圆有公共点 <span class="m"><i>d</i> &le; <i>R</i></span>，相切时取等号）：</strong><br>
+        如上方互动图 2 所示，圆心 <span class="m"><i>C</i>(2, 1)</span> 到直线 <span class="m"><i>x</i> + <i>y</i> &minus; <i>t</i> = 0</span> 的距离 <span class="m"><i>d</i> &le; <i>R</i> = 1</span>：
         <div class="formula-box">
-          <span class="m"><i>x</i> + <i>y</i> &minus; <i>t</i> = 0 &nbsp;（即 <i>y</i> = &minus;<i>x</i> + <i>t</i>，其中 <i>t</i> 为直线在 <i>y</i> 轴上的纵截距）</span>
+          <span class="m"><i>d</i> = <span class="frac"><span class="num">|2 + 1 &minus; <i>t</i>|</span><span class="den"><span class="rad"><span>1<sup>2</sup> + 1<sup>2</sup></span></span></span></span> = <span class="frac"><span class="num">|3 &minus; <i>t</i>|</span><span class="den"><span class="rad"><span>2</span></span></span></span> &le; 1 &nbsp;&hArr;&nbsp; |<i>t</i> &minus; 3| &le; <span class="rad"><span>2</span></span></span>
         </div>
-        <strong>第二步（直线与圆相切/相交条件 <span class="m"><i>d</i> &le; <i>R</i></span>）：</strong><br>
-        直线 <span class="m"><i>x</i> + <i>y</i> &minus; <i>t</i> = 0</span> 与圆有公共点，故圆心 <span class="m"><i>C</i>(2, 1)</span> 到该直线的距离 <span class="m"><i>d</i> &le; <i>R</i> = 1</span>：
-        <div class="formula-box">
-          <span class="m"><i>d</i> = <span class="frac"><span class="num">|2 + 1 &minus; <i>t</i>|</span><span class="den"><span class="rad"><span>1<sup>2</sup> + 1<sup>2</sup></span></span></span></span> = <span class="frac"><span class="num">|3 &minus; <i>t</i>|</span><span class="den"><span class="rad"><span>2</span></span></span></span> &le; 1</span>
-        </div>
-        <strong>第三步（解绝对值不等式）：</strong><br>
-        <div class="formula-box">
-          <span class="m">|<i>t</i> &minus; 3| &le; <span class="rad"><span>2</span></span> &nbsp;&hArr;&nbsp; &minus;<span class="rad"><span>2</span></span> &le; <i>t</i> &minus; 3 &le; <span class="rad"><span>2</span></span> &nbsp;&hArr;&nbsp; 3 &minus; <span class="rad"><span>2</span></span> &le; <i>t</i> &le; 3 + <span class="rad"><span>2</span></span></span>
-        </div>
-        故 <span class="m"><i>x</i> + <i>y</i></span> 的最大值为 <span class="hl-red m">3 + <span class="rad"><span>2</span></span></span>，最小值为 <span class="hl-green m">3 &minus; <span class="rad"><span>2</span></span></span>。
+        解得：<span class="hl-blue m">3 &minus; <span class="rad"><span>2</span></span> &le; <i>t</i> &le; 3 + <span class="rad"><span>2</span></span></span>。故最大值为 <span class="hl-red m">3 + <span class="rad"><span>2</span></span></span>，最小值为 <span class="hl-green m">3 &minus; <span class="rad"><span>2</span></span></span>。
       </div>
     </div>
   </div>
 
-  <!-- 六、第 (3) 题双解详析：参数坐标+三角函数 vs 距离平方几何意义 -->
+  <!-- ================= 五、第 (3) 题双解 + 专属可拖动几何图 3 ================= -->
   <div class="card">
-    <div class="card-title">🔍 六、第 (3) 题双解：求 <span class="m"><i>x</i><sup>2</sup> + <i>y</i><sup>2</sup></span> 的最值</div>
+    <div class="card-title">🔍 五、第 (3) 题双解：求 <span class="m"><i>x</i><sup>2</sup> + <i>y</i><sup>2</sup></span> 的最值（配互动图 3）</div>
+    <div style="font-size: 13.5px; color: #475569; margin-bottom: 6px;">
+      • <strong>互动操作</strong>：直接用手指按住下图圆上的<strong>蓝点 <span class="m"><i>P</i></span> 拖动</strong>，观察动点 <span class="m"><i>P</i></span> 到原点 <span class="m"><i>O</i></span> 的红线长度 <span class="m">|<i>OP</i>|</span>，当点 <span class="m"><i>P</i></span> 转到连心线 <span class="m"><i>OC</i></span>（虚线）与圆的两个交点 <span class="m"><i>P</i><sub>1</sub>, <i>P</i><sub>2</sub></span> 时，距离平方 <span class="m"><i>x</i><sup>2</sup> + <i>y</i><sup>2</sup> = |<i>OP</i>|<sup>2</sup></span> 取得最小和最大值！
+    </div>
+
+    <!-- 第 (3) 题专属动态 SVG 图（穿心线距离图） -->
+    <div class="svg-wrap">
+      <div class="drag-hint-pill">👆 按住蓝点 P 拖动观察距离平方 |OP|²</div>
+      <svg viewBox="0 0 380 280" id="svg-3">
+        <defs>
+          <pattern id="grid3" width="35" height="35" patternUnits="userSpaceOnUse">
+            <path d="M 35 0 L 0 0 0 35" fill="none" stroke="#f1f5f9" stroke-width="1"/>
+          </pattern>
+        </defs>
+        <rect width="380" height="280" fill="url(#grid3)" />
+
+        <!-- 原点 O(70, 220), 1单位=70px, 圆心 C(2,1)->(210, 150), R=70px -->
+        <line x1="15" y1="220" x2="365" y2="220" stroke="#94a3b8" stroke-width="1.6" />
+        <line x1="70" y1="15" x2="70" y2="265" stroke="#94a3b8" stroke-width="1.6" />
+        <polygon points="365,220 357,216 357,224" fill="#94a3b8"/>
+        <polygon points="70,15 66,23 74,23" fill="#94a3b8"/>
+        <text x="352" y="238" font-size="13" fill="#64748b" font-family="Times New Roman" font-style="italic" font-weight="bold">x</text>
+        <text x="78" y="26" font-size="13" fill="#64748b" font-family="Times New Roman" font-style="italic" font-weight="bold">y</text>
+        <text x="44" y="236" font-size="12" fill="#475569" font-weight="bold">O(0,0)</text>
+
+        <!-- 圆 C(2,1) -->
+        <circle cx="210" cy="150" r="70" fill="rgba(37,99,235,0.05)" stroke="#2563eb" stroke-width="2.2" />
+        <circle cx="210" cy="150" r="4" fill="#1e40af" />
+        <text x="214" y="166" font-size="12" fill="#1e40af" font-weight="bold">C(2,1)</text>
+
+        <!-- 穿心虚线 OC 所在直线：过 O(70,220) 与 C(210,150) -->
+        <line x1="40" y1="235" x2="350" y2="80" stroke="#94a3b8" stroke-width="1.8" stroke-dasharray="5,5"/>
+        <text x="280" y="96" font-size="11.5" fill="#64748b" font-weight="bold">穿心线 OC</text>
+
+        <!-- 最小距离点 P1 (θ≈206.57°): (147.4, 181.3) -->
+        <circle cx="147.4" cy="181.3" r="4.5" fill="#10b981"/>
+        <text x="86" y="176" font-size="11.5" fill="#059669" font-weight="bold">P₁(|OP|=√5−1)</text>
+
+        <!-- 最大距离点 P2 (θ≈26.57°): (272.6, 118.7) -->
+        <circle cx="272.6" cy="118.7" r="4.5" fill="#f59e0b"/>
+        <text x="278" y="128" font-size="11.5" fill="#d97706" font-weight="bold">P₂(|OP|=√5+1)</text>
+
+        <!-- 动态距离线段 OP -->
+        <line id="s3-line-op" x1="70" y1="220" x2="210" y2="80" stroke="#dc2626" stroke-width="2.8"/>
+        <!-- 半径 CP -->
+        <line id="s3-line-cp" x1="210" y1="150" x2="210" y2="80" stroke="#60a5fa" stroke-width="1.6" />
+
+        <!-- 动点 P -->
+        <circle id="s3-halo" cx="210" cy="80" r="14" fill="rgba(37, 99, 235, 0.18)" />
+        <circle id="s3-pt" cx="210" cy="80" r="7.5" fill="#2563eb" stroke="#ffffff" stroke-width="2.5" class="grab-pt"/>
+        <circle id="s3-hit" cx="210" cy="80" r="28" fill="transparent" class="grab-pt"/>
+        <text id="s3-txt" x="220" y="84" font-size="13" fill="#1e40af" font-weight="bold">P</text>
+      </svg>
+    </div>
+
+    <div class="ctrl-panel">
+      <div class="status-bar">
+        <span id="s3-coord">|OP| = 2.828</span>
+        <span id="s3-val" class="hl-red">当前 x² + y² = |OP|² = 8.000</span>
+      </div>
+      <div class="slider-row">
+        <span style="font-size:12px; font-weight:bold; color:#1e40af;">参数角 θ:</span>
+        <input type="range" id="s3-slider" min="0" max="360" value="90" oninput="updateS3(this.value)">
+        <button class="btn-play" id="s3-play" onclick="togglePlay3()">▶ 自动旋转</button>
+      </div>
+      <div class="jump-row">
+        <button class="jump-btn" style="border:1px solid #10b981; background:#ecfdf5; color:#065f46;" onclick="stopPlay3(); updateS3(206.57);">
+          📍 跳至 P₁【最小值 6−2√5】
+        </button>
+        <button class="jump-btn" style="border:1px solid #f59e0b; background:#fffbeb; color:#92400e;" onclick="stopPlay3(); updateS3(26.57);">
+          📍 跳至 P₂【最大值 6+2√5】
+        </button>
+      </div>
+    </div>
 
     <!-- 方法一：参数坐标 + 三角函数 -->
     <div style="margin-bottom: 14px;">
@@ -565,21 +635,15 @@
         <strong>第一步（代入参数坐标 <span class="m"><i>x</i> = 2 + cos<i>&theta;</i>, <i>y</i> = 1 + sin<i>&theta;</i></span> 展开）：</strong>
         <div class="formula-box">
           <span class="m"><i>x</i><sup>2</sup> + <i>y</i><sup>2</sup> = (2 + cos<i>&theta;</i>)<sup>2</sup> + (1 + sin<i>&theta;</i>)<sup>2</sup></span><br>
-          <span class="m">= (4 + 4cos<i>&theta;</i> + cos<sup>2</sup><i>&theta;</i>) + (1 + 2sin<i>&theta;</i> + sin<sup>2</sup><i>&theta;</i>)</span>
+          <span class="m">= 4 + 4cos<i>&theta;</i> + cos<sup>2</sup><i>&theta;</i> + 1 + 2sin<i>&theta;</i> + sin<sup>2</sup><i>&theta;</i></span>
         </div>
         <strong>第二步（利用 <span class="m">cos<sup>2</sup><i>&theta;</i> + sin<sup>2</sup><i>&theta;</i> = 1</span> 合并化简）：</strong>
         <div class="formula-box">
-          <span class="m"><i>x</i><sup>2</sup> + <i>y</i><sup>2</sup> = 4 + 1 + (cos<sup>2</sup><i>&theta;</i> + sin<sup>2</sup><i>&theta;</i>) + 4cos<i>&theta;</i> + 2sin<i>&theta;</i></span><br>
-          <span class="m">= 6 + 2(2cos<i>&theta;</i> + sin<i>&theta;</i>)</span>
+          <span class="m"><i>x</i><sup>2</sup> + <i>y</i><sup>2</sup> = 6 + (4cos<i>&theta;</i> + 2sin<i>&theta;</i>) = 6 + 2(2cos<i>&theta;</i> + sin<i>&theta;</i>)</span>
         </div>
         <strong>第三步（辅助角公式求最值）：</strong><br>
-        由辅助角公式，提取系数平方和开根号 <span class="m"><span class="rad"><span>2<sup>2</sup> + 1<sup>2</sup></span></span> = <span class="rad"><span>5</span></span></span>：
-        <div class="formula-box">
-          <span class="m">2cos<i>&theta;</i> + sin<i>&theta;</i> = <span class="rad"><span>5</span></span>sin(<i>&theta;</i> + <i>&phi;</i>) &nbsp;&in;&nbsp; [&minus;<span class="rad"><span>5</span></span>, &nbsp;<span class="rad"><span>5</span></span>]</span><br>
-          <span class="m">&rArr; <i>x</i><sup>2</sup> + <i>y</i><sup>2</sup> = 6 + 2<span class="rad"><span>5</span></span>sin(<i>&theta;</i> + <i>&phi;</i>)</span>
-        </div>
-        • 当 <span class="m">sin(<i>&theta;</i> + <i>&phi;</i>) = 1</span> 时，最大值为 <span class="hl-red m">6 + 2<span class="rad"><span>5</span></span></span>；<br>
-        • 当 <span class="m">sin(<i>&theta;</i> + <i>&phi;</i>) = &minus;1</span> 时，最小值为 <span class="hl-green m">6 &minus; 2<span class="rad"><span>5</span></span></span>。
+        因为 <span class="m">2cos<i>&theta;</i> + sin<i>&theta;</i> = <span class="rad"><span>2<sup>2</sup> + 1<sup>2</sup></span></span>sin(<i>&theta;</i> + <i>&phi;</i>) = <span class="rad"><span>5</span></span>sin(<i>&theta;</i> + <i>&phi;</i>) &in; [&minus;<span class="rad"><span>5</span></span>, <span class="rad"><span>5</span></span>]</span>：<br>
+        • 最大值为 <span class="hl-red m">6 + 2<span class="rad"><span>5</span></span></span>，最小值为 <span class="hl-green m">6 &minus; 2<span class="rad"><span>5</span></span></span>。
       </div>
     </div>
 
@@ -588,63 +652,80 @@
       <div><span class="badge badge-geom">方法二</span><strong>几何意义（动点到原点距离的平方：穿心线法则）</strong></div>
       <div class="step-box">
         <strong>第一步（识别几何意义：距离的平方！）：</strong><br>
-        因为圆上动点 <span class="m"><i>P</i>(<i>x</i>, <i>y</i>)</span> 到原点 <span class="m"><i>O</i>(0, 0)</span> 的距离为 <span class="m">|<i>OP</i>| = <span class="rad"><span><i>x</i><sup>2</sup> + <i>y</i><sup>2</sup></span></span></span>，所以：
-        <div class="formula-box">
-          <span class="m"><i>x</i><sup>2</sup> + <i>y</i><sup>2</sup> = |<i>OP</i>|<sup>2</sup></span>（即动点 <span class="m"><i>P</i></span> 到原点 <span class="m"><i>O</i></span> 距离的<strong>平方</strong>）
-        </div>
+        动点 <span class="m"><i>P</i>(<i>x</i>, <i>y</i>)</span> 到原点 <span class="m"><i>O</i>(0, 0)</span> 的距离为 <span class="m">|<i>OP</i>| = <span class="rad"><span><i>x</i><sup>2</sup> + <i>y</i><sup>2</sup></span></span></span>，故 <strong><span class="m"><i>x</i><sup>2</sup> + <i>y</i><sup>2</sup> = |<i>OP</i>|<sup>2</sup></span></strong>。<br>
         <strong>第二步（算圆心距 <span class="m">|<i>OC</i>|</span>，求距离 <span class="m">|<i>OP</i>|</span> 的最值）：</strong><br>
-        圆心 <span class="m"><i>C</i>(2, 1)</span> 到原点 <span class="m"><i>O</i>(0, 0)</span> 的距离（圆心距）为：
+        圆心距 <span class="m"><i>d</i> = |<i>OC</i>| = <span class="rad"><span>2<sup>2</sup> + 1<sup>2</sup></span></span> = <span class="rad"><span>5</span></span></span>，半径 <span class="m"><i>R</i> = 1</span>。如上方互动图 3 所示：<br>
+        • 最短距离 <span class="m">|<i>OP</i>|<sub>min</sub> = <i>d</i> &minus; <i>R</i> = <span class="rad"><span>5</span></span> &minus; 1</span>；最长距离 <span class="m">|<i>OP</i>|<sub>max</sub> = <i>d</i> + <i>R</i> = <span class="rad"><span>5</span></span> + 1</span>。<br>
+        <strong>第三步（两边平方得最终结果）：</strong>
         <div class="formula-box">
-          <span class="m">|<i>OC</i>| = <span class="rad"><span>(2 &minus; 0)<sup>2</sup> + (1 &minus; 0)<sup>2</sup></span></span> = <span class="rad"><span>5</span></span></span>
-        </div>
-        已知圆的半径 <span class="m"><i>R</i> = 1</span>，连接 <span class="m"><i>OC</i></span> 穿圆而过：<br>
-        • <strong>最短距离</strong>：<span class="m">|<i>OP</i>|<sub>min</sub> = |<i>OC</i>| &minus; <i>R</i> = <span class="rad"><span>5</span></span> &minus; 1</span>；<br>
-        • <strong>最长距离</strong>：<span class="m">|<i>OP</i>|<sub>max</sub> = |<i>OC</i>| + <i>R</i> = <span class="rad"><span>5</span></span> + 1</span>。<br><br>
-        <strong>第三步（别忘了最后要平方！）：</strong>
-        <div class="formula-box">
-          • <span class="hl-green m">(<i>x</i><sup>2</sup> + <i>y</i><sup>2</sup>)<sub>min</sub> = (|<i>OP</i>|<sub>min</sub>)<sup>2</sup> = (<span class="rad"><span>5</span></span> &minus; 1)<sup>2</sup> = 5 &minus; 2<span class="rad"><span>5</span></span> + 1 = 6 &minus; 2<span class="rad"><span>5</span></span></span><br>
-          • <span class="hl-red m">(<i>x</i><sup>2</sup> + <i>y</i><sup>2</sup>)<sub>max</sub> = (|<i>OP</i>|<sub>max</sub>)<sup>2</sup> = (<span class="rad"><span>5</span></span> + 1)<sup>2</sup> = 5 + 2<span class="rad"><span>5</span></span> + 1 = 6 + 2<span class="rad"><span>5</span></span></span>
+          • <span class="hl-green m">(<i>x</i><sup>2</sup> + <i>y</i><sup>2</sup>)<sub>min</sub> = (<span class="rad"><span>5</span></span> &minus; 1)<sup>2</sup> = 6 &minus; 2<span class="rad"><span>5</span></span></span><br>
+          • <span class="hl-red m">(<i>x</i><sup>2</sup> + <i>y</i><sup>2</sup>)<sub>max</sub> = (<span class="rad"><span>5</span></span> + 1)<sup>2</sup> = 6 + 2<span class="rad"><span>5</span></span></span>
         </div>
       </div>
     </div>
 
     <div class="warn-box">
       <strong>⚠️ 第 (3) 题高频易错警告：</strong><br>
-      90% 做错的同学都是算出了 <span class="m"><span class="rad"><span>5</span></span> + 1</span> 和 <span class="m"><span class="rad"><span>5</span></span> &minus; 1</span> 就直接填上去了！<br>
-      一定要看清题目问的是 <strong><span class="m"><i>x</i><sup>2</sup> + <i>y</i><sup>2</sup></span>（没有根号，是距离的平方）</strong>，还是 <strong><span class="m"><span class="rad"><span><i>x</i><sup>2</sup> + <i>y</i><sup>2</sup></span></span></span>（有根号，是距离本身）</strong>！如果没有根号，算完 <span class="m"><i>d</i> &plusmn; <i>R</i></span> 后<strong>必须平方</strong>！
+      题目问的是 <strong><span class="m"><i>x</i><sup>2</sup> + <i>y</i><sup>2</sup></span>（没有根号，是距离的平方）</strong>，算完 <span class="m"><span class="rad"><span>5</span></span> &plusmn; 1</span> 后<strong>千万别忘了平方</strong>！如果题目带根号问 <span class="m"><span class="rad"><span><i>x</i><sup>2</sup> + <i>y</i><sup>2</sup></span></span></span>，答案才是 <span class="m"><span class="rad"><span>5</span></span> &plusmn; 1</span>。
     </div>
   </div>
 
-  <!-- 七、举一反三同类巩固练习 -->
+  <!-- ================= 六、进阶拔高变式训练（定点不在原点、数值清爽好算） ================= -->
   <div class="card">
-    <div class="card-title">🚀 七、举一反三 · 趁热打铁自测题</div>
-    <div style="font-size: 14.5px; font-weight: 700; color: #0f172a;">
-      【变式训练】已知实数 <span class="m"><i>x</i>, <i>y</i></span> 满足方程 <span class="m">(<i>x</i> &minus; 3)<sup>2</sup> + (<i>y</i> &minus; 4)<sup>2</sup> = 1</span>，求：<br>
-      (1) <span class="m"><span class="frac"><span class="num"><i>y</i></span><span class="den"><i>x</i></span></span></span> 的最值； &nbsp;&nbsp;(2) <span class="m"><i>x</i> &minus; <i>y</i></span> 的最值； &nbsp;&nbsp;(3) <span class="m"><i>x</i><sup>2</sup> + <i>y</i><sup>2</sup></span> 的最值。
+    <div class="card-title">🚀 六、举一反三 · 进阶变式自测（定点不在原点）</div>
+    <div style="font-size: 13.5px; color: #475569; margin-bottom: 10px;">
+      💡 如果题目把 <span class="m"><span class="frac"><span class="num"><i>y</i></span><span class="den"><i>x</i></span></span></span> 换成 <span class="m"><span class="frac"><span class="num"><i>y</i> &minus; 1</span><span class="den"><i>x</i></span></span></span>，把 <span class="m"><i>x</i><sup>2</sup> + <i>y</i><sup>2</sup></span> 换成 <span class="m">(<i>x</i> + 1)<sup>2</sup> + (<i>y</i> + 3)<sup>2</sup></span>（即<strong>定点不再是原点 <span class="m">(0,0)</span></strong>），你还会转化吗？试着做做下面这道计算极其清爽的变式题！
     </div>
+
+    <div style="background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 12px; padding: 12px 14px; font-size: 14.5px; font-weight: 700; color: #0f172a;">
+      【变式训练】已知点 <span class="m"><i>P</i>(<i>x</i>, <i>y</i>)</span> 在圆 <span class="m">(<i>x</i> &minus; 2)<sup>2</sup> + (<i>y</i> &minus; 1)<sup>2</sup> = 2</span> 上运动，求：<br>
+      (1) <span class="m"><span class="frac"><span class="num"><i>y</i> &minus; 1</span><span class="den"><i>x</i></span></span></span> 的最大值与最小值；<br>
+      (2) <span class="m"><i>x</i> &minus; <i>y</i></span> 的最大值与最小值；<br>
+      (3) <span class="m">(<i>x</i> + 1)<sup>2</sup> + (<i>y</i> + 3)<sup>2</sup></span> 的最大值与最小值.
+    </div>
+
     <button class="toggle-btn" onclick="toggleBox('ext-ans', this)">👀 先自己在草稿纸算一算，再点击展开详细答案</button>
+
     <div id="ext-ans" class="hidden-box">
       <div style="font-size: 14px; color: #334155;">
-        <strong>【先找圆心和半径 + 参数坐标】：</strong><br>
-        圆心为 <span class="m"><i>C</i>(3, 4)</span>，半径 <span class="m"><i>R</i> = 1</span>；圆上点的参数坐标为 <span class="hl-purple m"><i>x</i> = 3 + cos<i>&theta;</i>, <i>y</i> = 4 + sin<i>&theta;</i></span>。<br><br>
-        <strong>(1) 求 <span class="m"><span class="frac"><span class="num"><i>y</i></span><span class="den"><i>x</i></span></span></span> 的最值（斜率相切法）：</strong><br>
-        设 <span class="m"><span class="frac"><span class="num"><i>y</i></span><span class="den"><i>x</i></span></span> = <i>k</i> &hArr; <i>kx</i> &minus; <i>y</i> = 0</span>。由圆心 <span class="m"><i>C</i>(3, 4)</span> 到直线的距离 <span class="m"><i>d</i> &le; 1</span> 得：<br>
+        <strong>【先读出圆心、半径与参数坐标】：</strong><br>
+        由方程 <span class="m">(<i>x</i> &minus; 2)<sup>2</sup> + (<i>y</i> &minus; 1)<sup>2</sup> = 2</span> 知：<strong>圆心 <span class="m"><i>C</i>(2, 1)</span>，半径 <span class="m"><i>R</i> = <span class="rad"><span>2</span></span></span></strong>。<br>
+        圆上点 <span class="m"><i>P</i></span> 的参数坐标为：<span class="hl-purple m"><i>x</i> = 2 + <span class="rad"><span>2</span></span>cos<i>&theta;</i>，&nbsp; <i>y</i> = 1 + <span class="rad"><span>2</span></span>sin<i>&theta;</i></span>。<br><br>
+
+        <strong>(1) 求 <span class="m"><span class="frac"><span class="num"><i>y</i> &minus; 1</span><span class="den"><i>x</i></span></span></span> 的最值（过定点 <span class="m"><i>M</i>(0, 1)</span> 的斜率模型）：</strong><br>
+        • <strong>看几何意义</strong>：<span class="m"><i>k</i> = <span class="frac"><span class="num"><i>y</i> &minus; 1</span><span class="den"><i>x</i> &minus; 0</span></span></span> 表示圆上动点 <span class="m"><i>P</i>(<i>x</i>, <i>y</i>)</span> 与<strong>定点 <span class="m"><i>M</i>(0, 1)</span> 连线的斜率</strong>！<br>
+        • <strong>化直线方程</strong>：<span class="m"><i>y</i> &minus; 1 = <i>kx</i> &hArr; <i>kx</i> &minus; <i>y</i> + 1 = 0</span>。<br>
+        • <strong>相切条件 <span class="m"><i>d</i> &le; <i>R</i></span></strong>：圆心 <span class="m"><i>C</i>(2, 1)</span> 到直线 <span class="m"><i>kx</i> &minus; <i>y</i> + 1 = 0</span> 的距离 <span class="m"><i>d</i> &le; <span class="rad"><span>2</span></span></span>：
         <div class="formula-box">
-          <span class="m"><span class="frac"><span class="num">|3<i>k</i> &minus; 4|</span><span class="den"><span class="rad"><span><i>k</i><sup>2</sup> + 1</span></span></span></span> &le; 1 &hArr; (3<i>k</i> &minus; 4)<sup>2</sup> &le; <i>k</i><sup>2</sup> + 1 &hArr; 8<i>k</i><sup>2</sup> &minus; 24<i>k</i> + 15 &le; 0</span>
+          <span class="m"><i>d</i> = <span class="frac"><span class="num">|2<i>k</i> &minus; 1 + 1|</span><span class="den"><span class="rad"><span><i>k</i><sup>2</sup> + 1</span></span></span></span> = <span class="frac"><span class="num">|2<i>k</i>|</span><span class="den"><span class="rad"><span><i>k</i><sup>2</sup> + 1</span></span></span></span> &le; <span class="rad"><span>2</span></span></span>
         </div>
-        由求根公式得：<span class="hl-blue m"><i>k</i><sub>max</sub> = <span class="frac"><span class="num">12 + <span class="rad"><span>24</span></span></span><span class="den">8</span></span> = <span class="frac"><span class="num">6 + <span class="rad"><span>6</span></span></span><span class="den">4</span></span></span>，<span class="hl-green m"><i>k</i><sub>min</sub> = <span class="frac"><span class="num">6 &minus; <span class="rad"><span>6</span></span></span><span class="den">4</span></span></span>。<br><br>
+        两边平方得：<span class="m">4<i>k</i><sup>2</sup> &le; 2(<i>k</i><sup>2</sup> + 1) &hArr; 2<i>k</i><sup>2</sup> &le; 2 &hArr; <i>k</i><sup>2</sup> &le; 1 &hArr; &minus;1 &le; <i>k</i> &le; 1</span>。<br>
+        故 <span class="m"><span class="frac"><span class="num"><i>y</i> &minus; 1</span><span class="den"><i>x</i></span></span></span> 的<strong>最大值为 <span class="hl-red m">1</span>，最小值为 <span class="hl-green m">&minus;1</span></strong>！（结果非常干脆！）<br><br>
 
         <strong>(2) 求 <span class="m"><i>x</i> &minus; <i>y</i></span> 的最值（双解）：</strong><br>
-        • <strong>方法一（参数坐标法）</strong>：<span class="m"><i>x</i> &minus; <i>y</i> = (3 + cos<i>&theta;</i>) &minus; (4 + sin<i>&theta;</i>) = &minus;1 + (cos<i>&theta;</i> &minus; sin<i>&theta;</i>) = &minus;1 + <span class="rad"><span>2</span></span>cos(<i>&theta;</i> + <span class="frac"><span class="num">&pi;</span><span class="den">4</span></span>)</span>。<br>
-        &nbsp;&nbsp;故最大值为 <span class="hl-red m">&minus;1 + <span class="rad"><span>2</span></span></span>，最小值为 <span class="hl-green m">&minus;1 &minus; <span class="rad"><span>2</span></span></span>。<br>
-        • <strong>方法二（截距法）</strong>：设 <span class="m"><i>x</i> &minus; <i>y</i> = <i>t</i> &hArr; <i>x</i> &minus; <i>y</i> &minus; <i>t</i> = 0</span>，由 <span class="m"><i>d</i> = <span class="frac"><span class="num">|3 &minus; 4 &minus; <i>t</i>|</span><span class="den"><span class="rad"><span>2</span></span></span></span> &le; 1</span> 得 <span class="m">|<i>t</i> + 1| &le; <span class="rad"><span>2</span></span></span>，同样解得 <span class="m">[&minus;1 &minus; <span class="rad"><span>2</span></span>, &minus;1 + <span class="rad"><span>2</span></span>]</span>。<br><br>
+        • <strong>方法一（参数坐标法）</strong>：<br>
+        &nbsp;&nbsp;<span class="m"><i>x</i> &minus; <i>y</i> = (2 + <span class="rad"><span>2</span></span>cos<i>&theta;</i>) &minus; (1 + <span class="rad"><span>2</span></span>sin<i>&theta;</i>) = 1 + <span class="rad"><span>2</span></span>(cos<i>&theta;</i> &minus; sin<i>&theta;</i>) = 1 + 2cos(<i>&theta;</i> + <span class="frac"><span class="num">&pi;</span><span class="den">4</span></span>)</span>。<br>
+        &nbsp;&nbsp;故<strong>最大值为 <span class="hl-red m">1 + 2 = 3</span>，最小值为 <span class="hl-green m">1 &minus; 2 = &minus;1</span></strong>。<br>
+        • <strong>方法二（截距法）</strong>：设 <span class="m"><i>x</i> &minus; <i>y</i> = <i>t</i> &hArr; <i>x</i> &minus; <i>y</i> &minus; <i>t</i> = 0</span>，由圆心 <span class="m"><i>C</i>(2, 1)</span> 到直线距离 <span class="m"><i>d</i> &le; <span class="rad"><span>2</span></span></span> 得：
+        <div class="formula-box">
+          <span class="m"><span class="frac"><span class="num">|2 &minus; 1 &minus; <i>t</i>|</span><span class="den"><span class="rad"><span>1<sup>2</sup> + (&minus;1)<sup>2</sup></span></span></span></span> = <span class="frac"><span class="num">|1 &minus; <i>t</i>|</span><span class="den"><span class="rad"><span>2</span></span></span></span> &le; <span class="rad"><span>2</span></span> &nbsp;&hArr;&nbsp; |<i>t</i> &minus; 1| &le; 2 &nbsp;&hArr;&nbsp; &minus;1 &le; <i>t</i> &le; 3</span>
+        </div>
+        同样求得最大值为 <span class="hl-red m">3</span>，最小值为 <span class="hl-green m">&minus;1</span>。<br><br>
 
-        <strong>(3) 求 <span class="m"><i>x</i><sup>2</sup> + <i>y</i><sup>2</sup></span> 的最值（双解）：</strong><br>
-        • <strong>方法一（参数坐标法）</strong>：<span class="m"><i>x</i><sup>2</sup> + <i>y</i><sup>2</sup> = (3 + cos<i>&theta;</i>)<sup>2</sup> + (4 + sin<i>&theta;</i>)<sup>2</sup> = 9 + 16 + 1 + 2(3cos<i>&theta;</i> + 4sin<i>&theta;</i>) = 26 + 2 &times; 5sin(<i>&theta;</i> + <i>&phi;</i>) = 26 + 10sin(<i>&theta;</i> + <i>&phi;</i>)</span>。<br>
-        &nbsp;&nbsp;故最大值为 <span class="hl-red m">26 + 10 = 36</span>，最小值为 <span class="hl-green m">26 &minus; 10 = 16</span>。<br>
-        • <strong>方法二（距离平方法）</strong>：圆心距 <span class="m">|<i>OC</i>| = <span class="rad"><span>3<sup>2</sup> + 4<sup>2</sup></span></span> = 5</span>，半径 <span class="m"><i>R</i> = 1</span>。<br>
-        &nbsp;&nbsp;距离 <span class="m">|<i>OP</i>|<sub>max</sub> = 5 + 1 = 6</span>，<span class="m">|<i>OP</i>|<sub>min</sub> = 5 &minus; 1 = 4</span>。<br>
-        &nbsp;&nbsp;平方后得：<span class="hl-red m">(<i>x</i><sup>2</sup> + <i>y</i><sup>2</sup>)<sub>max</sub> = 6<sup>2</sup> = 36</span>，<span class="hl-green m">(<i>x</i><sup>2</sup> + <i>y</i><sup>2</sup>)<sub>min</sub> = 4<sup>2</sup> = 16</span>！
+        <strong>(3) 求 <span class="m">(<i>x</i> + 1)<sup>2</sup> + (<i>y</i> + 3)<sup>2</sup></span> 的最值（到定点 <span class="m"><i>A</i>(&minus;1, &minus;3)</span> 的距离平方）：</strong><br>
+        • <strong>方法一（几何意义：到定点距离的平方，强烈推荐！）</strong>：<br>
+        &nbsp;&nbsp;把式子改写为标准差平方和：<span class="m">[<i>x</i> &minus; (&minus;1)]<sup>2</sup> + [<i>y</i> &minus; (&minus;3)]<sup>2</sup> = |<i>PA</i>|<sup>2</sup></span>，表示圆上动点 <span class="m"><i>P</i>(<i>x</i>, <i>y</i>)</span> 到<strong>定点 <span class="m"><i>A</i>(&minus;1, &minus;3)</span> 距离的平方</strong>！<br>
+        &nbsp;&nbsp;计算圆心 <span class="m"><i>C</i>(2, 1)</span> 到定点 <span class="m"><i>A</i>(&minus;1, &minus;3)</span> 的圆心距 <span class="m"><i>d</i> = |<i>CA</i>|</span>：
+        <div class="formula-box">
+          <span class="m"><i>d</i> = |<i>CA</i>| = <span class="rad"><span>[2 &minus; (&minus;1)]<sup>2</sup> + [1 &minus; (&minus;3)]<sup>2</sup></span></span> = <span class="rad"><span>3<sup>2</sup> + 4<sup>2</sup></span></span> = 5</span>
+        </div>
+        &nbsp;&nbsp;因为半径 <span class="m"><i>R</i> = <span class="rad"><span>2</span></span></span>，所以距离 <span class="m">|<i>PA</i>|<sub>min</sub> = 5 &minus; <span class="rad"><span>2</span></span></span>，<span class="m">|<i>PA</i>|<sub>max</sub> = 5 + <span class="rad"><span>2</span></span></span>。<br>
+        &nbsp;&nbsp;最后<strong>平方</strong>得：<br>
+        &nbsp;&nbsp;• 最小值 = <span class="hl-green m">(5 &minus; <span class="rad"><span>2</span></span>)<sup>2</sup> = 27 &minus; 10<span class="rad"><span>2</span></span></span>；<br>
+        &nbsp;&nbsp;• 最大值 = <span class="hl-red m">(5 + <span class="rad"><span>2</span></span>)<sup>2</sup> = 27 + 10<span class="rad"><span>2</span></span></span>。<br><br>
+        • <strong>方法二（参数坐标法）</strong>：<br>
+        &nbsp;&nbsp;将 <span class="m"><i>x</i> = 2 + <span class="rad"><span>2</span></span>cos<i>&theta;</i>, <i>y</i> = 1 + <span class="rad"><span>2</span></span>sin<i>&theta;</i></span> 代入得：<br>
+        &nbsp;&nbsp;<span class="m">(3 + <span class="rad"><span>2</span></span>cos<i>&theta;</i>)<sup>2</sup> + (4 + <span class="rad"><span>2</span></span>sin<i>&theta;</i>)<sup>2</sup> = 9 + 16 + 2(cos<sup>2</sup><i>&theta;</i> + sin<sup>2</sup><i>&theta;</i>) + 2<span class="rad"><span>2</span></span>(3cos<i>&theta;</i> + 4sin<i>&theta;</i>) = 27 + 2<span class="rad"><span>2</span></span> &times; 5sin(<i>&theta;</i> + <i>&phi;</i>) = 27 + 10<span class="rad"><span>2</span></span>sin(<i>&theta;</i> + <i>&phi;</i>)</span>，同样得出最大值为 <span class="hl-red m">27 + 10<span class="rad"><span>2</span></span></span>，最小值为 <span class="hl-green m">27 &minus; 10<span class="rad"><span>2</span></span></span>！
       </div>
     </div>
   </div>
@@ -652,222 +733,233 @@
 </div>
 
 <script>
-  // 坐标系参数：O(70, 230), 1单位 = 70px, 圆心 C(2,1) -> (210, 160), R = 70px
-  var ox = 70, oy = 230, scale = 70;
-  var cx = 210, cy = 160, R = 70;
-
-  var currentMode = 1; // 1: 斜率 y/x, 2: 截距 x+y, 3: 距离平方 x²+y²
-  var currentDeg = 30;
-  var timer = null;
-  var isDragging = false;
-
-  // 各模式下的最小值角与最大值角（度）
-  // Mode 1 (y/x): min at P(2,0) -> θ = 270°; max at P(1.2, 1.6) -> cosθ=-0.8, sinθ=0.6 -> θ ≈ 143.13°
-  // Mode 2 (x+y): min at θ = 225°; max at θ = 45°
-  // Mode 3 (x²+y²): OC方向角 atan2(1,2) ≈ 26.565°; min at 206.565°, max at 26.565°
-  var modeExtrema = {
-    1: { minDeg: 270, maxDeg: 143.13 },
-    2: { minDeg: 225, maxDeg: 45 },
-    3: { minDeg: 206.57, maxDeg: 26.57 }
-  };
-
-  function switchMode(m) {
-    currentMode = m;
-    document.getElementById('tab-m1').classList.toggle('active', m === 1);
-    document.getElementById('tab-m2').classList.toggle('active', m === 2);
-    document.getElementById('tab-m3').classList.toggle('active', m === 3);
-
-    document.getElementById('layer-m1').style.display = (m === 1) ? 'block' : 'none';
-    document.getElementById('layer-m2').style.display = (m === 2) ? 'block' : 'none';
-    document.getElementById('layer-m3').style.display = (m === 3) ? 'block' : 'none';
-
-    var descEl = document.getElementById('mode-desc');
-    if (m === 1) {
-      descEl.innerHTML = '当前演示：<strong>(1) 斜率模型 k = y/x</strong>。红线为过原点 <span class="m"><i>O</i></span> 与动点 <span class="m"><i>P</i></span> 的直线 <span class="m"><i>y</i> = <i>kx</i></span>，两条虚线为直线与圆<strong>相切</strong>时的极端位置（<span class="m"><i>k</i><sub>min</sub> = 0</span>，<span class="m"><i>k</i><sub>max</sub> = 4/3</span>）。';
-    } else if (m === 2) {
-      descEl.innerHTML = '当前演示：<strong>(2) 截距模型 t = x+y</strong>。红线为过动点 <span class="m"><i>P</i></span> 且斜率为 <span class="m">&minus;1</span> 的直线 <span class="m"><i>y</i> = &minus;<i>x</i> + <i>t</i></span>，当平行线平移到与圆<strong>相切</strong>（虚线）时，纵截距 <span class="m"><i>t</i></span> 取最值 <span class="m">3 &plusmn; <span class="rad"><span>2</span></span></span>。';
+  // ================= 二、知识点手风琴折叠逻辑 =================
+  function toggleKp(id) {
+    var item = document.getElementById(id);
+    var arrow = item.querySelector('.acc-arrow');
+    if (item.classList.contains('open')) {
+      item.classList.remove('open');
+      arrow.innerText = '▼ 展开';
     } else {
-      descEl.innerHTML = '当前演示：<strong>(3) 距离平方模型 x²+y² = |OP|²</strong>。红线为动点 <span class="m"><i>P</i></span> 到原点 <span class="m"><i>O</i></span> 的连线，当 <span class="m"><i>P</i></span> 落在连心线 <span class="m"><i>OC</i></span>（虚线）与圆的交点时，距离平方取最值 <span class="m">6 &plusmn; 2<span class="rad"><span>5</span></span></span>。';
+      item.classList.add('open');
+      arrow.innerText = '▲ 收起';
     }
-    updateAngle(currentDeg);
   }
 
-  function updateAngle(deg) {
-    currentDeg = ((parseFloat(deg) % 360) + 360) % 360;
-    document.getElementById('angle-slider').value = Math.round(currentDeg);
-    var rad = currentDeg * Math.PI / 180;
-
-    // 数学坐标 x = 2 + cosθ, y = 1 + sinθ
-    var mathX = 2 + Math.cos(rad);
-    var mathY = 1 + Math.sin(rad);
-
-    // SVG 像素坐标
-    var px = ox + mathX * scale;
-    var py = oy - mathY * scale;
-
-    // 更新公共动点 P 与半径 CP
-    document.getElementById('line-cp').setAttribute('x2', px);
-    document.getElementById('line-cp').setAttribute('y2', py);
-    document.getElementById('pt-p').setAttribute('cx', px);
-    document.getElementById('pt-p').setAttribute('cy', py);
-    document.getElementById('pt-p-halo').setAttribute('cx', px);
-    document.getElementById('pt-p-halo').setAttribute('cy', py);
-    document.getElementById('pt-p-hit').setAttribute('cx', px);
-    document.getElementById('pt-p-hit').setAttribute('cy', py);
-    document.getElementById('txt-p').setAttribute('x', px + 10);
-    document.getElementById('txt-p').setAttribute('y', py + 4);
-
-    // 更新模式 1 图层（过原点与P的射线）
-    var k = mathY / mathX;
-    var endX1 = 3.6;
-    var endY1 = k * endX1;
-    if (endY1 > 3.1) { endY1 = 3.1; endX1 = endY1 / k; }
-    document.getElementById('m1-line-op').setAttribute('x2', ox + endX1 * scale);
-    document.getElementById('m1-line-op').setAttribute('y2', oy - endY1 * scale);
-
-    // 更新模式 2 图层（斜率 -1 的直线 x + y = t）
-    var t = mathX + mathY;
-    // 取 x1 = -0.3 -> y1 = t + 0.3; x2 = 4.0 -> y2 = t - 4.0
-    var lx1 = ox + (-0.3) * scale, ly1 = oy - (t + 0.3) * scale;
-    var lx2 = ox + (4.0) * scale, ly2 = oy - (t - 4.0) * scale;
-    document.getElementById('m2-line-t').setAttribute('x1', lx1);
-    document.getElementById('m2-line-t').setAttribute('y1', ly1);
-    document.getElementById('m2-line-t').setAttribute('x2', lx2);
-    document.getElementById('m2-line-t').setAttribute('y2', ly2);
-    var yIntPy = oy - t * scale;
-    document.getElementById('m2-pt-yint').setAttribute('cy', yIntPy);
-    document.getElementById('m2-txt-yint').setAttribute('y', Math.max(20, Math.min(280, yIntPy + 4)));
-    document.getElementById('m2-txt-yint').textContent = 't=' + t.toFixed(2);
-
-    // 更新模式 3 图层（线段 OP）
-    document.getElementById('m3-line-op').setAttribute('x2', px);
-    document.getElementById('m3-line-op').setAttribute('y2', py);
-
-    // 更新状态栏文字
-    document.getElementById('coord-label').innerText =
-      'θ=' + Math.round(currentDeg) + '° | P(' + mathX.toFixed(2) + ', ' + mathY.toFixed(2) + ')';
-
-    var valEl = document.getElementById('val-label');
-    var ext = modeExtrema[currentMode];
-    var isMin = Math.abs(angleDiff(currentDeg, ext.minDeg)) <= 2.5;
-    var isMax = Math.abs(angleDiff(currentDeg, ext.maxDeg)) <= 2.5;
-
-    if (currentMode === 1) {
-      if (isMin) {
-        valEl.innerHTML = '🌟 最小值 y/x = 0（相切）';
-        valEl.style.color = '#059669';
-      } else if (isMax) {
-        valEl.innerHTML = '🔥 最大值 y/x = 4/3 ≈ 1.333（相切）';
-        valEl.style.color = '#d97706';
+  function toggleAllKp(btn) {
+    var items = document.querySelectorAll('.acc-item');
+    var anyClosed = false;
+    items.forEach(function(it) { if (!it.classList.contains('open')) anyClosed = true; });
+    items.forEach(function(it) {
+      var arrow = it.querySelector('.acc-arrow');
+      if (anyClosed) {
+        it.classList.add('open');
+        arrow.innerText = '▲ 收起';
       } else {
-        valEl.innerText = '当前斜率 y/x = ' + k.toFixed(3);
-        valEl.style.color = '#dc2626';
+        it.classList.remove('open');
+        arrow.innerText = '▼ 展开';
       }
-    } else if (currentMode === 2) {
-      if (isMin) {
-        valEl.innerHTML = '🌟 最小值 x+y = <span class="m">3&minus;<span class="rad"><span>2</span></span></span> &approx; 1.586';
-        valEl.style.color = '#059669';
-      } else if (isMax) {
-        valEl.innerHTML = '🔥 最大值 x+y = <span class="m">3+<span class="rad"><span>2</span></span></span> &approx; 4.414';
-        valEl.style.color = '#d97706';
-      } else {
-        valEl.innerText = '当前截距 x+y = ' + t.toFixed(3);
-        valEl.style.color = '#dc2626';
-      }
-    } else {
-      var d2 = mathX * mathX + mathY * mathY;
-      if (isMin) {
-        valEl.innerHTML = '🌟 最小值 x²+y² = <span class="m">6&minus;2<span class="rad"><span>5</span></span></span> &approx; 1.528';
-        valEl.style.color = '#059669';
-      } else if (isMax) {
-        valEl.innerHTML = '🔥 最大值 x²+y² = <span class="m">6+2<span class="rad"><span>5</span></span></span> &approx; 10.472';
-        valEl.style.color = '#d97706';
-      } else {
-        valEl.innerText = '当前距离² x²+y² = ' + d2.toFixed(3);
-        valEl.style.color = '#dc2626';
-      }
-    }
+    });
+    btn.innerText = anyClosed ? '全部收起' : '全部展开';
   }
 
   function angleDiff(a, b) {
-    var d = ((a - b) % 360 + 540) % 360 - 180;
-    return d;
+    return ((a - b) % 360 + 540) % 360 - 180;
   }
 
-  function stopPlayIfRunning() {
-    if (timer) {
-      clearInterval(timer);
-      timer = null;
-      document.getElementById('play-btn').innerText = '▶ 自动旋转';
-    }
-  }
+  // ================= 三、图 1 互动逻辑（第1题：斜率 y/x） =================
+  // 原点 O(70, 220), 1单位=70px, C(210, 150), R=70px
+  var deg1 = 30, timer1 = null, drag1 = false;
+  function updateS1(deg) {
+    deg1 = ((parseFloat(deg) % 360) + 360) % 360;
+    document.getElementById('s1-slider').value = Math.round(deg1);
+    var rad = deg1 * Math.PI / 180;
+    var mx = 2 + Math.cos(rad), my = 1 + Math.sin(rad);
+    var px = 70 + mx * 70, py = 220 - my * 70;
 
-  function jumpToMin() {
-    stopPlayIfRunning();
-    updateAngle(modeExtrema[currentMode].minDeg);
-  }
+    document.getElementById('s1-line-cp').setAttribute('x2', px);
+    document.getElementById('s1-line-cp').setAttribute('y2', py);
+    document.getElementById('s1-pt').setAttribute('cx', px);
+    document.getElementById('s1-pt').setAttribute('cy', py);
+    document.getElementById('s1-halo').setAttribute('cx', px);
+    document.getElementById('s1-halo').setAttribute('cy', py);
+    document.getElementById('s1-hit').setAttribute('cx', px);
+    document.getElementById('s1-hit').setAttribute('cy', py);
+    document.getElementById('s1-txt').setAttribute('x', px + 10);
+    document.getElementById('s1-txt').setAttribute('y', py + 4);
 
-  function jumpToMax() {
-    stopPlayIfRunning();
-    updateAngle(modeExtrema[currentMode].maxDeg);
-  }
+    var k = my / mx;
+    var ex = 3.6, ey = k * ex;
+    if (ey > 2.9) { ey = 2.9; ex = ey / k; }
+    document.getElementById('s1-line-op').setAttribute('x2', 70 + ex * 70);
+    document.getElementById('s1-line-op').setAttribute('y2', 220 - ey * 70);
 
-  function togglePlay() {
-    var btn = document.getElementById('play-btn');
-    if (timer) {
-      clearInterval(timer);
-      timer = null;
-      btn.innerText = '▶ 自动旋转';
+    document.getElementById('s1-coord').innerText = 'θ=' + Math.round(deg1) + '° | P(' + mx.toFixed(2) + ', ' + my.toFixed(2) + ')';
+    var valEl = document.getElementById('s1-val');
+    if (Math.abs(angleDiff(deg1, 270)) <= 2.5) {
+      valEl.innerHTML = '🌟 下相切最小值 y/x = 0';
+      valEl.style.color = '#059669';
+    } else if (Math.abs(angleDiff(deg1, 143.13)) <= 2.5) {
+      valEl.innerHTML = '🔥 上相切最大值 y/x = 4/3 ≈ 1.333';
+      valEl.style.color = '#d97706';
     } else {
-      btn.innerText = '⏸ 暂停旋转';
-      timer = setInterval(function() {
-        var next = (currentDeg + 1.4) % 360;
-        updateAngle(next);
-      }, 30);
+      valEl.innerText = '当前斜率 k = y/x = ' + k.toFixed(3);
+      valEl.style.color = '#dc2626';
+    }
+  }
+  function stopPlay1() {
+    if (timer1) { clearInterval(timer1); timer1 = null; document.getElementById('s1-play').innerText = '▶ 自动旋转'; }
+  }
+  function togglePlay1() {
+    if (timer1) { stopPlay1(); } else {
+      document.getElementById('s1-play').innerText = '⏸ 暂停旋转';
+      timer1 = setInterval(function() { updateS1((deg1 + 1.4) % 360); }, 30);
     }
   }
 
-  // 手指/鼠标在画布上直接拖拽点 P（相对于圆心 C(210, 160) 解算角度 θ）
-  var svgEl = document.getElementById('main-svg');
+  // ================= 四、图 2 互动逻辑（第2题：截距 x+y） =================
+  // 原点 O(70, 240), 1单位=50px, C(170, 190), R=50px
+  var deg2 = 0, timer2 = null, drag2 = false;
+  function updateS2(deg) {
+    deg2 = ((parseFloat(deg) % 360) + 360) % 360;
+    document.getElementById('s2-slider').value = Math.round(deg2);
+    var rad = deg2 * Math.PI / 180;
+    var mx = 2 + Math.cos(rad), my = 1 + Math.sin(rad);
+    var px = 70 + mx * 50, py = 240 - my * 50;
 
-  function pointerToAngle(clientX, clientY) {
-    var rect = svgEl.getBoundingClientRect();
-    var scaleX = 380 / rect.width;
-    var scaleY = 300 / rect.height;
-    var svgX = (clientX - rect.left) * scaleX;
-    var svgY = (clientY - rect.top) * scaleY;
+    document.getElementById('s2-line-cp').setAttribute('x2', px);
+    document.getElementById('s2-line-cp').setAttribute('y2', py);
+    document.getElementById('s2-pt').setAttribute('cx', px);
+    document.getElementById('s2-pt').setAttribute('cy', py);
+    document.getElementById('s2-halo').setAttribute('cx', px);
+    document.getElementById('s2-halo').setAttribute('cy', py);
+    document.getElementById('s2-hit').setAttribute('cx', px);
+    document.getElementById('s2-hit').setAttribute('cy', py);
+    document.getElementById('s2-txt').setAttribute('x', px + 10);
+    document.getElementById('s2-txt').setAttribute('y', py + 4);
 
-    var dx = svgX - cx;
-    var dy = cy - svgY;
-    var rad = Math.atan2(dy, dx);
-    var deg = rad * 180 / Math.PI;
-    if (deg < 0) deg += 360;
+    var t = mx + my;
+    var lx1 = 70 + (-0.4) * 50, ly1 = 240 - (t + 0.4) * 50;
+    var lx2 = 70 + (4.8) * 50, ly2 = 240 - (t - 4.8) * 50;
+    document.getElementById('s2-line-t').setAttribute('x1', lx1);
+    document.getElementById('s2-line-t').setAttribute('y1', ly1);
+    document.getElementById('s2-line-t').setAttribute('x2', lx2);
+    document.getElementById('s2-line-t').setAttribute('y2', ly2);
 
-    // 靠近当前模式的极值角时提供磁吸手感
-    var ext = modeExtrema[currentMode];
-    if (Math.abs(angleDiff(deg, ext.minDeg)) < 4) deg = ext.minDeg;
-    if (Math.abs(angleDiff(deg, ext.maxDeg)) < 4) deg = ext.maxDeg;
+    var yIntPy = 240 - t * 50;
+    document.getElementById('s2-yint').setAttribute('cy', yIntPy);
+    document.getElementById('s2-yint-txt').setAttribute('y', yIntPy + 4);
+    document.getElementById('s2-yint-txt').textContent = '截距 t=' + t.toFixed(2);
 
-    updateAngle(deg);
+    document.getElementById('s2-coord').innerText = 'θ=' + Math.round(deg2) + '° | P(' + mx.toFixed(2) + ', ' + my.toFixed(2) + ')';
+    var valEl = document.getElementById('s2-val');
+    if (Math.abs(angleDiff(deg2, 225)) <= 2.5) {
+      valEl.innerHTML = '🌟 最小值 x+y = <span class="m">3&minus;<span class="rad"><span>2</span></span></span> &approx; 1.586';
+      valEl.style.color = '#059669';
+    } else if (Math.abs(angleDiff(deg2, 45)) <= 2.5) {
+      valEl.innerHTML = '🔥 最大值 x+y = <span class="m">3+<span class="rad"><span>2</span></span></span> &approx; 4.414';
+      valEl.style.color = '#d97706';
+    } else {
+      valEl.innerText = '当前 x + y = ' + t.toFixed(3);
+      valEl.style.color = '#dc2626';
+    }
+  }
+  function stopPlay2() {
+    if (timer2) { clearInterval(timer2); timer2 = null; document.getElementById('s2-play').innerText = '▶ 自动旋转'; }
+  }
+  function togglePlay2() {
+    if (timer2) { stopPlay2(); } else {
+      document.getElementById('s2-play').innerText = '⏸ 暂停旋转';
+      timer2 = setInterval(function() { updateS2((deg2 + 1.4) % 360); }, 30);
+    }
   }
 
-  svgEl.addEventListener('pointerdown', function(e) {
-    stopPlayIfRunning();
-    isDragging = true;
-    if (svgEl.setPointerCapture) {
-      try { svgEl.setPointerCapture(e.pointerId); } catch(err) {}
+  // ================= 五、图 3 互动逻辑（第3题：距离平方 x²+y²） =================
+  // 原点 O(70, 220), 1单位=70px, C(210, 150), R=70px
+  var deg3 = 90, timer3 = null, drag3 = false;
+  function updateS3(deg) {
+    deg3 = ((parseFloat(deg) % 360) + 360) % 360;
+    document.getElementById('s3-slider').value = Math.round(deg3);
+    var rad = deg3 * Math.PI / 180;
+    var mx = 2 + Math.cos(rad), my = 1 + Math.sin(rad);
+    var px = 70 + mx * 70, py = 220 - my * 70;
+
+    document.getElementById('s3-line-cp').setAttribute('x2', px);
+    document.getElementById('s3-line-cp').setAttribute('y2', py);
+    document.getElementById('s3-line-op').setAttribute('x2', px);
+    document.getElementById('s3-line-op').setAttribute('y2', py);
+    document.getElementById('s3-pt').setAttribute('cx', px);
+    document.getElementById('s3-pt').setAttribute('cy', py);
+    document.getElementById('s3-halo').setAttribute('cx', px);
+    document.getElementById('s3-halo').setAttribute('cy', py);
+    document.getElementById('s3-hit').setAttribute('cx', px);
+    document.getElementById('s3-hit').setAttribute('cy', py);
+    document.getElementById('s3-txt').setAttribute('x', px + 10);
+    document.getElementById('s3-txt').setAttribute('y', py + 4);
+
+    var d2 = mx * mx + my * my;
+    var d = Math.sqrt(d2);
+    document.getElementById('s3-coord').innerText = 'θ=' + Math.round(deg3) + '° | |OP| = ' + d.toFixed(3);
+    var valEl = document.getElementById('s3-val');
+    if (Math.abs(angleDiff(deg3, 206.57)) <= 2.5) {
+      valEl.innerHTML = '🌟 最小值 x²+y² = <span class="m">6&minus;2<span class="rad"><span>5</span></span></span> &approx; 1.528';
+      valEl.style.color = '#059669';
+    } else if (Math.abs(angleDiff(deg3, 26.57)) <= 2.5) {
+      valEl.innerHTML = '🔥 最大值 x²+y² = <span class="m">6+2<span class="rad"><span>5</span></span></span> &approx; 10.472';
+      valEl.style.color = '#d97706';
+    } else {
+      valEl.innerText = '当前 x² + y² = |OP|² = ' + d2.toFixed(3);
+      valEl.style.color = '#dc2626';
     }
-    pointerToAngle(e.clientX, e.clientY);
-  });
+  }
+  function stopPlay3() {
+    if (timer3) { clearInterval(timer3); timer3 = null; document.getElementById('s3-play').innerText = '▶ 自动旋转'; }
+  }
+  function togglePlay3() {
+    if (timer3) { stopPlay3(); } else {
+      document.getElementById('s3-play').innerText = '⏸ 暂停旋转';
+      timer3 = setInterval(function() { updateS3((deg3 + 1.4) % 360); }, 30);
+    }
+  }
 
-  svgEl.addEventListener('pointermove', function(e) {
-    if (!isDragging) return;
-    e.preventDefault();
-    pointerToAngle(e.clientX, e.clientY);
-  });
+  // ================= 通用拖拽绑定函数（为3个独立SVG分别绑定丝滑拖拽） =================
+  function bindSvgDrag(svgId, viewW, viewH, centerPx, centerPy, minSnap, maxSnap, stopFn, updateFn) {
+    var svgEl = document.getElementById(svgId);
+    var isDragging = false;
 
-  svgEl.addEventListener('pointerup', function() { isDragging = false; });
-  svgEl.addEventListener('pointercancel', function() { isDragging = false; });
+    function pointerToDeg(clientX, clientY) {
+      var rect = svgEl.getBoundingClientRect();
+      var svgX = (clientX - rect.left) * (viewW / rect.width);
+      var svgY = (clientY - rect.top) * (viewH / rect.height);
+      var dx = svgX - centerPx;
+      var dy = centerPy - svgY;
+      var deg = Math.atan2(dy, dx) * 180 / Math.PI;
+      if (deg < 0) deg += 360;
+      if (Math.abs(angleDiff(deg, minSnap)) < 4) deg = minSnap;
+      if (Math.abs(angleDiff(deg, maxSnap)) < 4) deg = maxSnap;
+      updateFn(deg);
+    }
+
+    svgEl.addEventListener('pointerdown', function(e) {
+      stopFn();
+      isDragging = true;
+      if (svgEl.setPointerCapture) {
+        try { svgEl.setPointerCapture(e.pointerId); } catch(err) {}
+      }
+      pointerToDeg(e.clientX, e.clientY);
+    });
+    svgEl.addEventListener('pointermove', function(e) {
+      if (!isDragging) return;
+      e.preventDefault();
+      pointerToDeg(e.clientX, e.clientY);
+    });
+    svgEl.addEventListener('pointerup', function() { isDragging = false; });
+    svgEl.addEventListener('pointercancel', function() { isDragging = false; });
+  }
+
+  bindSvgDrag('svg-1', 380, 280, 210, 150, 270, 143.13, stopPlay1, updateS1);
+  bindSvgDrag('svg-2', 380, 290, 170, 190, 225, 45, stopPlay2, updateS2);
+  bindSvgDrag('svg-3', 380, 280, 210, 150, 206.57, 26.57, stopPlay3, updateS3);
 
   function toggleBox(id, btn) {
     var box = document.getElementById(id);
@@ -880,9 +972,17 @@
     }
   }
 
-  // 初始化
-  switchMode(1);
+  // 初始化三张独立互动图
+  updateS1(30);
+  updateS2(0);
+  updateS3(90);
 </script>
 
 </body>
 </html>
+"""
+
+with open("circle_extrema_mobile_guide-v2.html", "w", encoding="utf-8") as f:
+    f.write(html_content)
+
+print("File circle_extrema_mobile_guide-v2.html generated successfully.")
