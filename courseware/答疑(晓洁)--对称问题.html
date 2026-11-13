@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>圆关于直线对称的方程问题 · 互动课件</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true},{left: '$', right: '$', display: false}]});"></script>
+<style>
+  :root {
+    --primary: #1665d8;
+    --primary-light: #eef5ff;
+    --accent: #0f9d58;
+    --accent-light: #e8f7f0;
+    --warn: #d97706;
+    --warn-light: #fffbeb;
+    --purple: #7c3aed;
+    --purple-light: #f3e8ff;
+    --danger: #e11d48;
+    --ink: #1e293b;
+    --muted: #64748b;
+    --border: #e2e8f0;
+    --bg: #f1f5f9;
+    --card: #ffffff;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 15.5px/1.75 -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+  }
+  header {
+    background: linear-gradient(135deg, #0f294a 0%, #1665d8 100%);
+    color: #fff;
+    padding: 28px 18px 24px;
+    border-radius: 0 0 24px 24px;
+    box-shadow: 0 6px 20px rgba(15, 41, 74, 0.15);
+  }
+  .container { max-width: 760px; margin: 0 auto; }
+  .header-tag {
+    display: inline-block;
+    font-size: 12px;
+    background: rgba(255,255,255,0.16);
+    padding: 3px 10px;
+    border-radius: 20px;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+  h1 {
+    font-size: clamp(22px, 5.5vw, 30px);
+    line-height: 1.35;
+    margin: 4px 0 8px;
+    font-weight: 800;
+  }
+  header p {
+    margin: 0;
+    font-size: 13.5px;
+    color: #dbeafe;
+    line-height: 1.5;
+  }
+  main { padding: 12px 12px 60px; max-width: 760px; margin: 0 auto; }
+  .nav-bar {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding: 6px 2px 10px;
+    position: sticky;
+    top: 0;
+    background: rgba(241, 245, 249, 0.92);
+    backdrop-filter: blur(8px);
+    z-index: 50;
+  }
+  .nav-bar::-webkit-scrollbar { display: none; }
+  .nav-bar a {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 6px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--primary);
+    text-decoration: none;
+    white-space: nowrap;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+  }
+  .card {
+    background: var(--card);
+    border-radius: 18px;
+    padding: 20px 16px;
+    margin: 14px 0;
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+  }
+  .sec-idx {
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--primary);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  h2 {
+    font-size: 19px;
+    margin: 4px 0 14px;
+    color: #0f172a;
+    line-height: 1.4;
+  }
+  h3 {
+    font-size: 16px;
+    margin: 16px 0 8px;
+    color: #1e3a8a;
+  }
+  .problem-box {
+    background: linear-gradient(135deg, #f0f7ff 0%, #f8fafc 100%);
+    border: 1.5px solid #bfdbfe;
+    border-radius: 14px;
+    padding: 15px 16px;
+    font-size: 16px;
+    line-height: 1.9;
+    color: #0f172a;
+  }
+  .core-banner {
+    background: var(--accent-light);
+    border-left: 4px solid var(--accent);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin: 14px 0 6px;
+    font-size: 14.5px;
+    color: #065f46;
+  }
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  @media (max-width: 600px) {
+    .grid-2 { grid-template-columns: 1fr; }
+  }
+  .method-card {
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px;
+  }
+  .method-card .m-tag {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 2px 9px;
+    border-radius: 6px;
+    margin-bottom: 6px;
+  }
+  .tag-blue { background: #dbeafe; color: #1d4ed8; }
+  .tag-green { background: #d1fae5; color: #047857; }
+  .tag-purple { background: #ede9fe; color: #6d28d9; }
+  .tag-amber { background: #fef3c7; color: #b45309; }
+  .eq-block {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 12px;
+    margin: 10px 0;
+    overflow-x: auto;
+    text-align: center;
+  }
+  /* Canvas Interactive Area */
+  .canvas-wrap {
+    border: 1.5px solid #cbd5e1;
+    border-radius: 14px;
+    background: #ffffff;
+    overflow: hidden;
+    position: relative;
+  }
+  canvas {
+    display: block;
+    width: 100%;
+    height: 360px;
+    touch-action: none;
+    cursor: grab;
+  }
+  canvas:active { cursor: grabbing; }
+  .canvas-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(15, 23, 42, 0.82);
+    color: #fff;
+    font-size: 12px;
+    padding: 5px 10px;
+    border-radius: 8px;
+    pointer-events: none;
+    backdrop-filter: blur(4px);
+  }
+  .legend-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    padding: 8px 10px;
+    background: #f8fafc;
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 4px;
+    vertical-align: middle;
+  }
+  .ctrl-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin: 10px 0;
+  }
+  .step-btn {
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 7px 12px;
+    border-radius: 999px;
+    border: 1px solid #cbd5e1;
+    background: #f8fafc;
+    color: #334155;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .step-btn.on {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+    box-shadow: 0 2px 8px rgba(22, 101, 216, 0.25);
+  }
+  .preset-btn {
+    font: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 7px 12px;
+    border-radius: 10px;
+    border: 1px solid #bfdbfe;
+    background: #eff6ff;
+    color: #1d4ed8;
+    cursor: pointer;
+  }
+  .preset-btn.active {
+    background: #1d4ed8;
+    color: #fff;
+  }
+  .slider-row {
+    display: grid;
+    grid-template-columns: 110px 1fr 56px;
+    align-items: center;
+    gap: 8px;
+    margin: 8px 0;
+    font-size: 13.5px;
+  }
+  input[type="range"] {
+    width: 100%;
+    accent-color: var(--primary);
+  }
+  .readout-box {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 12px;
+    padding: 10px 13px;
+    font-size: 13.5px;
+    color: #14532d;
+    line-height: 1.65;
+    margin-top: 10px;
+  }
+  /* Tabs */
+  .tabs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .tab-btn {
+    flex: 1;
+    min-width: 140px;
+    padding: 10px 12px;
+    border-radius: 11px;
+    border: 1px solid #cbd5e1;
+    background: #f8fafc;
+    color: #334155;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    text-align: center;
+  }
+  .tab-btn.active {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+  }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+  /* Collapsible details */
+  details {
+    border: 1px solid #cbd5e1;
+    border-radius: 12px;
+    background: #ffffff;
+    margin: 12px 0;
+    overflow: hidden;
+  }
+  details.elim-box {
+    border: 1.5px dashed #f59e0b;
+    background: #fffbeb;
+  }
+  summary {
+    padding: 11px 14px;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--primary);
+    cursor: pointer;
+    user-select: none;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  details.elim-box summary { color: #b45309; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after {
+    content: "展开 ▼";
+    font-size: 12px;
+    font-weight: 600;
+    opacity: 0.75;
+  }
+  details[open] summary::after { content: "收起 ▲"; }
+  .details-body {
+    padding: 12px 14px 14px;
+    border-top: 1px solid rgba(0,0,0,0.06);
+    font-size: 14.5px;
+  }
+  .ans-banner {
+    background: #ecfdf5;
+    border: 1.5px solid #6ee7b7;
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-top: 12px;
+    color: #064e3b;
+  }
+  .variant-item {
+    border-top: 1px dashed #cbd5e1;
+    padding-top: 16px;
+    margin-top: 16px;
+  }
+  .variant-item:first-of-type {
+    border-top: 0;
+    padding-top: 4px;
+    margin-top: 4px;
+  }
+  .v-badge {
+    display: inline-block;
+    background: var(--primary-light);
+    color: var(--primary);
+    border: 1px solid #bfdbfe;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 999px;
+    margin-bottom: 6px;
+  }
+  .fig-box {
+    width: 100%;
+    max-width: 420px;
+    margin: 8px auto;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: #fcfdff;
+    padding: 8px;
+  }
+  .fig-box svg { display: block; width: 100%; height: auto; }
+  footer {
+    text-align: center;
+    font-size: 12px;
+    color: var(--muted);
+    padding: 20px 10px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <div class="header-tag">高中数学 · 直线与圆的方程 · 手机互动版</div>
+    <h1>圆关于直线对称的方程问题</h1>
+    <p>抓住“圆心对称 + 半径不变”本质，掌握常规方程组、斜率 $\pm 1$ 秒杀法与对称点通式</p>
+  </div>
+</header>
+
+<main>
+  <nav class="nav-bar">
+    <a href="#sec-example">01 核心例题</a>
+    <a href="#sec-methods">02 四大方法体系</a>
+    <a href="#sec-canvas">03 动态交互探究</a>
+    <a href="#sec-solution">04 例题规范解答</a>
+    <a href="#sec-practice">05 变式训练</a>
+  </nav>
+
+  <!-- 01 核心例题与本质降维 -->
+  <section class="card" id="sec-example">
+    <div class="sec-idx">01 · 核心例题与本质转化</div>
+    <h2>圆关于直线对称，到底在求什么？</h2>
+    <div class="problem-box">
+      <strong>【例 15】</strong> 求与圆 $C: (x+2)^2 + (y-6)^2 = 1$ 关于直线 $l: 3x - 4y + 5 = 0$ 对称的圆 $C'$ 的方程。
+    </div>
+    <div class="core-banner">
+      <strong>🎯 核心降维本质：</strong><br>
+      圆在轴对称变换下<strong>形状、大小完全不变</strong>！因此：<br>
+      ① <strong>半径相等：</strong> 对称圆半径 $r' = r = 1$；<br>
+      ② <strong>圆心对称：</strong> 只需作出原圆心 $C(-2, 6)$ 关于直线 $l$ 的<strong>对称点 $C'(a, b)$</strong>，即可直接写出对称圆方程 $(x-a)^2 + (y-b)^2 = 1$。
+    </div>
+  </section>
+
+  <!-- 02 四大方法体系 -->
+  <section class="card" id="sec-methods">
+    <div class="sec-idx">02 · 求对称点 $C'(a,b)$ 的四大武器</div>
+    <h2>常规通法 + 特殊斜率秒杀 + 一般对称公式</h2>
+
+    <div class="grid-2">
+      <!-- 1. 常规通法 -->
+      <div class="method-card">
+        <span class="m-tag tag-blue">方法一 · 常规通法（一平二垂）</span>
+        <div style="font-size:14px;">
+          设点 $C(x_0, y_0)$ 关于直线 $Ax+By+C=0$ 的对称点为 $C'(a, b)$，利用<strong>对称轴是线段 $CC'$ 的垂直平分线</strong>列出两个一次方程：
+        </div>
+        <div class="eq-block">
+          $$\begin{cases} A\cdot\dfrac{x_0+a}{2} + B\cdot\dfrac{y_0+b}{2} + C = 0 & \text{(中点在轴上)} \\[8pt] \dfrac{b - y_0}{a - x_0} \cdot \left(-\dfrac{A}{B}\right) = -1 & \text{(连线垂直轴)} \end{cases}$$
+        </div>
+        <div style="font-size:12.5px;color:var(--muted);">
+          💡 <strong>技巧：</strong> 垂直条件也可直接写为方向向量平行：$B(a - x_0) - A(b - y_0) = 0$，避免分母与斜率不存在的讨论。
+        </div>
+      </div>
+
+      <!-- 2. 距离相等替代法 -->
+      <div class="method-card">
+        <span class="m-tag tag-amber">补充视角 · 距离相等能列方程吗？</span>
+        <div style="font-size:14px;">
+          除了“中点 + 垂直”，也可以用<strong>点到直线的距离相等</strong>（$d_{C\to l} = d_{C'\to l}$）或 $|MC| = |MC'|$ 作为其中一个方程：
+        </div>
+        <div class="eq-block">
+          $$\frac{|Aa + Bb + C|}{\sqrt{A^2+B^2}} = \frac{|Ax_0 + By_0 + C|}{\sqrt{A^2+B^2}}$$
+        </div>
+        <div style="font-size:12.5px;color:var(--muted);">
+          ⚠️ <strong>注意：</strong> 去绝对值会产生“$=$ 原值”（重合或平行移动，舍去）和“$= -$原值”（异侧对称）两解，结合“垂直”方程组解一次方程即可；但若用两点间距离平方相等则会引入二次方程，计算量偏大。
+        </div>
+      </div>
+
+      <!-- 3. 斜率 k = ±1 秒杀法 -->
+      <div class="method-card">
+        <span class="m-tag tag-green">方法二 · 斜率 $k = \pm 1$ 特殊秒杀法</span>
+        <div style="font-size:14px;">
+          当对称轴斜率 $k = 1$ 或 $k = -1$（即 $x, y$ 系数绝对值相等，形如 $x \pm y + m = 0$）时，<strong>无需列方程组</strong>，直接<strong>反解换元</strong>！
+        </div>
+        <div class="eq-block">
+          $$\text{由 } x - y + m = 0 \implies \begin{cases} a = y_0 - m \\ b = x_0 + m \end{cases}$$
+        </div>
+        <div style="font-size:12.5px;color:var(--muted);">
+          🔥 <strong>口诀：</strong> 把点 $(x_0, y_0)$ 代入由直线方程反解出的 $x = \dots$ 得新横坐标 $a$，代入 $y = \dots$ 得新纵坐标 $b$！（仅限 $k = \pm 1$ 或水平/铅垂线）
+        </div>
+      </div>
+
+      <!-- 4. 一般对称点秒杀公式 -->
+      <div class="method-card">
+        <span class="m-tag tag-purple">方法三 · 一般直线对称点秒杀公式</span>
+        <div style="font-size:14px;">
+          任意点 $P(x_0, y_0)$ 关于一般直线 $Ax+By+C=0$ 的对称点 $P'(a, b)$ 统一公式（选择填空提速利器）：
+        </div>
+        <div class="eq-block">
+          $$\begin{cases} a = x_0 - 2A \cdot \dfrac{Ax_0 + By_0 + C}{A^2 + B^2} \\[8pt] b = y_0 - 2B \cdot \dfrac{Ax_0 + By_0 + C}{A^2 + B^2} \end{cases}$$
+        </div>
+        <div style="font-size:12.5px;color:var(--muted);">
+          💡 <strong>怎么记？</strong> 先算核心比例因子 $\lambda = \dfrac{Ax_0+By_0+C}{A^2+B^2}$，则对称点就是 $(x_0 - 2A\lambda,\; y_0 - 2B\lambda)$，垂足中点就是 $(x_0 - A\lambda,\; y_0 - B\lambda)$。
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 动态交互画板 -->
+  <section class="card" id="sec-canvas">
+    <div class="sec-idx">03 · 动态交互探究画板</div>
+    <h2>亲手拖动圆心与对称轴，观察对称不变量</h2>
+    <p style="margin:0 0 10px;font-size:13.5px;color:var(--muted);">
+      👆 <strong>操作指南：</strong> 在画布上直接用手指/鼠标<strong>拖动蓝色圆心 $C$</strong> 或<strong>橙色直线上的两个空心控制点 $P_1, P_2$</strong>；点击下方分步按钮逐步生成对称图形。
+    </p>
+
+    <div class="canvas-wrap">
+      <canvas id="symCanvas"></canvas>
+      <div class="canvas-badge" id="modeBadge">当前：原题直线 3x-4y+5=0</div>
+      <div class="legend-bar">
+        <span><i class="dot" style="background:#1665d8"></i>原圆 $C$</span>
+        <span><i class="dot" style="background:#f59e0b"></i>对称轴 $l$（可拖拽两端点）</span>
+        <span><i class="dot" style="background:#7c3aed"></i>中点垂足 $M$</span>
+        <span><i class="dot" style="background:#e11d48"></i>对称圆 $C'$</span>
+      </div>
+    </div>
+
+    <!-- 分步显示按钮（初始留白，引导思考） -->
+    <div class="ctrl-group">
+      <button class="step-btn" data-step="perp">① 作垂直连线与中点 M</button>
+      <button class="step-btn" data-step="symCenter">② 标出对称圆心 C'</button>
+      <button class="step-btn" data-step="symCircle">③ 画出对称圆 C'</button>
+      <button class="step-btn" data-step="distCheck">④ 显示距离相等 d = d'</button>
+      <button class="step-btn" id="btnShowAll" style="background:#eef5ff;color:#1665d8;border-color:#bfdbfe;">全部展开</button>
+      <button class="step-btn" id="btnHideAll">恢复留白</button>
+    </div>
+
+    <!-- 快捷场景切换 -->
+    <div class="ctrl-group">
+      <button class="preset-btn active" id="preOrig">📌 场景1：例题 3x-4y+5=0</button>
+      <button class="preset-btn" id="preK1">⚡ 场景2：特殊斜率 k=1 (x-y+2=0)</button>
+      <button class="preset-btn" id="preKm1">⚡ 场景3：特殊斜率 k=-1 (x+y-4=0)</button>
+    </div>
+
+    <!-- 半径调节滑块 -->
+    <div class="slider-row">
+      <span>圆半径 $r = r'$：</span>
+      <input type="range" id="radiusSlider" min="0.6" max="3.0" step="0.1" value="1.0">
+      <strong id="radiusVal" style="color:var(--primary);text-align:right;">1.0</strong>
+    </div>
+
+    <div class="readout-box" id="canvasReadout"></div>
+  </section>
+
+  <!-- 04 例题规范解答（双方法对比 + 折叠消元） -->
+  <section class="card" id="sec-solution">
+    <div class="sec-idx">04 · 例题规范解答与方法对比</div>
+    <h2>一题两解：考场大题规范写法 vs 选填秒杀公式</h2>
+
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchSolTab('sol1', this)">方法一：常规方程组法（大题标准）</button>
+      <button class="tab-btn" onclick="switchSolTab('sol2', this)">方法二：对称点公式法（选填秒杀）</button>
+    </div>
+
+    <!-- 方法一面板 -->
+    <div class="tab-panel active" id="sol1">
+      <h3>第一步：提炼原圆信息，设对称圆心</h3>
+      <p style="margin:4px 0;">
+        由圆 $C: (x+2)^2 + (y-6)^2 = 1$ 知，原圆心为 $C(-2, 6)$，半径 $r = 1$。<br>
+        设圆心 $C(-2, 6)$ 关于直线 $l: 3x - 4y + 5 = 0$（斜率 $k_l = \dfrac{3}{4}$）的对称点为 $C'(a, b)$。
+      </p>
+
+      <h3>第二步：由“一平二垂”列出方程组</h3>
+      <p style="margin:4px 0;">
+        线段 $CC'$ 的中点为 $M\left(\dfrac{a-2}{2}, \dfrac{b+6}{2}\right)$，由中点在直线 $l$ 上且 $CC' \perp l$，得：
+      </p>
+      <div class="eq-block">
+        $$\begin{cases} 3\cdot\dfrac{a-2}{2} - 4\cdot\dfrac{b+6}{2} + 5 = 0 & \text{①（中点在对称轴上）} \\[10pt] \dfrac{b-6}{a+2} \cdot \dfrac{3}{4} = -1 & \text{②（连线与对称轴垂直）} \end{cases}$$
+      </div>
+
+      <!-- 折叠消元详情（供基础薄弱学生点开） -->
+      <details class="elim-box">
+        <summary>💡 基础薄弱同学点此查看：详细化简与联立消元步骤</summary>
+        <div class="details-body">
+          <p style="margin:0 0 6px;"><strong>Step 1：先将 ①、② 两式去分母化为整式方程</strong></p>
+          <div class="eq-block">
+            由 ① 两边同乘 $2$：$3(a-2) - 4(b+6) + 10 = 0 \implies 3a - 4b - 20 = 0 \quad \text{③}$
+          </div>
+          <div class="eq-block">
+            由 ② 交叉相乘：$3(b-6) = -4(a+2) \implies 4a + 3b - 10 = 0 \quad \text{④}$
+          </div>
+          <p style="margin:8px 0 6px;"><strong>Step 2：加减消元法消去 $b$</strong></p>
+          <div class="eq-block">
+            $\text{③}\times 3 + \text{④}\times 4$ 得：$(9a - 12b - 60) + (16a + 12b - 40) = 0$
+          </div>
+          <div class="eq-block">
+            $$25a - 100 = 0 \implies a = 4$$
+          </div>
+          <p style="margin:8px 0 6px;"><strong>Step 3：回代求 $b$</strong></p>
+          <div class="eq-block">
+            将 $a = 4$ 代入 ④：$4\times 4 + 3b - 10 = 0 \implies 3b = -6 \implies b = -2$
+          </div>
+        </div>
+      </details>
+
+      <h3>第三步：得出对称圆心，写出圆的方程</h3>
+      <p style="margin:4px 0;">
+        联立 ①② 解得 $\begin{cases} a = 4 \\ b = -2 \end{cases}$，故对称圆心为 $C'(4, -2)$，又半径 $r' = r = 1$。
+      </p>
+      <div class="ans-banner">
+        <strong>✅ 最终答案：</strong> 所求对称圆的方程为 $(x - 4)^2 + (y + 2)^2 = 1$。
+      </div>
+    </div>
+
+    <!-- 方法二面板 -->
+    <div class="tab-panel" id="sol2">
+      <h3>第一步：计算对称点公式的核心比例因子 $\lambda$</h3>
+      <p style="margin:4px 0;">
+        对于原圆心 $C(x_0, y_0) = (-2, 6)$ 与直线 $3x - 4y + 5 = 0$（其中 $A=3, B=-4, C=5$）：
+      </p>
+      <div class="eq-block">
+        $$\lambda = \frac{Ax_0 + By_0 + C}{A^2 + B^2} = \frac{3\times(-2) + (-4)\times 6 + 5}{3^2 + (-4)^2} = \frac{-6 - 24 + 5}{25} = \frac{-25}{25} = -1$$
+      </div>
+
+      <h3>第二步：直接代入对称点公式</h3>
+      <div class="eq-block">
+        $$\begin{cases} a = x_0 - 2A\lambda = -2 - 2\times 3\times(-1) = -2 + 6 = 4 \\[8pt] b = y_0 - 2B\lambda = 6 - 2\times(-4)\times(-1) = 6 - 8 = -2 \end{cases}$$
+      </div>
+      <div class="ans-banner">
+        <strong>✅ 秒杀结论：</strong> 对称圆心为 $C'(4, -2)$，半径不变仍为 $1$，故方程为 $(x - 4)^2 + (y + 2)^2 = 1$。
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 变式训练（配图全部默认折叠，统一清爽卡片样式） -->
+  <section class="card" id="sec-practice">
+    <div class="sec-idx">05 · 梯度变式训练</div>
+    <h2>先独立思考动笔，再展开几何图与解析核对</h2>
+
+    <!-- 变式 1：斜率 k = 1 特殊直线秒杀 -->
+    <div class="variant-item">
+      <span class="v-badge">变式 1 · 斜率 $k = 1$ 的特殊对称轴（反解换元秒杀）</span>
+      <p style="margin:6px 0 10px;">
+        已知圆 $C_1: (x + 1)^2 + (y - 3)^2 = 4$ 与圆 $C_2$ 关于直线 $l: x - y + 2 = 0$ 对称，求圆 $C_2$ 的标准方程。
+      </p>
+
+      <details>
+        <summary>📐 思考后点此展开：几何辅助图</summary>
+        <div class="details-body">
+          <div class="fig-box">
+            <svg viewBox="0 0 360 250" xmlns="http://www.w3.org/2000/svg">
+              <rect width="360" height="250" rx="8" fill="#fcfdff"/>
+              <!-- 坐标网格与轴: 原点(180, 175), scale=26 -->
+              <line x1="20" y1="175" x2="340" y2="175" stroke="#94a3b8" stroke-width="1.5"/>
+              <line x1="180" y1="15" x2="180" y2="235" stroke="#94a3b8" stroke-width="1.5"/>
+              <text x="330" y="192" font-size="12" fill="#64748b" font-style="italic">x</text>
+              <text x="188" y="25" font-size="12" fill="#64748b" font-style="italic">y</text>
+              <!-- 对称轴 x - y + 2 = 0: 过(-4,-2)->(76,227) 到 (4,6)->(284,19) -->
+              <line x1="65" y1="238" x2="288" y2="15" stroke="#f59e0b" stroke-width="2.2" stroke-dasharray="6 4"/>
+              <text x="235" y="34" font-size="13" fill="#d97706" font-weight="bold">l: x - y + 2 = 0</text>
+              <!-- 原圆 C1(-1, 3), r=2 -> (154, 97), r=52 -->
+              <circle cx="154" cy="97" r="52" fill="rgba(22,101,216,0.06)" stroke="#1665d8" stroke-width="2.2"/>
+              <circle cx="154" cy="97" r="3.5" fill="#1665d8"/>
+              <text x="108" y="92" font-size="13" fill="#1665d8" font-weight="bold">C₁(-1,3)</text>
+              <!-- 对称圆 C2(1, 1), r=2 -> (206, 149), r=52 -->
+              <circle cx="206" cy="149" r="52" fill="rgba(225,29,72,0.06)" stroke="#e11d48" stroke-width="2.2"/>
+              <circle cx="206" cy="149" r="3.5" fill="#e11d48"/>
+              <text x="214" y="155" font-size="13" fill="#e11d48" font-weight="bold">C₂(1,1)</text>
+              <!-- 连线与中点 M(0,2) -> (180, 123) -->
+              <line x1="154" y1="97" x2="206" y2="149" stroke="#7c3aed" stroke-width="1.8" stroke-dasharray="4 3"/>
+              <circle cx="180" cy="123" r="3.5" fill="#7c3aed"/>
+              <text x="186" y="120" font-size="12" fill="#7c3aed" font-weight="bold">M(0,2)</text>
+            </svg>
+          </div>
+        </div>
+      </details>
+
+      <details>
+        <summary>📝 查看完整解析与答案</summary>
+        <div class="details-body">
+          <p style="margin:0 0 6px;">
+            <strong>【解析】</strong> 原圆心为 $C_1(-1, 3)$，半径 $r = 2$。<br>
+            因为对称轴 $l: x - y + 2 = 0$ 的斜率 $k = 1$，直接利用<strong>反解换元法</strong>：
+          </p>
+          <div class="eq-block">
+            $$\text{由 } x - y + 2 = 0 \implies \begin{cases} x = y - 2 \\ y = x + 2 \end{cases}$$
+          </div>
+          <p style="margin:6px 0;">
+            将 $C_1(-1, 3)$ 的坐标代入右端，直接得对称圆心 $C_2(a, b)$：
+          </p>
+          <div class="eq-block">
+            $$\begin{cases} a = y_1 - 2 = 3 - 2 = 1 \\ b = x_1 + 2 = -1 + 2 = 1 \end{cases} \implies C_2(1, 1)$$
+          </div>
+          <div class="ans-banner">
+            <strong>✅ 答案：</strong> 圆 $C_2$ 的标准方程为 $(x - 1)^2 + (y - 1)^2 = 4$。
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <!-- 变式 2：一般方程给出的圆关于一般直线对称 -->
+    <div class="variant-item">
+      <span class="v-badge">变式 2 · 一般方程下的圆关于直线对称</span>
+      <p style="margin:6px 0 10px;">
+        已知圆 $C: x^2 + y^2 - 4x + 2y + 1 = 0$，求圆 $C$ 关于直线 $l: 2x - y + 1 = 0$ 对称的圆的标准方程。
+      </p>
+
+      <details>
+        <summary>📐 思考后点此展开：几何辅助图</summary>
+        <div class="details-body">
+          <div class="fig-box">
+            <svg viewBox="0 0 360 250" xmlns="http://www.w3.org/2000/svg">
+              <rect width="360" height="250" rx="8" fill="#fcfdff"/>
+              <!-- 原点(210, 110), scale=28 -->
+              <line x1="20" y1="110" x2="340" y2="110" stroke="#94a3b8" stroke-width="1.5"/>
+              <line x1="210" y1="15" x2="210" y2="235" stroke="#94a3b8" stroke-width="1.5"/>
+              <text x="330" y="126" font-size="12" fill="#64748b" font-style="italic">x</text>
+              <text x="218" y="25" font-size="12" fill="#64748b" font-style="italic">y</text>
+              <!-- 直线 2x - y + 1 = 0: 过(-2.5, -4)->(140,222) 到 (1.2, 3.4)->(243.6, 14.8) -->
+              <line x1="135" y1="232" x2="244" y2="14" stroke="#f59e0b" stroke-width="2.2" stroke-dasharray="6 4"/>
+              <text x="242" y="32" font-size="13" fill="#d97706" font-weight="bold">2x - y + 1 = 0</text>
+              <!-- 原圆 C(2, -1), r=2 -> (266, 138), r=56 -->
+              <circle cx="266" cy="138" r="56" fill="rgba(22,101,216,0.06)" stroke="#1665d8" stroke-width="2.2"/>
+              <circle cx="266" cy="138" r="3.5" fill="#1665d8"/>
+              <text x="272" y="143" font-size="13" fill="#1665d8" font-weight="bold">C(2,-1)</text>
+              <!-- 对称圆 C'(-2.8, 1.4), r=2 -> (131.6, 70.8), r=56 -->
+              <circle cx="131.6" cy="70.8" r="56" fill="rgba(225,29,72,0.06)" stroke="#e11d48" stroke-width="2.2"/>
+              <circle cx="131.6" cy="70.8" r="3.5" fill="#e11d48"/>
+              <text x="64" y="65" font-size="12.5" fill="#e11d48" font-weight="bold">C'(-14/5, 7/5)</text>
+              <!-- 连线 -->
+              <line x1="266" y1="138" x2="131.6" y2="70.8" stroke="#7c3aed" stroke-width="1.8" stroke-dasharray="4 3"/>
+              <circle cx="198.8" cy="104.4" r="3.5" fill="#7c3aed"/>
+            </svg>
+          </div>
+        </div>
+      </details>
+
+      <details>
+        <summary>📝 查看完整解析与答案</summary>
+        <div class="details-body">
+          <p style="margin:0 0 6px;">
+            <strong>Step 1：先配方求原圆心与半径</strong><br>
+            将 $x^2 + y^2 - 4x + 2y + 1 = 0$ 配方得 $(x-2)^2 + (y+1)^2 = 4$，故圆心 $C(2, -1)$，半径 $r = 2$。
+          </p>
+          <p style="margin:6px 0;">
+            <strong>Step 2：求 $C(2, -1)$ 关于 $2x - y + 1 = 0$ 的对称点 $C'(a, b)$</strong>
+          </p>
+          <div class="eq-block">
+            $$\begin{cases} 2\cdot\dfrac{a+2}{2} - \dfrac{b-1}{2} + 1 = 0 \\[8pt] \dfrac{b+1}{a-2} \cdot 2 = -1 \end{cases} \implies \begin{cases} 2a - b + 7 = 0 \\ a + 2b = 0 \end{cases}$$
+          </div>
+          <p style="margin:6px 0;">
+            由第二式得 $a = -2b$，代入第一式得 $-5b + 7 = 0 \implies b = \dfrac{7}{5}$，进而 $a = -\dfrac{14}{5}$。
+          </p>
+          <div class="ans-banner">
+            <strong>✅ 答案：</strong> $\left(x + \dfrac{14}{5}\right)^2 + \left(y - \dfrac{7}{5}\right)^2 = 4$。
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <!-- 变式 3：逆向问题——已知两对称圆反求对称轴与相交弦 -->
+    <div class="variant-item">
+      <span class="v-badge">变式 3 · 逆向综合：由对称关系求参数与公共弦长</span>
+      <p style="margin:6px 0 10px;">
+        已知圆 $C_1: (x - 1)^2 + (y + 2)^2 = 9$ 与圆 $C_2: (x + 3)^2 + (y - 2)^2 = 9$ 关于直线 $l$ 对称。<br>
+        （1）求直线 $l$ 的方程；<br>
+        （2）求圆 $C_1$ 与圆 $C_2$ 相交所得公共弦的长度。
+      </p>
+
+      <details>
+        <summary>📐 思考后点此展开：几何辅助图</summary>
+        <div class="details-body">
+          <div class="fig-box">
+            <svg viewBox="0 0 360 250" xmlns="http://www.w3.org/2000/svg">
+              <rect width="360" height="250" rx="8" fill="#fcfdff"/>
+              <!-- 原点(195, 125), scale=22 -->
+              <line x1="20" y1="125" x2="340" y2="125" stroke="#94a3b8" stroke-width="1.5"/>
+              <line x1="195" y1="15" x2="195" y2="235" stroke="#94a3b8" stroke-width="1.5"/>
+              <!-- C1(1, -2)->(217, 169), r=3*22=66 -->
+              <circle cx="217" cy="169" r="66" fill="rgba(22,101,216,0.06)" stroke="#1665d8" stroke-width="2.2"/>
+              <circle cx="217" cy="169" r="3.5" fill="#1665d8"/>
+              <text x="223" y="175" font-size="12.5" fill="#1665d8" font-weight="bold">C₁(1,-2)</text>
+              <!-- C2(-3, 2)->(129, 81), r=66 -->
+              <circle cx="129" cy="81" r="66" fill="rgba(225,29,72,0.06)" stroke="#e11d48" stroke-width="2.2"/>
+              <circle cx="129" cy="81" r="3.5" fill="#e11d48"/>
+              <text x="68" y="76" font-size="12.5" fill="#e11d48" font-weight="bold">C₂(-3,2)</text>
+              <!-- 对称轴 l: x - y + 1 = 0, 过(-4,-3)->(107,191) 到 (3,4)->(261,37) -->
+              <line x1="85" y1="213" x2="275" y2="23" stroke="#f59e0b" stroke-width="2.4" stroke-dasharray="6 4"/>
+              <text x="235" y="34" font-size="13" fill="#d97706" font-weight="bold">l: x - y + 1 = 0</text>
+              <!-- 公共弦红线 -->
+              <line x1="164" y1="134" x2="182" y2="116" stroke="#10b981" stroke-width="3.5"/>
+              <!-- 连线 C1C2 与中点 M(-1, 0)->(173, 125) -->
+              <line x1="217" y1="169" x2="129" y2="81" stroke="#7c3aed" stroke-width="1.8" stroke-dasharray="4 3"/>
+              <circle cx="173" cy="125" r="3.5" fill="#7c3aed"/>
+              <text x="142" y="142" font-size="12" fill="#7c3aed" font-weight="bold">M(-1,0)</text>
+            </svg>
+          </div>
+        </div>
+      </details>
+
+      <details>
+        <summary>📝 查看完整解析与答案</summary>
+        <div class="details-body">
+          <p style="margin:0 0 6px;">
+            <strong>（1）求对称轴 $l$（即线段 $C_1C_2$ 的垂直平分线）：</strong><br>
+            由题知 $C_1(1, -2)$，$C_2(-3, 2)$，则线段 $C_1C_2$ 的中点为 $M(-1, 0)$。<br>
+            又 $k_{C_1C_2} = \dfrac{2 - (-2)}{-3 - 1} = -1$，故对称轴斜率 $k_l = 1$。<br>
+            由点斜式得直线 $l: y - 0 = 1\cdot(x + 1)$，即 $x - y + 1 = 0$。
+          </p>
+          <p style="margin:8px 0 6px;">
+            <strong>（2）求公共弦长（对称轴即公共弦所在直线！）：</strong><br>
+            两等圆关于直线 $l$ 对称，若两圆相交，则<strong>公共弦所在直线正是对称轴 $l: x - y + 1 = 0$</strong>。<br>
+            圆心 $C_1(1, -2)$ 到直线 $l$ 的弦心距为：
+          </p>
+          <div class="eq-block">
+            $$d = |C_1M| = \frac{|1 - (-2) + 1|}{\sqrt{1^2 + (-1)^2}} = \frac{4}{\sqrt{2}} = 2\sqrt{2}$$
+          </div>
+          <p style="margin:6px 0;">
+            由弦长公式 $L = 2\sqrt{r^2 - d^2} = 2\sqrt{9 - (2\sqrt{2})^2} = 2\sqrt{9 - 8} = 2$。
+          </p>
+          <div class="ans-banner">
+            <strong>✅ 答案：</strong> （1）直线 $l$ 的方程为 $x - y + 1 = 0$；（2）公共弦长为 $2$。
+          </div>
+        </div>
+      </details>
+    </div>
+  </section>
+</main>
+
+<footer>高中数学 · 圆的对称问题专题课件 · 手机与大屏自适应版</footer>
+
+<script>
+// Tab switching for Section 04
+function switchSolTab(panelId, btn) {
+  document.querySelectorAll('#sec-solution .tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('#sec-solution .tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(panelId).classList.add('active');
+  btn.classList.add('active');
+}
+
+// Interactive Canvas for Section 03
+(function(){
+  const canvas = document.getElementById('symCanvas');
+  const ctx = canvas.getContext('2d');
+  const readout = document.getElementById('canvasReadout');
+  const modeBadge = document.getElementById('modeBadge');
+  const radiusSlider = document.getElementById('radiusSlider');
+  const radiusVal = document.getElementById('radiusVal');
+
+  // State: Original circle center C, two control points P1, P2 defining line l, and radius r
+  let C = { x: -2, y: 6 };
+  let P1 = { x: -3, y: -1 }; // On 3x - 4y + 5 = 0: 3(-3)-4(-1)+5 = 0
+  let P2 = { x: 5, y: 5 };   // On 3x - 4y + 5 = 0: 3(5)-4(5)+5 = 0
+  let R = 1.0;
+
+  // Step visibility (default blank to prompt thinking!)
+  const steps = {
+    perp: false,
+    symCenter: false,
+    symCircle: false,
+    distCheck: false
+  };
+
+  let dragging = null; // 'C', 'P1', or 'P2'
+
+  // Coordinate system parameters
+  const view = { cx: 1.2, cy: 2.0, scale: 28 };
+
+  function toScreen(x, y, w, h) {
+    const ox = w / 2 - view.cx * view.scale;
+    const oy = h / 2 + view.cy * view.scale;
+    return [ox + x * view.scale, oy - y * view.scale];
+  }
+
+  function toWorld(sx, sy, w, h) {
+    const ox = w / 2 - view.cx * view.scale;
+    const oy = h / 2 + view.cy * view.scale;
+    return [(sx - ox) / view.scale, (oy - sy) / view.scale];
+  }
+
+  function computeSymmetry() {
+    const dx = P2.x - P1.x;
+    const dy = P2.y - P1.y;
+    let A = dy;
+    let B = -dx;
+    let C0 = dx * P1.y - dy * P1.x;
+    const norm2 = A * A + B * B || 1;
+    const val = A * C.x + B * C.y + C0;
+    const lambda = val / norm2;
+    const M = { x: C.x - A * lambda, y: C.y - B * lambda };
+    const C_sym = { x: C.x - 2 * A * lambda, y: C.y - 2 * B * lambda };
+    const dist = Math.abs(val) / Math.sqrt(norm2);
+    return { A, B, C0, M, C_sym, dist };
+  }
+
+  function draw() {
+    const rect = canvas.getBoundingClientRect();
+    const w = rect.width;
+    const h = rect.height;
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = w * dpr;
+    canvas.height = h * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, w, h);
+
+    view.scale = Math.min(w, h) / 13.5;
+
+    // 1. Draw Grid
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = '#f1f5f9';
+    for (let gx = -10; gx <= 12; gx++) {
+      const [sx] = toScreen(gx, 0, w, h);
+      ctx.beginPath(); ctx.moveTo(sx, 0); ctx.lineTo(sx, h); ctx.stroke();
+    }
+    for (let gy = -8; gy <= 10; gy++) {
+      const [, sy] = toScreen(0, gy, w, h);
+      ctx.beginPath(); ctx.moveTo(0, sy); ctx.lineTo(w, sy); ctx.stroke();
+    }
+
+    // 2. Draw Axes
+    const [ox, oy] = toScreen(0, 0, w, h);
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(0, oy); ctx.lineTo(w, oy); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(ox, 0); ctx.lineTo(ox, h); ctx.stroke();
+
+    ctx.fillStyle = '#64748b';
+    ctx.font = '12px sans-serif';
+    ctx.fillText('O', ox + 5, oy + 14);
+    ctx.fillText('x', w - 16, oy - 6);
+    ctx.fillText('y', ox + 6, 14);
+
+    const { A, B, C0, M, C_sym, dist } = computeSymmetry();
+
+    // 3. Draw Extended Line l through P1 and P2
+    const dx = P2.x - P1.x;
+    const dy = P2.y - P1.y;
+    const L_ext = 20;
+    const [lx1, ly1] = toScreen(P1.x - dx * L_ext, P1.y - dy * L_ext, w, h);
+    const [lx2, ly2] = toScreen(P1.x + dx * L_ext, P1.y + dy * L_ext, w, h);
+    ctx.save();
+    ctx.strokeStyle = '#f59e0b';
+    ctx.lineWidth = 2.4;
+    ctx.beginPath(); ctx.moveTo(lx1, ly1); ctx.lineTo(lx2, ly2); ctx.stroke();
+    ctx.restore();
+
+    // 4. Optional Step 1: Perpendicular segment CC' & Midpoint M + Right-angle mark
+    const [cx, cy] = toScreen(C.x, C.y, w, h);
+    const [mx, my] = toScreen(M.x, M.y, w, h);
+    const [scx, scy] = toScreen(C_sym.x, C_sym.y, w, h);
+
+    if (steps.perp) {
+      ctx.save();
+      ctx.strokeStyle = '#7c3aed';
+      ctx.lineWidth = 1.8;
+      ctx.setLineDash([5, 4]);
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(steps.symCenter || steps.symCircle || steps.distCheck ? scx : mx, steps.symCenter || steps.symCircle || steps.distCheck ? scy : my);
+      ctx.stroke();
+      ctx.restore();
+
+      const ux = dx / (Math.hypot(dx, dy) || 1);
+      const uy = -dy / (Math.hypot(dx, dy) || 1);
+      const vx = cx - mx, vy = cy - my;
+      const vlen = Math.hypot(vx, vy) || 1;
+      const nx = vx / vlen, ny = vy / vlen;
+      const sz = 9;
+      ctx.strokeStyle = '#7c3aed';
+      ctx.lineWidth = 1.4;
+      ctx.beginPath();
+      ctx.moveTo(mx + ux * sz, my + uy * sz);
+      ctx.lineTo(mx + ux * sz + nx * sz, my + uy * sz + ny * sz);
+      ctx.lineTo(mx + nx * sz, my + ny * sz);
+      ctx.stroke();
+
+      ctx.fillStyle = '#7c3aed';
+      ctx.beginPath(); ctx.arc(mx, my, 4.5, 0, Math.PI * 2); ctx.fill();
+      ctx.font = 'bold 13px sans-serif';
+      ctx.fillText(`M(${M.x.toFixed(1)}, ${M.y.toFixed(1)})`, mx + 8, my + 15);
+    }
+
+    // 5. Optional Step 4: Distance equality labels d = d'
+    if (steps.distCheck) {
+      ctx.save();
+      ctx.fillStyle = '#047857';
+      ctx.font = 'bold 12.5px sans-serif';
+      ctx.fillText(`d = ${dist.toFixed(2)}`, (cx + mx) / 2 - 22, (cy + my) / 2 - 6);
+      ctx.fillText(`d' = ${dist.toFixed(2)}`, (scx + mx) / 2 + 8, (scy + my) / 2 + 12);
+      ctx.restore();
+    }
+
+    // 6. Draw Original Circle C
+    ctx.save();
+    ctx.fillStyle = 'rgba(22, 101, 216, 0.08)';
+    ctx.strokeStyle = '#1665d8';
+    ctx.lineWidth = 2.4;
+    ctx.beginPath();
+    ctx.arc(cx, cy, R * view.scale, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    ctx.restore();
+
+    ctx.fillStyle = '#1665d8';
+    ctx.beginPath(); ctx.arc(cx, cy, 6, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
+    ctx.font = 'bold 13.5px sans-serif';
+    ctx.fillStyle = '#1e3a8a';
+    ctx.fillText(`C(${C.x.toFixed(1)}, ${C.y.toFixed(1)})`, cx - 32, cy - 12);
+
+    // 7. Optional Step 3: Symmetric Circle C'
+    if (steps.symCircle) {
+      ctx.save();
+      ctx.fillStyle = 'rgba(225, 29, 72, 0.08)';
+      ctx.strokeStyle = '#e11d48';
+      ctx.lineWidth = 2.4;
+      ctx.beginPath();
+      ctx.arc(scx, scy, R * view.scale, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    // 8. Optional Step 2: Symmetric Center C'
+    if (steps.symCenter || steps.symCircle) {
+      ctx.fillStyle = '#e11d48';
+      ctx.beginPath(); ctx.arc(scx, scy, 5.5, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.8; ctx.stroke();
+      ctx.font = 'bold 13.5px sans-serif';
+      ctx.fillStyle = '#be123c';
+      ctx.fillText(`C'(${C_sym.x.toFixed(1)}, ${C_sym.y.toFixed(1)})`, scx + 9, scy + 5);
+    }
+
+    // 9. Draw Line Control Handles P1, P2
+    [ {pt: P1, name: 'P₁'}, {pt: P2, name: 'P₂'} ].forEach(item => {
+      const [px, py] = toScreen(item.pt.x, item.pt.y, w, h);
+      ctx.fillStyle = '#fff';
+      ctx.strokeStyle = '#d97706';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.arc(px, py, 5.5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    });
+
+    const sxSign = C_sym.x >= 0 ? `- ${C_sym.x.toFixed(1)}` : `+ ${Math.abs(C_sym.x).toFixed(1)}`;
+    const sySign = C_sym.y >= 0 ? `- ${C_sym.y.toFixed(1)}` : `+ ${Math.abs(C_sym.y).toFixed(1)}`;
+    readout.innerHTML =
+      `<strong>📊 实时几何数据：</strong> ` +
+      `原圆心 C(${C.x.toFixed(1)}, ${C.y.toFixed(1)}) 　|　` +
+      `中点垂足 M(${M.x.toFixed(1)}, ${M.y.toFixed(1)}) 　|　` +
+      `对称圆心 <strong style="color:#e11d48;">C'(${C_sym.x.toFixed(1)}, ${C_sym.y.toFixed(1)})</strong><br>` +
+      `<strong>🎯 对称圆方程：</strong> <code style="background:#fff;padding:2px 6px;border-radius:5px;border:1px solid #bbf7d0;font-weight:bold;">(x ${sxSign})² + (y ${sySign})² = ${(R*R).toFixed(2).replace(/\.00$/,'')}</code>`;
+  }
+
+  function getPointerPos(e) {
+    const rect = canvas.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    return {
+      sx: clientX - rect.left,
+      sy: clientY - rect.top,
+      w: rect.width,
+      h: rect.height
+    };
+  }
+
+  function onDown(e) {
+    const { sx, sy, w, h } = getPointerPos(e);
+    const [cx, cy] = toScreen(C.x, C.y, w, h);
+    const [p1x, p1y] = toScreen(P1.x, P1.y, w, h);
+    const [p2x, p2y] = toScreen(P2.x, P2.y, w, h);
+
+    if (Math.hypot(sx - cx, sy - cy) < 22) dragging = 'C';
+    else if (Math.hypot(sx - p1x, sy - p1y) < 22) dragging = 'P1';
+    else if (Math.hypot(sx - p2x, sy - p2y) < 22) dragging = 'P2';
+
+    if (dragging && e.cancelable) e.preventDefault();
+  }
+
+  function onMove(e) {
+    if (!dragging) return;
+    if (e.cancelable) e.preventDefault();
+    const { sx, sy, w, h } = getPointerPos(e);
+    let [wx, wy] = toWorld(sx, sy, w, h);
+    wx = Math.round(wx * 2) / 2;
+    wy = Math.round(wy * 2) / 2;
+
+    if (dragging === 'C') { C.x = wx; C.y = wy; }
+    else if (dragging === 'P1') {
+      if (Math.hypot(wx - P2.x, wy - P2.y) > 0.5) { P1.x = wx; P1.y = wy; modeBadge.textContent = '当前：自定义拖动直线'; }
+    } else if (dragging === 'P2') {
+      if (Math.hypot(wx - P1.x, wy - P1.y) > 0.5) { P2.x = wx; P2.y = wy; modeBadge.textContent = '当前：自定义拖动直线'; }
+    }
+    draw();
+  }
+
+  function onUp() { dragging = null; }
+
+  canvas.addEventListener('mousedown', onDown);
+  window.addEventListener('mousemove', onMove);
+  window.addEventListener('mouseup', onUp);
+  canvas.addEventListener('touchstart', onDown, { passive: false });
+  window.addEventListener('touchmove', onMove, { passive: false });
+  window.addEventListener('touchend', onUp);
+
+  function syncStepBtns() {
+    document.querySelectorAll('.step-btn[data-step]').forEach(btn => {
+      btn.classList.toggle('on', steps[btn.dataset.step]);
+    });
+  }
+
+  document.querySelectorAll('.step-btn[data-step]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const k = btn.dataset.step;
+      steps[k] = !steps[k];
+      syncStepBtns();
+      draw();
+    });
+  });
+
+  document.getElementById('btnShowAll').addEventListener('click', () => {
+    Object.keys(steps).forEach(k => steps[k] = true);
+    syncStepBtns();
+    draw();
+  });
+
+  document.getElementById('btnHideAll').addEventListener('click', () => {
+    Object.keys(steps).forEach(k => steps[k] = false);
+    syncStepBtns();
+    draw();
+  });
+
+  function setActivePreset(id) {
+    document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+
+  document.getElementById('preOrig').addEventListener('click', () => {
+    setActivePreset('preOrig');
+    C = { x: -2, y: 6 };
+    P1 = { x: -3, y: -1 };
+    P2 = { x: 5, y: 5 };
+    R = 1.0;
+    radiusSlider.value = 1.0;
+    radiusVal.textContent = '1.0';
+    modeBadge.textContent = '当前：原题直线 3x-4y+5=0';
+    draw();
+  });
+
+  document.getElementById('preK1').addEventListener('click', () => {
+    setActivePreset('preK1');
+    C = { x: -1, y: 3 };
+    P1 = { x: -3, y: -1 };
+    P2 = { x: 3, y: 5 };
+    R = 2.0;
+    radiusSlider.value = 2.0;
+    radiusVal.textContent = '2.0';
+    modeBadge.textContent = '当前：特殊斜率 k=1 (x-y+2=0)';
+    draw();
+  });
+
+  document.getElementById('preKm1').addEventListener('click', () => {
+    setActivePreset('preKm1');
+    C = { x: -1, y: 1 };
+    P1 = { x: -1, y: 5 };
+    P2 = { x: 5, y: -1 };
+    R = 1.5;
+    radiusSlider.value = 1.5;
+    radiusVal.textContent = '1.5';
+    modeBadge.textContent = '当前：特殊斜率 k=-1 (x+y-4=0)';
+    draw();
+  });
+
+  radiusSlider.addEventListener('input', () => {
+    R = parseFloat(radiusSlider.value);
+    radiusVal.textContent = R.toFixed(1);
+    draw();
+  });
+
+  window.addEventListener('resize', draw);
+  syncStepBtns();
+  draw();
+})();
+</script>
+</body>
+</html>
