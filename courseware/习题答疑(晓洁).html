@@ -1,0 +1,2387 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f172a" />
+  <title>圆上点到直线的距离为定值的个数问题（平行线转化法）</title>
+  <!-- 引入 KaTeX 教科书级数学公式渲染引擎 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" crossorigin="anonymous">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+  <style>
+    :root {
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --ink: #0f172a;
+      --ink-secondary: #334155;
+      --muted: #64748b;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --primary-soft: #eff6ff;
+      --primary-border: #bfdbfe;
+      --violet: #d946ef;
+      --violet-dark: #a21caf;
+      --violet-soft: #fdf4ff;
+      --emerald: #059669;
+      --emerald-dark: #047857;
+      --emerald-soft: #ecfdf5;
+      --emerald-border: #a7f3d0;
+      --amber: #d97706;
+      --amber-soft: #fffbeb;
+      --amber-border: #fde68a;
+      --rose: #e11d48;
+      --border: #e2e8f0;
+      --radius-lg: 20px;
+      --radius-md: 14px;
+      --radius-sm: 10px;
+      --shadow-card: 0 10px 30px -5px rgba(15, 23, 42, 0.05), 0 4px 12px -2px rgba(15, 23, 42, 0.03);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background-color: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      font-size: 16px;
+      line-height: 1.75;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .katex {
+      font-size: 1.06em;
+    }
+    .katex-display {
+      margin: 0.55em 0;
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding: 4px 0;
+    }
+
+    /* 顶部深海蓝渐变 Header */
+    header {
+      position: relative;
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 52%, #2563eb 100%);
+      color: #ffffff;
+      padding: 40px 20px 34px;
+      border-bottom-left-radius: 32px;
+      border-bottom-right-radius: 32px;
+      box-shadow: 0 14px 35px rgba(30, 58, 138, 0.22);
+      overflow: hidden;
+    }
+
+    header::before {
+      content: "";
+      position: absolute;
+      top: -60px;
+      right: -40px;
+      width: 250px;
+      height: 250px;
+      border-radius: 50%;
+      border: 30px solid rgba(255, 255, 255, 0.05);
+      pointer-events: none;
+    }
+
+    header::after {
+      content: "";
+      position: absolute;
+      bottom: -80px;
+      left: 8%;
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      border: 18px solid rgba(56, 189, 248, 0.08);
+      pointer-events: none;
+    }
+
+    .container {
+      max-width: 840px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.14);
+      backdrop-filter: blur(8px);
+      padding: 5px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #e0f2fe;
+      letter-spacing: 0.6px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+    }
+
+    header h1 {
+      font-size: clamp(23px, 5vw, 32px);
+      font-weight: 800;
+      margin: 14px 0 8px;
+      line-height: 1.32;
+      letter-spacing: -0.3px;
+    }
+
+    header p {
+      margin: 0;
+      color: #bfdbfe;
+      font-size: 15px;
+      max-width: 690px;
+    }
+
+    /* 吸顶胶囊导航栏 */
+    .sticky-nav {
+      position: sticky;
+      top: 0;
+      z-index: 60;
+      background: rgba(241, 245, 249, 0.88);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(226, 232, 240, 0.9);
+      padding: 10px 16px;
+    }
+
+    .nav-scroll {
+      max-width: 840px;
+      margin: 0 auto;
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .nav-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    .nav-pill {
+      text-decoration: none;
+      background: #ffffff;
+      color: var(--ink-secondary);
+      font-size: 13.5px;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      white-space: nowrap;
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+    }
+
+    .nav-pill:hover, .nav-pill:active {
+      color: var(--primary);
+      border-color: var(--primary-border);
+      background: var(--primary-soft);
+      transform: translateY(-1px);
+    }
+
+    /* 主容器与卡片 */
+    main {
+      max-width: 840px;
+      margin: 0 auto;
+      padding: 20px 16px 70px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius-lg);
+      padding: 26px 24px;
+      margin-bottom: 22px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-card);
+    }
+
+    .sec-header {
+      margin-bottom: 18px;
+    }
+
+    .sec-index {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--primary);
+      background: var(--primary-soft);
+      border: 1px solid var(--primary-border);
+      padding: 3px 11px;
+      border-radius: 999px;
+      letter-spacing: 0.8px;
+      margin-bottom: 8px;
+    }
+
+    h2 {
+      font-size: 21px;
+      font-weight: 800;
+      color: var(--ink);
+      margin: 0;
+      line-height: 1.4;
+    }
+
+    /* 题目高亮框 */
+    .question-box {
+      background: linear-gradient(135deg, #f8fafc 0%, #eff6ff 100%);
+      border: 1px solid var(--primary-border);
+      border-left: 5px solid var(--primary);
+      border-radius: var(--radius-md);
+      padding: 18px 20px;
+      font-size: 16.5px;
+      color: var(--ink);
+      margin-bottom: 18px;
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.04);
+    }
+
+    .math-banner {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      text-align: center;
+      margin: 12px 0;
+      overflow-x: auto;
+    }
+
+    /* 破题转化对比卡片 */
+    .transform-box {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .transform-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .t-badge {
+      padding: 3px 10px;
+      border-radius: 8px;
+      font-size: 12.5px;
+      font-weight: 800;
+      white-space: nowrap;
+      margin-top: 2px;
+    }
+
+    .t-badge.ask {
+      background: #fef3c7;
+      color: #92400e;
+      border: 1px solid #fde68a;
+    }
+
+    .t-badge.key {
+      background: var(--primary-soft);
+      color: var(--primary-dark);
+      border: 1px solid var(--primary-border);
+    }
+
+    .t-badge.eq {
+      background: var(--emerald-soft);
+      color: var(--emerald-dark);
+      border: 1px solid var(--emerald-border);
+    }
+
+    /* 双视角对比卡片与数轴可视化 */
+    .perspective-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 16px;
+    }
+
+    .persp-card {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 18px;
+      position: relative;
+    }
+
+    .persp-card.highlight-persp {
+      background: linear-gradient(145deg, #fffbeb 0%, #ffffff 100%);
+      border: 1.5px solid #fcd34d;
+    }
+
+    .persp-badge {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 800;
+      padding: 3px 10px;
+      border-radius: 999px;
+      margin-bottom: 8px;
+    }
+
+    .persp-badge.p1 {
+      background: var(--primary-soft);
+      color: var(--primary-dark);
+      border: 1px solid var(--primary-border);
+    }
+
+    .persp-badge.p2 {
+      background: #fef3c7;
+      color: #b45309;
+      border: 1px solid #fde68a;
+    }
+
+    .persp-title {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--ink);
+      margin-bottom: 8px;
+    }
+
+    .axis-box {
+      margin-top: 16px;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
+    }
+
+    .axis-title {
+      font-size: 14.5px;
+      font-weight: 800;
+      color: var(--ink);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    /* 规范解答双视角 Tab 切换 */
+    .sol-tabs {
+      display: flex;
+      gap: 10px;
+      background: #f1f5f9;
+      padding: 6px;
+      border-radius: 12px;
+      margin-bottom: 18px;
+    }
+
+    .sol-tab-btn {
+      flex: 1;
+      font: inherit;
+      font-size: 14.5px;
+      font-weight: 700;
+      padding: 10px 14px;
+      border-radius: 9px;
+      border: none;
+      background: transparent;
+      color: var(--ink-secondary);
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+
+    .sol-tab-btn.active {
+      background: #ffffff;
+      color: var(--primary-dark);
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+    }
+
+    .sol-panel {
+      display: none;
+    }
+
+    .sol-panel.active {
+      display: block;
+    }
+
+    .pill-btn.crit-btn {
+      border-color: #fcd34d;
+      background: #fffbeb;
+      color: #b45309;
+    }
+
+    .pill-btn.crit-btn.preset-on {
+      background: #d97706;
+      color: #ffffff;
+      border-color: #d97706;
+    }
+
+    .line-tag-l1 {
+      display: inline-block;
+      background: var(--violet-soft);
+      color: var(--violet-dark);
+      border: 1px dashed #d946ef;
+      padding: 0 8px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .line-tag-l2 {
+      display: inline-block;
+      background: var(--emerald-soft);
+      color: var(--emerald-dark);
+      border: 1px dashed #10b981;
+      padding: 0 8px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    /* 02 动态画板模式切换与控制栏 */
+    .mode-switch {
+      display: flex;
+      gap: 10px;
+      background: #f1f5f9;
+      padding: 6px;
+      border-radius: 12px;
+      margin-bottom: 14px;
+    }
+
+    .mode-btn {
+      flex: 1;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      padding: 10px 12px;
+      border-radius: 9px;
+      border: none;
+      background: transparent;
+      color: var(--ink-secondary);
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+
+    .mode-btn.active {
+      background: #ffffff;
+      color: var(--primary-dark);
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+    }
+
+    .step-bar {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 11px 14px;
+      margin-bottom: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 9px;
+    }
+
+    .step-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      align-items: center;
+    }
+
+    .bar-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--muted);
+      margin-right: 2px;
+    }
+
+    .pill-btn {
+      font: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid #cbd5e1;
+      background: #ffffff;
+      color: var(--ink-secondary);
+      cursor: pointer;
+      transition: all 0.18s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .pill-btn:hover {
+      border-color: #94a3b8;
+      background: #f8fafc;
+    }
+
+    .pill-btn.layer-on {
+      background: var(--emerald-soft);
+      color: #047857;
+      border-color: #6ee7b7;
+      box-shadow: 0 2px 6px rgba(5, 150, 105, 0.12);
+    }
+
+    .pill-btn.preset-on {
+      background: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
+      box-shadow: 0 3px 10px rgba(37, 99, 235, 0.22);
+    }
+
+    .pill-btn.action-primary {
+      background: var(--primary-soft);
+      color: var(--primary-dark);
+      border-color: var(--primary-border);
+    }
+
+    .canvas-card {
+      position: relative;
+      border: 1px solid #cbd5e1;
+      border-radius: 16px;
+      background: #ffffff;
+      overflow: hidden;
+      box-shadow: inset 0 2px 6px rgba(15, 23, 42, 0.02);
+    }
+
+    .canvas-hud {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(15, 23, 42, 0.84);
+      backdrop-filter: blur(8px);
+      color: #ffffff;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 13.5px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      pointer-events: none;
+      z-index: 5;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+    }
+
+    .hud-count {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 24px;
+      height: 24px;
+      padding: 0 6px;
+      border-radius: 999px;
+      background: #f43f5e;
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    canvas#graphCanvas {
+      display: block;
+      width: 100%;
+      height: 400px;
+      touch-action: pan-y;
+    }
+
+    .legend-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+      padding: 10px 14px;
+      background: #f8fafc;
+      border-top: 1px solid var(--border);
+      font-size: 12.8px;
+      color: var(--ink-secondary);
+    }
+
+    .dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 5px;
+      vertical-align: middle;
+    }
+
+    .dash-icon {
+      display: inline-block;
+      width: 16px;
+      height: 0;
+      border-top: 2.5px dashed;
+      margin-right: 5px;
+      vertical-align: middle;
+    }
+
+    .slider-panel {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      margin-top: 12px;
+    }
+
+    .slider-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--primary);
+      height: 6px;
+      cursor: pointer;
+    }
+
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .metric-card {
+      background: var(--primary-soft);
+      border: 1px solid var(--primary-border);
+      border-radius: var(--radius-sm);
+      padding: 9px 10px;
+      text-align: center;
+    }
+
+    .metric-label {
+      font-size: 12px;
+      color: #1e40af;
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .metric-val {
+      font-weight: 800;
+      font-size: 14.5px;
+      color: var(--ink);
+      font-family: "Times New Roman", Georgia, serif;
+    }
+
+    /* 0~4 点直观状态对照表 */
+    .state-guide {
+      margin-top: 14px;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+
+    .state-guide-head {
+      background: #f8fafc;
+      padding: 10px 16px;
+      font-size: 13.5px;
+      font-weight: 800;
+      color: var(--ink-secondary);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .state-rows {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      divide-x: 1px solid var(--border);
+    }
+
+    .state-cell {
+      padding: 10px 8px;
+      text-align: center;
+      border-right: 1px solid var(--border);
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+    .state-cell:last-child {
+      border-right: none;
+    }
+    .state-cell:hover {
+      background: #f8fafc;
+    }
+    .state-cell.active-state {
+      background: var(--primary-soft);
+      box-shadow: inset 0 -3px 0 var(--primary);
+    }
+
+    .st-count {
+      font-weight: 800;
+      font-size: 15px;
+      color: var(--primary-dark);
+      margin-bottom: 3px;
+    }
+
+    .st-desc {
+      font-size: 12px;
+      color: var(--ink-secondary);
+      line-height: 1.4;
+    }
+
+    /* 03 三大题型归纳网格 */
+    .type-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    .type-card {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 18px 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .type-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--primary);
+    }
+
+    .type-card.t2::before {
+      background: #8b5cf6;
+    }
+    .type-card.t3::before {
+      background: #059669;
+    }
+
+    .type-tag {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--primary-dark);
+      background: var(--primary-soft);
+      padding: 2px 9px;
+      border-radius: 6px;
+      margin-bottom: 8px;
+      width: fit-content;
+    }
+
+    .type-card.t2 .type-tag {
+      color: #6d28d9;
+      background: #f5f3ff;
+    }
+    .type-card.t3 .type-tag {
+      color: #047857;
+      background: var(--emerald-soft);
+    }
+
+    .type-title {
+      font-size: 16.5px;
+      font-weight: 800;
+      color: var(--ink);
+      margin-bottom: 8px;
+    }
+
+    .type-desc {
+      font-size: 14px;
+      color: var(--ink-secondary);
+      line-height: 1.6;
+      margin-bottom: 10px;
+    }
+
+    .type-foot {
+      font-size: 12.5px;
+      color: var(--muted);
+      padding-top: 8px;
+      border-top: 1px dashed var(--border);
+    }
+
+    /* 04 规范解答步骤卡片 */
+    .main-step {
+      display: grid;
+      grid-template-columns: 38px 1fr;
+      gap: 14px;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 18px;
+      margin-bottom: 14px;
+    }
+
+    .step-num {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: var(--primary);
+      color: #ffffff;
+      font-weight: 800;
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 2px;
+    }
+
+    .step-body h3 {
+      margin: 0 0 8px;
+      font-size: 16.5px;
+      color: var(--ink);
+    }
+
+    .step-body p {
+      margin: 4px 0;
+      color: var(--ink-secondary);
+      font-size: 15px;
+    }
+
+    /* 基础薄弱学生折叠框 */
+    details.elim-details {
+      border: 1.5px dashed #93c5fd;
+      background: #f0f7ff;
+      border-radius: var(--radius-md);
+      margin: 14px 0;
+      overflow: hidden;
+    }
+
+    details.elim-details summary {
+      padding: 12px 18px;
+      color: var(--primary-dark);
+      font-weight: 700;
+      font-size: 14.5px;
+      cursor: pointer;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      user-select: none;
+    }
+    details.elim-details summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .sum-tag {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--primary);
+      background: #ffffff;
+      padding: 3px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--primary-border);
+      white-space: nowrap;
+    }
+
+    details[open] > summary .sum-tag::after {
+      content: " ▲";
+    }
+    details:not([open]) > summary .sum-tag::after {
+      content: " ▼";
+    }
+
+    .elim-content {
+      padding: 16px 20px;
+      background: #ffffff;
+      border-top: 1px solid #dbeafe;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .sub-step {
+      padding-left: 12px;
+      border-left: 3px solid #93c5fd;
+    }
+
+    .sub-step-title {
+      font-weight: 700;
+      font-size: 14.5px;
+      color: #1e3a8a;
+      margin-bottom: 4px;
+    }
+
+    .answer-banner {
+      background: var(--emerald-soft);
+      border: 1.5px solid var(--emerald-border);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      margin-top: 14px;
+    }
+
+    .answer-label {
+      font-weight: 800;
+      color: #065f46;
+      font-size: 14.5px;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* 05 变式训练卡片 */
+    .variant-card {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 18px;
+    }
+    .variant-card:last-child {
+      margin-bottom: 0;
+    }
+
+    /* 高考真题卡片微调 */
+    .variant-card.gaokao-variant {
+      background: linear-gradient(145deg, #f8fafc 0%, #eff6ff 35%, #ffffff 100%);
+      border: 1.5px solid #93c5fd;
+    }
+
+    /* 变式 3 作业本专属琥珀金样式 */
+    .variant-card.homework-variant {
+      background: linear-gradient(145deg, #fffbeb 0%, #fef3c7 25%, #ffffff 100%);
+      border: 2px solid #f59e0b;
+      box-shadow: 0 8px 24px rgba(217, 119, 6, 0.08);
+    }
+
+    .v-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .v-pill {
+      background: var(--primary);
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 13px;
+      padding: 4px 12px;
+      border-radius: 999px;
+    }
+
+    .v-pill.gk-pill {
+      background: linear-gradient(135deg, #1d4ed8 0%, #4338ca 100%);
+    }
+
+    .v-pill.hw-pill {
+      background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(180, 83, 9, 0.25);
+    }
+
+    .v-meta {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink-secondary);
+      background: #e2e8f0;
+      padding: 3px 10px;
+      border-radius: 6px;
+    }
+
+    .v-meta.gk-meta {
+      background: #dbeafe;
+      color: #1e40af;
+      border: 1px solid #93c5fd;
+    }
+
+    .v-meta.hw-meta {
+      background: #fde68a;
+      color: #92400e;
+      border: 1px solid #f59e0b;
+    }
+
+    .v-question {
+      font-size: 16px;
+      color: var(--ink);
+      margin: 8px 0 12px;
+    }
+
+    .options-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin: 10px 0 14px;
+    }
+
+    .opt-item {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 8px 12px;
+      font-size: 15px;
+      text-align: center;
+      font-weight: 600;
+    }
+
+    .v-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    details.v-collapse {
+      border: 1px solid #cbd5e1;
+      background: #ffffff;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    details.v-collapse summary {
+      padding: 11px 16px;
+      font-weight: 700;
+      font-size: 14.5px;
+      color: var(--ink-secondary);
+      background: #f1f5f9;
+      cursor: pointer;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      user-select: none;
+    }
+    details.v-collapse summary::-webkit-details-marker {
+      display: none;
+    }
+
+    details.v-collapse.sol-collapse {
+      border-color: var(--primary-border);
+    }
+    details.v-collapse.sol-collapse summary {
+      background: var(--primary-soft);
+      color: var(--primary-dark);
+    }
+
+    details.v-collapse.hw-collapse {
+      border-color: #fcd34d;
+    }
+    details.v-collapse.hw-collapse summary {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .v-collapse-body {
+      padding: 16px;
+      border-top: 1px solid var(--border);
+      font-size: 15px;
+    }
+
+    .svg-box {
+      max-width: 540px;
+      margin: 0 auto;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      background: #ffffff;
+    }
+
+    .svg-box svg {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .svg-note {
+      font-size: 12.5px;
+      color: var(--muted);
+      text-align: center;
+      padding: 8px 12px;
+      background: #f8fafc;
+      border-top: 1px solid var(--border);
+    }
+
+    /* 06 实战三步通法总结 */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    .sum-card {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 18px 16px;
+    }
+
+    .sum-step {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--primary);
+      letter-spacing: 0.6px;
+      margin-bottom: 4px;
+    }
+
+    .sum-title {
+      font-weight: 800;
+      font-size: 16.5px;
+      color: var(--ink);
+      margin-bottom: 6px;
+    }
+
+    .sum-desc {
+      font-size: 14px;
+      color: var(--ink-secondary);
+      line-height: 1.6;
+    }
+
+    footer {
+      text-align: center;
+      font-size: 13px;
+      color: var(--muted);
+      padding: 20px 16px 40px;
+    }
+
+    @media (max-width: 680px) {
+      .type-grid,
+      .summary-grid,
+      .perspective-grid {
+        grid-template-columns: 1fr;
+      }
+      .metrics-grid,
+      .options-row {
+        grid-template-columns: 1fr 1fr;
+      }
+      .sol-tabs {
+        flex-direction: column;
+      }
+      .state-rows {
+        grid-template-columns: 1fr;
+      }
+      .state-cell {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 14px;
+      }
+      .card {
+        padding: 20px 16px;
+      }
+      canvas#graphCanvas {
+        height: 340px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <div class="hero-badge">高中数学 · 直线与圆核心压轴微专题</div>
+    <h1>圆上点到直线距离为定值的个数问题</h1>
+    <p>告别死记硬背公式！在主直线两侧添画两条异色平行虚线，用动画直观体会 0 ~ 4 个交点的转化全过程。</p>
+  </div>
+</header>
+
+<nav class="sticky-nav" aria-label="课堂模块导航">
+  <div class="nav-scroll">
+    <a class="nav-pill" href="#sec-example">01 核心问题与双视角</a>
+    <a class="nav-pill" href="#sec-canvas">02 动态探究画板</a>
+    <a class="nav-pill" href="#sec-solution">03 主例题双视角解答</a>
+    <a class="nav-pill" href="#sec-practice">04 题型与变式训练</a>
+    <a class="nav-pill" href="#sec-summary">05 实战通法归纳</a>
+  </div>
+</nav>
+
+<main>
+  <!-- 01 核心例题与两大破题视角 -->
+  <section class="card" id="sec-example">
+    <div class="sec-header">
+      <span class="sec-index">01 · 核心问题与双解题视角</span>
+      <h2>不背死公式：双平行虚线转化 + 抓“奇数个点”相切临界由奇推偶</h2>
+    </div>
+
+    <div class="question-box">
+      <strong>【核心例题】</strong>已知圆 $C: (x - 2)^2 + (y + 1)^2 = 4$，直线 $l: x - y + m = 0$。若圆 $C$ 上恰有 $4$ 个点到直线 $l$ 的距离等于 $1$，求实数 $m$ 的取值范围。
+    </div>
+
+    <!-- 两大破题视角并列卡片 -->
+    <div class="perspective-grid">
+      <div class="persp-card">
+        <span class="persp-badge p1">视角一 · 几何直观转化</span>
+        <div class="persp-title">双平行虚线走廊法</div>
+        <div style="font-size:14.5px; color:var(--ink-secondary);">
+          <p style="margin:0 0 8px;">
+            平面内到直线 $l$ 的距离等于定值 $h$（本题 $h=1$）的点的轨迹，是位于 $l$ 两侧、平行于 $l$ 且相距为 $h$ 的<strong>两条异色平行虚线</strong>：
+            <span class="line-tag-l1">虚线 $l_1$</span> 与 <span class="line-tag-l2">虚线 $l_2$</span>。
+          </p>
+          <p style="margin:0;">
+            <strong>核心等价：</strong>圆 $C$ 上到 $l$ 距离为 $h$ 的点的个数 $\Longleftrightarrow$ <strong>两条平行虚线 $l_1, l_2$ 与圆 $C$ 的交点总数</strong>（$0 \sim 4$ 个）！
+          </p>
+        </div>
+      </div>
+
+      <div class="persp-card highlight-persp">
+        <span class="persp-badge p2">视角二 · 重点推荐（由奇推偶）</span>
+        <div class="persp-title">奇数点相切临界法（抓 $d$ 与 $r$ 关系）</div>
+        <div style="font-size:14.5px; color:var(--ink-secondary);">
+          <p style="margin:0 0 8px;">
+            为什么会出现<strong>奇数个点（$1$ 个或 $3$ 个）</strong>？因为必有一条平行虚线恰好与圆<strong>相切</strong>！先抓这两个特殊临界点：
+          </p>
+          <p style="margin:0 0 6px;">
+            &bull; <strong>临界 ①（恰有 $1$ 个点·外切）：</strong>近侧虚线与圆外切，远侧相离 $\implies \boldsymbol{d = r + h}$（本题 $d = 2+1 = 3$）。
+          </p>
+          <p style="margin:0;">
+            &bull; <strong>临界 ②（恰有 $3$ 个点·内切）：</strong>近侧虚线交圆 $2$ 点，远侧虚线与圆内侧相切 $1$ 点 $\implies \boldsymbol{d = r - h}$（本题 $d = 2-1 = 1$）。
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 由奇推偶：数轴切分可视化 SVG -->
+    <div class="axis-box">
+      <div class="axis-title">
+        <span>🎯 由奇推偶：用两个“奇数点相切临界值”切分 $d$ 的数轴，偶数点范围一目了然！</span>
+        <span style="font-size:12.5px; color:var(--muted); font-weight:600;">（设 $r > h$，点击下方画板可动态验证）</span>
+      </div>
+      <svg viewBox="0 0 760 135" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto; display:block;">
+        <!-- 三个偶数开区间背景色块 -->
+        <rect x="45" y="24" width="215" height="44" rx="8" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.5"/>
+        <text x="152" y="43" text-anchor="middle" fill="#047857" font-size="13.5" font-weight="bold">偶数区①：恰有 4 个点</text>
+        <text x="152" y="60" text-anchor="middle" fill="#059669" font-size="12">0 ≤ d &lt; r - h（双轨均穿圆）</text>
+
+        <rect x="276" y="24" width="215" height="44" rx="8" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.5"/>
+        <text x="383" y="43" text-anchor="middle" fill="#1d4ed8" font-size="13.5" font-weight="bold">偶数区②：恰有 2 个点</text>
+        <text x="383" y="60" text-anchor="middle" fill="#2563eb" font-size="12">r - h &lt; d &lt; r + h（一穿一离）</text>
+
+        <rect x="507" y="24" width="205" height="44" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+        <text x="610" y="43" text-anchor="middle" fill="#475569" font-size="13.5" font-weight="bold">偶数区③：0 个点</text>
+        <text x="610" y="60" text-anchor="middle" fill="#64748b" font-size="12">d &gt; r + h（双轨均相离）</text>
+
+        <!-- 主数轴线 -->
+        <line x1="35" y1="88" x2="725" y2="88" stroke="#334155" stroke-width="2.5"/>
+        <polygon points="732,88 720,82 720,94" fill="#334155"/>
+        <text x="718" y="112" fill="#0f172a" font-size="13" font-weight="bold" font-style="italic">d</text>
+
+        <!-- 起点 d = 0 -->
+        <circle cx="45" cy="88" r="5" fill="#0f172a"/>
+        <text x="45" y="112" text-anchor="middle" fill="#334155" font-size="12.5" font-weight="bold">d = 0</text>
+        <text x="45" y="127" text-anchor="middle" fill="#64748b" font-size="11">（l 过圆心）</text>
+
+        <!-- 奇数分水岭 1：d = r - h (3个点) -->
+        <line x1="268" y1="16" x2="268" y2="96" stroke="#d97706" stroke-width="2" stroke-dasharray="4 3"/>
+        <circle cx="268" cy="88" r="7" fill="#f59e0b" stroke="#ffffff" stroke-width="2"/>
+        <rect x="208" y="2" width="120" height="20" rx="10" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.2"/>
+        <text x="268" y="16" text-anchor="middle" fill="#b45309" font-size="11.5" font-weight="bold">★ 奇数临界：3个点</text>
+        <text x="268" y="112" text-anchor="middle" fill="#b45309" font-size="13" font-weight="bold">d = r - h</text>
+        <text x="268" y="127" text-anchor="middle" fill="#d97706" font-size="11">（本题 d = 2 - 1 = 1）</text>
+
+        <!-- 奇数分水岭 2：d = r + h (1个点) -->
+        <line x1="499" y1="16" x2="499" y2="96" stroke="#e11d48" stroke-width="2" stroke-dasharray="4 3"/>
+        <circle cx="499" cy="88" r="7" fill="#e11d48" stroke="#ffffff" stroke-width="2"/>
+        <rect x="439" y="2" width="120" height="20" rx="10" fill="#ffe4e6" stroke="#f43f5e" stroke-width="1.2"/>
+        <text x="499" y="16" text-anchor="middle" fill="#be123c" font-size="11.5" font-weight="bold">★ 奇数临界：1个点</text>
+        <text x="499" y="112" text-anchor="middle" fill="#be123c" font-size="13" font-weight="bold">d = r + h</text>
+        <text x="499" y="127" text-anchor="middle" fill="#e11d48" font-size="11">（本题 d = 2 + 1 = 3）</text>
+      </svg>
+    </div>
+  </section>
+
+  <!-- 02 动态画板探究（初始留白，逐步开启异色平行虚线） -->
+  <section class="card" id="sec-canvas">
+    <div class="sec-header">
+      <span class="sec-index">02 · 交互式动态探究画板</span>
+      <h2>先想象图形，再按步骤开启平行虚线、体验“奇数点相切临界”</h2>
+    </div>
+
+    <!-- 模式切换：模式A(圆定线移) vs 模式B(2025高考：线定圆缩) -->
+    <div class="mode-switch">
+      <button type="button" class="mode-btn active" id="modeBtnA">
+        模式 A：圆定 + 直线含参平移（主例题模型）
+      </button>
+      <button type="button" class="mode-btn" id="modeBtnB">
+        模式 B：直线定 + 圆半径缩放（2025高考真题模型）
+      </button>
+    </div>
+
+    <!-- 分步显示图层控制栏（默认仅开启基础圆与直线） -->
+    <div class="step-bar">
+      <div class="step-group">
+        <span class="bar-label">分步显示开关：</span>
+        <button type="button" class="pill-btn" data-layer="dist">① 显示圆心距 d 与半径 r</button>
+        <button type="button" class="pill-btn" data-layer="parallels">② 显示两侧异色平行虚线 l₁, l₂</button>
+        <button type="button" class="pill-btn" data-layer="points">③ 标出圆上满足条件的点</button>
+      </div>
+      <div class="step-group">
+        <button type="button" class="pill-btn action-primary" id="btnShowAll">✨ 全部显示</button>
+        <button type="button" class="pill-btn" id="btnResetBlank">↺ 重置留白</button>
+      </div>
+    </div>
+
+    <!-- 奇数临界与点数快捷预设按钮 -->
+    <div class="step-bar" style="padding: 9px 14px;">
+      <div class="step-group">
+        <span class="bar-label">奇偶临界预设：</span>
+        <button type="button" class="pill-btn preset-on" data-preset="4">4个点 (d &lt; r-h)</button>
+        <button type="button" class="pill-btn crit-btn" data-preset="3">★ 3个点·临界 (d = r-h)</button>
+        <button type="button" class="pill-btn" data-preset="2">2个点 (r-h &lt; d &lt; r+h)</button>
+        <button type="button" class="pill-btn crit-btn" data-preset="1">★ 1个点·临界 (d = r+h)</button>
+        <button type="button" class="pill-btn" data-preset="0">0个点 (d &gt; r+h)</button>
+      </div>
+    </div>
+
+    <div class="canvas-card">
+      <div class="canvas-hud">
+        <span>当前圆上满足条件的点：</span>
+        <span class="hud-count" id="hudPointCount">4 个</span>
+      </div>
+      <canvas id="graphCanvas" aria-label="双平行虚线与圆交点个数动态画板"></canvas>
+      <div class="legend-bar">
+        <span><i class="dot" style="background:#2563eb"></i>圆 $C$ 与主直线 $l$</span>
+        <span><i class="dash-icon" style="border-color:#e11d48"></i>虚线 $l_1$（距 $l$ 为 $1$）</span>
+        <span><i class="dash-icon" style="border-color:#059669"></i>虚线 $l_2$（距 $l$ 为 $1$）</span>
+        <span><i class="dot" style="background:#f43f5e"></i>圆上满足条件的点</span>
+      </div>
+    </div>
+
+    <div class="slider-panel">
+      <div class="slider-top">
+        <span id="sliderLabel">拖动滑块平移直线参数 $m$（观察 $d$ 跨过奇数点临界值 $1$ 和 $3$ 时的突变）：</span>
+        <span id="sliderValueText" style="color:var(--primary-dark); font-weight:800;">m = -3.00（d = 0.00，共 4 个点）</span>
+      </div>
+      <input id="paramSlider" type="range" min="-8.0" max="2.0" step="0.01" value="-3.00" />
+    </div>
+
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <span class="metric-label">圆心到主直线距离 $d$</span>
+        <span class="metric-val" id="mDistD">d = 0.00</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-label">圆半径 $r$ 与定距 $h$</span>
+        <span class="metric-val" id="mRadiusR">r = 2.00, h = 1</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-label">奇数点临界值对比</span>
+        <span class="metric-val" id="mTrackDist">r-h = 1.00, r+h = 3.00</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-label">d 与 r, h 的关系判定</span>
+        <span class="metric-val" id="mStatusText" style="font-family:inherit;font-size:13px;">d &lt; r-h (4个点)</span>
+      </div>
+    </div>
+
+    <!-- 底部直观状态速览（点击也可直接切换） -->
+    <div class="state-guide">
+      <div class="state-guide-head">
+        <span>💡 点击下方任意状态格，画板将平滑过渡到对应位置（重点体会两个 ★ 奇数点相切临界态）：</span>
+        <span style="font-size:12px; color:var(--muted); font-weight:600;">3点临界：$d=r-h$ ｜ 1点临界：$d=r+h$</span>
+      </div>
+      <div class="state-rows">
+        <div class="state-cell active-state" data-state-jump="4">
+          <div class="st-count">4 个点 (偶)</div>
+          <div class="st-desc">$0 \le d < r - h$<br/>双轨均穿过圆</div>
+        </div>
+        <div class="state-cell" data-state-jump="3">
+          <div class="st-count" style="color:#b45309;">★ 3 个点 (奇·临界)</div>
+          <div class="st-desc">$\boldsymbol{d = r - h}$<br/>一轨交2点，远轨内切1点</div>
+        </div>
+        <div class="state-cell" data-state-jump="2">
+          <div class="st-count">2 个点 (偶)</div>
+          <div class="st-desc">$r - h < d < r + h$<br/>近轨交2点，远轨相离</div>
+        </div>
+        <div class="state-cell" data-state-jump="1">
+          <div class="st-count" style="color:#be123c;">★ 1 个点 (奇·临界)</div>
+          <div class="st-desc">$\boldsymbol{d = r + h}$<br/>近轨外切1点，远轨相离</div>
+        </div>
+        <div class="state-cell" data-state-jump="0">
+          <div class="st-count">0 个点 (偶)</div>
+          <div class="st-desc">$d > r + h$<br/>双轨均在圆外相离</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 核心例题规范解答（双视角 Tab 切换 + 折叠化简过程） -->
+  <section class="card" id="sec-solution">
+    <div class="sec-header">
+      <span class="sec-index">03 · 主例题双视角规范解答</span>
+      <h2>两种视角殊途同归，基础薄弱同学可点开中间折叠框学习不等式化简</h2>
+    </div>
+
+    <div class="sol-tabs">
+      <button type="button" class="sol-tab-btn active" data-sol-tab="solTab1">
+        视角一：奇数点相切临界法（抓 $d$ 与 $r$ 关系 · 推荐）
+      </button>
+      <button type="button" class="sol-tab-btn" data-sol-tab="solTab2">
+        视角二：双平行虚线交点法（几何轨迹法）
+      </button>
+    </div>
+
+    <!-- Tab 1：视角一（奇数点相切临界法） -->
+    <div class="sol-panel active" id="solTab1">
+      <div class="main-step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h3>求圆心、半径，并写出圆心距 $d$ 的表达式</h3>
+          <p>
+            由圆 $C: (x - 2)^2 + (y + 1)^2 = 4$ 得圆心 $C(2, -1)$，半径 $r = 2$。题目要求圆上点到直线 $l: x - y + m = 0$ 的距离为定值 $h = 1$。
+          </p>
+          <p>由点到直线的距离公式，圆心 $C(2, -1)$ 到直线 $l$ 的距离 $d$ 为：</p>
+          <div class="math-banner">
+            $$d = \frac{|2 - (-1) + m|}{\sqrt{1^2 + (-1)^2}} = \frac{|m + 3|}{\sqrt{2}}$$
+          </div>
+        </div>
+      </div>
+
+      <div class="main-step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h3>先找“奇数个点”的相切临界状态，再由奇推偶确定 $4$ 个点的范围</h3>
+          <p>
+            结合图形分析圆心距 $d$ 与半径 $r = 2$、定距 $h = 1$ 的关系：
+          </p>
+          <p>
+            &bull; 当<strong>恰有 $3$ 个点</strong>满足要求（临界内切）时，$d = r - h = 2 - 1 = 1$；<br/>
+            &bull; 当<strong>恰有 $1$ 个点</strong>满足要求（临界外切）时，$d = r + h = 2 + 1 = 3$。
+          </p>
+          <p>
+            要使圆上<strong>恰有 $4$ 个点</strong>（偶数范围）到直线 $l$ 的距离等于 $1$，直线 $l$ 必须比“$3$ 个点的临界位置”更靠近圆心，故圆心距 $d$ 需满足：
+          </p>
+          <div class="math-banner">
+            $$0 \le d < r - 1 \implies \frac{|m + 3|}{\sqrt{2}} < 1$$
+          </div>
+        </div>
+      </div>
+
+      <div class="main-step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h3>解绝对值不等式得出 $m$ 的范围</h3>
+
+          <details class="elim-details">
+            <summary>
+              <span>💡 基础薄弱同学点此展开：绝对值不等式详细化简过程</span>
+              <span class="sum-tag">查看详细演算</span>
+            </summary>
+            <div class="elim-content">
+              <div class="sub-step">
+                <div class="sub-step-title">Step 1：不等式两边同乘分母 $\sqrt{2}$</div>
+                $$\frac{|m + 3|}{\sqrt{2}} < 1 \implies |m + 3| < \sqrt{2}$$
+              </div>
+              <div class="sub-step">
+                <div class="sub-step-title">Step 2：利用 $|X| < a \Longleftrightarrow -a < X < a$ 拆开绝对值</div>
+                $$-\sqrt{2} < m + 3 < \sqrt{2}$$
+              </div>
+              <div class="sub-step">
+                <div class="sub-step-title">Step 3：不等式三边同时减去 $3$ 解出 $m$</div>
+                $$-3 - \sqrt{2} < m < -3 + \sqrt{2}$$
+              </div>
+            </div>
+          </details>
+
+          <p>解得 $-3 - \sqrt{2} < m < -3 + \sqrt{2}$。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 2：视角二（双平行虚线交点法） -->
+    <div class="sol-panel" id="solTab2">
+      <div class="main-step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h3>添画两条平行虚线，转化为直线与圆相交问题</h3>
+          <p>
+            由圆 $C: (x - 2)^2 + (y + 1)^2 = 4$ 知圆心 $C(2, -1)$，半径 $r = 2$。
+          </p>
+          <p>
+            在直线 $l: x - y + m = 0$ 两侧各作一条距离为 $1$ 的平行虚线 $l_1, l_2$。圆 $C$ 上恰有 $4$ 个点到 $l$ 的距离为 $1$，等价于<strong>两条平行虚线 $l_1, l_2$ 均与圆 $C$ 相交（各产生 $2$ 个交点）</strong>。
+          </p>
+          <p>
+            设圆心 $C$ 到主直线 $l$ 的距离为 $d$，则较远的一条平行虚线到圆心的距离为 $d + 1$。要使两条虚线都穿过圆内部，只需较远虚线到圆心的距离小于半径 $r$：
+          </p>
+          <div class="math-banner">
+            $$d + 1 < r \implies d + 1 < 2 \implies d < 1$$
+          </div>
+        </div>
+      </div>
+
+      <div class="main-step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h3>代入点到直线距离公式求解 $m$</h3>
+          <div class="math-banner">
+            $$d = \frac{|2 - (-1) + m|}{\sqrt{1^2 + (-1)^2}} = \frac{|m + 3|}{\sqrt{2}} < 1$$
+          </div>
+
+          <details class="elim-details">
+            <summary>
+              <span>💡 基础薄弱同学点此展开：绝对值不等式详细化简过程</span>
+              <span class="sum-tag">查看详细演算</span>
+            </summary>
+            <div class="elim-content">
+              <div class="sub-step">
+                <div class="sub-step-title">Step 1：去分母</div>
+                两边同乘 $\sqrt{2}$ 得 $|m + 3| < \sqrt{2}$。
+              </div>
+              <div class="sub-step">
+                <div class="sub-step-title">Step 2：去绝对值并移项</div>
+                $$-\sqrt{2} < m + 3 < \sqrt{2} \implies -3 - \sqrt{2} < m < -3 + \sqrt{2}$$
+              </div>
+            </div>
+          </details>
+
+          <p>解得 $-3 - \sqrt{2} < m < -3 + \sqrt{2}$。</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="answer-banner">
+      <div class="answer-label">✅ 最终答案</div>
+      <div>
+        实数 $m$ 的取值范围是 <strong>$(-3 - \sqrt{2},\, -3 + \sqrt{2})$</strong>。
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 题型分类与三道梯度变式训练（统一清爽样式，配图全部默认折叠） -->
+  <section class="card" id="sec-practice">
+    <div class="sec-header">
+      <span class="sec-index">04 · 三大题型分类与阶梯变式训练</span>
+      <h2>涵盖“圆定线定、线定圆动、圆定线动”三大常考模型（先独立画图分析，再展开核对）</h2>
+    </div>
+
+    <div class="type-grid" style="margin-bottom: 22px;">
+      <div class="type-card t1">
+        <div>
+          <span class="type-tag">模型一 · 圆定 + 线定</span>
+          <div class="type-title">正向求满足条件的点数</div>
+          <div class="type-desc">
+            算出圆心距 $d$，与两个奇数点临界值 $r-h$（$3$点）、$r+h$（$1$点）比大小，秒判交点个数。
+          </div>
+        </div>
+        <div class="type-foot">对应训练：下方【变式训练 1】</div>
+      </div>
+
+      <div class="type-card t3">
+        <div>
+          <span class="type-tag">模型二 · 线定 + 圆动</span>
+          <div class="type-title">已知点数求半径 $r$ 范围</div>
+          <div class="type-desc">
+            圆心距 $d$ 固定，先算 $3$ 点临界半径 $r=d+h$ 与 $1$ 点临界半径 $r=d-h$，再定偶数点区间。
+          </div>
+        </div>
+        <div class="type-foot">对应训练：【变式 2 · 2025高考真题】</div>
+      </div>
+
+      <div class="type-card t2">
+        <div>
+          <span class="type-tag">模型三 · 圆定 + 线动</span>
+          <div class="type-title">已知点数求直线参数范围</div>
+          <div class="type-desc">
+            半径 $r$ 固定，由给定点数（奇数点列方程、偶数点列不等式）反解圆心距 $d$ 中的参数。
+          </div>
+        </div>
+        <div class="type-foot">对应训练：【核心例题】与【变式训练 3】</div>
+      </div>
+    </div>
+
+    <!-- 变式 1：圆定 + 线定 -->
+    <div class="variant-card">
+      <div class="v-top">
+        <span class="v-pill">变式训练 1</span>
+        <span class="v-meta">模型一：圆定 + 线定 · 逆向求点的个数</span>
+      </div>
+      <div class="v-question">
+        已知圆 $C: (x + 1)^2 + (y - 2)^2 = 9$，直线 $l: 3x + 4y - 15 = 0$。则圆 $C$ 上到直线 $l$ 的距离等于 $1$ 的点共有（　）
+      </div>
+      <div class="options-row">
+        <div class="opt-item">A. $1$ 个</div>
+        <div class="opt-item">B. $2$ 个</div>
+        <div class="opt-item">C. $3$ 个</div>
+        <div class="opt-item">D. $4$ 个</div>
+      </div>
+
+      <div class="v-actions">
+        <details class="v-collapse">
+          <summary>
+            <span>📐 思考后点此展开：几何辅助图（含双平行虚线与 $d, r$ 关系）</span>
+            <span class="sum-tag">查看配图</span>
+          </summary>
+          <div class="v-collapse-body">
+            <div class="svg-box">
+              <svg viewBox="0 0 380 240" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <pattern id="vg1" width="28" height="28" patternUnits="userSpaceOnUse" x="173" y="186">
+                    <path d="M 28 0 L 0 0 0 28" fill="none" stroke="#f1f5f9" stroke-width="1"/>
+                  </pattern>
+                </defs>
+                <rect width="380" height="240" fill="#ffffff"/>
+                <rect width="380" height="240" fill="url(#vg1)"/>
+
+                <line x1="20" y1="186" x2="360" y2="186" stroke="#94a3b8" stroke-width="1.4"/>
+                <line x1="173" y1="228" x2="173" y2="14" stroke="#94a3b8" stroke-width="1.4"/>
+                <text x="348" y="202" fill="#64748b" font-size="12" font-family="Times New Roman, serif" font-style="italic">x</text>
+                <text x="180" y="24" fill="#64748b" font-size="12" font-family="Times New Roman, serif" font-style="italic">y</text>
+
+                <circle cx="145" cy="130" r="84" fill="rgba(37, 99, 235, 0.05)" stroke="#2563eb" stroke-width="2.4"/>
+
+                <line x1="74.6" y1="7.2" x2="306.6" y2="181.2" stroke="#2563eb" stroke-width="2"/>
+                <text x="262" y="168" fill="#1d4ed8" font-size="12" font-weight="bold">主直线 l (d=2)</text>
+
+                <line x1="57.8" y1="29.6" x2="289.8" y2="203.6" stroke="#e11d48" stroke-width="2" stroke-dasharray="6 4"/>
+                <text x="235" y="198" fill="#be123c" font-size="12" font-weight="bold">近轨 l₁ (距C为1, 交2点)</text>
+
+                <line x1="91.4" y1="-15.2" x2="323.4" y2="158.8" stroke="#059669" stroke-width="2" stroke-dasharray="6 4"/>
+                <text x="225" y="82" fill="#047857" font-size="12" font-weight="bold">远轨 l₂ (距C为3=r, 切1点)</text>
+
+                <line x1="145" y1="130" x2="195.4" y2="62.8" stroke="#64748b" stroke-width="1.5" stroke-dasharray="3 3"/>
+
+                <circle cx="98.4" cy="60.1" r="4.8" fill="#f43f5e" stroke="#ffffff" stroke-width="1.5"/>
+                <circle cx="225.2" cy="155.1" r="4.8" fill="#f43f5e" stroke="#ffffff" stroke-width="1.5"/>
+                <circle cx="195.4" cy="62.8" r="5.2" fill="#f43f5e" stroke="#ffffff" stroke-width="1.5"/>
+
+                <circle cx="145" cy="130" r="4" fill="#1d4ed8"/>
+                <text x="95" y="146" fill="#1e3a8a" font-size="12.5" font-weight="bold">C(-1, 2), r=3</text>
+              </svg>
+              <div class="svg-note">圆心距 $d = 2$，恰满足 $d = r - h = 3 - 1 = 2$（即 $3$ 个点的奇数相切临界状态）</div>
+            </div>
+          </div>
+        </details>
+
+        <details class="v-collapse sol-collapse">
+          <summary>
+            <span>📝 点此查看：完整解析与答案（奇数临界法 & 平行线法双解）</span>
+            <span class="sum-tag">展开解析</span>
+          </summary>
+          <div class="v-collapse-body">
+            <p style="margin-top:0;"><strong>解：</strong>由圆 $C: (x+1)^2 + (y-2)^2 = 9$ 得圆心 $C(-1, 2)$，半径 $r = 3$，定距 $h = 1$。</p>
+            <p>① 先求圆心 $C(-1, 2)$ 到直线 $l: 3x + 4y - 15 = 0$ 的距离 $d$：</p>
+            $$d = \frac{|3\times(-1) + 4\times 2 - 15|}{\sqrt{3^2 + 4^2}} = \frac{|-10|}{5} = 2$$
+            <p>② <strong>视角一（奇数点相切临界法）：</strong><br/>
+               计算两个奇数点临界值：$3$ 个点临界为 $r - h = 3 - 1 = 2$；$1$ 个点临界为 $r + h = 3 + 1 = 4$。因为算出的 $d = 2$ 恰好等于 $r - h$，所以正好处于<strong>恰有 $3$ 个点</strong>的临界内切状态！</p>
+            <p>③ <strong>视角二（双平行虚线法）：</strong><br/>
+               近侧平行虚线 $l_1$ 到圆心距离 $d_1 = d - 1 = 1 < r$（相交，交 $2$ 点）；远侧平行虚线 $l_2$ 到圆心距离 $d_2 = d + 1 = 3 = r$（相切，切 $1$ 点）。</p>
+            <p style="margin-bottom:0;">综上所述，圆上满足条件的点共有 $2 + 1 = 3$ 个，故选 <strong>C</strong>。</p>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <!-- 变式 2：2025年高考真题 -->
+    <div class="variant-card">
+      <div class="v-top">
+        <span class="v-pill">变式训练 2 · 2025年高考真题</span>
+        <span class="v-meta">模型二：线定 + 圆动 · 已知点数求半径范围</span>
+      </div>
+      <div class="v-question">
+        <strong>（2025·高考真题）</strong>若圆 $x^2 + (y + 2)^2 = r^2\ (r > 0)$ 上到直线 $y = \sqrt{3}x + 2$ 的距离为 $1$ 的点有且仅有 $2$ 个，则 $r$ 的取值范围是（　）
+      </div>
+      <div class="options-row">
+        <div class="opt-item">A. $(0, 1)$</div>
+        <div class="opt-item">B. $(1, 3)$</div>
+        <div class="opt-item">C. $(3, +\infty)$</div>
+        <div class="opt-item">D. $(0, +\infty)$</div>
+      </div>
+
+      <div class="v-actions">
+        <details class="v-collapse">
+          <summary>
+            <span>📐 思考后点此展开：几何辅助图（含双平行虚线与 $d, r$ 关系）</span>
+            <span class="sum-tag">查看配图</span>
+          </summary>
+          <div class="v-collapse-body">
+            <div class="svg-box">
+              <svg viewBox="0 0 380 245" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <pattern id="vg2" width="34" height="34" patternUnits="userSpaceOnUse" x="190" y="87">
+                    <path d="M 34 0 L 0 0 0 34" fill="none" stroke="#f1f5f9" stroke-width="1"/>
+                  </pattern>
+                </defs>
+                <rect width="380" height="245" fill="#ffffff"/>
+                <rect width="380" height="245" fill="url(#vg2)"/>
+
+                <line x1="20" y1="87" x2="360" y2="87" stroke="#94a3b8" stroke-width="1.4"/>
+                <line x1="190" y1="235" x2="190" y2="12" stroke="#94a3b8" stroke-width="1.4"/>
+                <text x="348" y="102" fill="#64748b" font-size="12" font-family="Times New Roman, serif" font-style="italic">x</text>
+                <text x="197" y="24" fill="#64748b" font-size="12" font-family="Times New Roman, serif" font-style="italic">y</text>
+
+                <!-- 临界虚圆 r=1(34px) 与 r=3(102px) -->
+                <circle cx="190" cy="155" r="34" fill="none" stroke="#e11d48" stroke-width="1.2" stroke-dasharray="3 3" opacity="0.65"/>
+                <circle cx="190" cy="155" r="102" fill="none" stroke="#059669" stroke-width="1.2" stroke-dasharray="3 3" opacity="0.65"/>
+
+                <!-- 当前代表圆 1 < r < 3 (取 r=2 -> 68px) -->
+                <circle cx="190" cy="155" r="68" fill="rgba(37, 99, 235, 0.06)" stroke="#2563eb" stroke-width="2.5"/>
+
+                <line x1="66.1" y1="233.6" x2="216.1" y2="-26.2" stroke="#2563eb" stroke-width="2"/>
+                <text x="152" y="34" fill="#1d4ed8" font-size="12" font-weight="bold">y = √3x + 2 (d=2)</text>
+
+                <line x1="95.6" y1="250.6" x2="245.6" y2="-9.2" stroke="#e11d48" stroke-width="2" stroke-dasharray="6 4"/>
+                <text x="218" y="64" fill="#be123c" font-size="12" font-weight="bold">近轨 l₁ (距C为1)</text>
+
+                <line x1="36.7" y1="216.6" x2="186.7" y2="-43.2" stroke="#059669" stroke-width="2" stroke-dasharray="6 4"/>
+                <text x="20" y="96" fill="#047857" font-size="12" font-weight="bold">远轨 l₂ (距C为3)</text>
+
+                <line x1="190" y1="155" x2="101.7" y2="104" stroke="#64748b" stroke-width="1.5" stroke-dasharray="3 3"/>
+
+                <circle cx="190" cy="87" r="5" fill="#f43f5e" stroke="#ffffff" stroke-width="1.5"/>
+                <circle cx="131.1" cy="189" r="5" fill="#f43f5e" stroke="#ffffff" stroke-width="1.5"/>
+
+                <circle cx="190" cy="155" r="4.2" fill="#1d4ed8"/>
+                <text x="198" y="164" fill="#1e3a8a" font-size="12.5" font-weight="bold">C(0, -2)</text>
+                <text x="198" y="182" fill="#2563eb" font-size="12" font-weight="bold">1 &lt; r &lt; 3 时恰有 2 个点</text>
+              </svg>
+              <div class="svg-note">圆心距 $d = 2$，$1$ 个点的外切临界半径为 $r_1 = d - 1 = 1$，$3$ 个点的内切临界半径为 $r_2 = d + 1 = 3$，故 $2$ 个点夹在 $(1, 3)$ 之间</div>
+            </div>
+          </div>
+        </details>
+
+        <details class="v-collapse sol-collapse">
+          <summary>
+            <span>📝 点此查看：完整解析与答案（奇数临界法 & 平行线法双解）</span>
+            <span class="sum-tag">展开解析</span>
+          </summary>
+          <div class="v-collapse-body">
+            <p style="margin-top:0;"><strong>解：</strong>由圆的方程 $x^2 + (y + 2)^2 = r^2$ 得定圆心 $C(0, -2)$，半径为 $r > 0$；将直线化为一般式：$\sqrt{3}x - y + 2 = 0$。</p>
+            <p>① 求圆心 $C(0, -2)$ 到直线 $\sqrt{3}x - y + 2 = 0$ 的距离 $d$：</p>
+            $$d = \frac{|\sqrt{3}\times 0 - (-2) + 2|}{\sqrt{(\sqrt{3})^2 + (-1)^2}} = \frac{4}{2} = 2$$
+            <p>② <strong>视角一（奇数点相切临界法）：</strong><br/>
+               想象圆的半径 $r$ 从 $0$ 开始逐渐变大：<br/>
+               &bull; 当<strong>恰有 $1$ 个点</strong>（圆刚触碰到近侧虚线外切）时，$d = r + 1 \implies r = d - 1 = 2 - 1 = 1$；<br/>
+               &bull; 当<strong>恰有 $3$ 个点</strong>（圆刚触碰到远侧虚线内切）时，$d = r - 1 \implies r = d + 1 = 2 + 1 = 3$。<br/>
+               由奇推偶可知，要使圆上<strong>有且仅有 $2$ 个点</strong>满足条件，半径 $r$ 必介于这两个奇数点临界值之间，即 $1 < r < 3$。</p>
+            <p>③ <strong>视角二（双平行虚线法）：</strong><br/>
+               近侧平行虚线到圆心距离为 $2 - 1 = 1$，远侧平行虚线到圆心距离为 $2 + 1 = 3$。恰有 $2$ 个交点即圆与近轨相交且与远轨相离，故 $1 < r < 3$。</p>
+            <p style="margin-bottom:0;">因此 $r$ 的取值范围是 <strong>$(1, 3)$</strong>，故选 <strong>B</strong>。</p>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <!-- 变式 3：圆定 + 线动（统一清爽样式，一般直线 + 奇偶两问综合） -->
+    <div class="variant-card">
+      <div class="v-top">
+        <span class="v-pill">变式训练 3</span>
+        <span class="v-meta">模型三：圆定 + 线动 · 先求奇数临界(3点)再推偶数范围(2点)</span>
+      </div>
+      <div class="v-question">
+        已知圆 $C: (x - 1)^2 + (y - 2)^2 = 5$，直线 $l: 2x - y + c = 0$。<br/>
+        （1）若圆 $C$ 上恰有 <strong>$3$ 个点</strong> 到直线 $l$ 的距离为 $\dfrac{\sqrt{5}}{5}$，求实数 $c$ 的值；<br/>
+        （2）若圆 $C$ 上恰有 <strong>$2$ 个点</strong> 到直线 $l$ 的距离为 $\dfrac{\sqrt{5}}{5}$，求实数 $c$ 的取值范围。
+      </div>
+
+      <div class="v-actions">
+        <details class="v-collapse">
+          <summary>
+            <span>📐 思考后点此展开：几何辅助图（含双平行虚线与 $d, r$ 关系）</span>
+            <span class="sum-tag">查看配图</span>
+          </summary>
+          <div class="v-collapse-body">
+            <div class="svg-box">
+              <svg viewBox="0 0 380 240" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <pattern id="vg3" width="32" height="32" patternUnits="userSpaceOnUse" x="135" y="185">
+                    <path d="M 32 0 L 0 0 0 32" fill="none" stroke="#f1f5f9" stroke-width="1"/>
+                  </pattern>
+                </defs>
+                <rect width="380" height="240" fill="#ffffff"/>
+                <rect width="380" height="240" fill="url(#vg3)"/>
+
+                <!-- 坐标轴 O(135, 185), C(1,2)->(167, 121), scale=32, r=sqrt(5)≈2.236 -> 71.5px -->
+                <line x1="20" y1="185" x2="360" y2="185" stroke="#94a3b8" stroke-width="1.4"/>
+                <line x1="135" y1="228" x2="135" y2="12" stroke="#94a3b8" stroke-width="1.4"/>
+                <text x="348" y="201" fill="#64748b" font-size="12" font-family="Times New Roman, serif" font-style="italic">x</text>
+                <text x="142" y="24" fill="#64748b" font-size="12" font-family="Times New Roman, serif" font-style="italic">y</text>
+
+                <!-- 圆 C(1,2)->(167,121), r=71.5 -->
+                <circle cx="167" cy="121" r="71.5" fill="rgba(37, 99, 235, 0.05)" stroke="#2563eb" stroke-width="2.5"/>
+
+                <!-- 直线 2x - y + c = 0, 法向 (2/sqrt(5), -1/sqrt(5)) = (0.894, -0.447) 数学坐标 -> 屏幕法向 (0.894, 0.447) 右下 -->
+                <!-- 展示第(1)问 3个点临界状态: d = r - h = 4*sqrt(5)/5 ≈ 1.789 -> 57.2px, H0 = (167 + 51.1, 121 + 25.6) = (218.1, 146.6) -->
+                <!-- 直线切向 (-0.447, 0.894) -->
+                <line x1="276.2" y1="30.4" x2="160.0" y2="262.8" stroke="#2563eb" stroke-width="2"/>
+                <text x="246" y="46" fill="#1d4ed8" font-size="12" font-weight="bold">2x - y + c = 0</text>
+
+                <!-- 近轨 l1: 距 C 为 3*sqrt(5)/5 -> 42.9px, H1 = (205.3, 140.2) -->
+                <line x1="263.4" y1="24.0" x2="147.2" y2="256.4" stroke="#e11d48" stroke-width="2" stroke-dasharray="6 4"/>
+                <text x="64" y="220" fill="#be123c" font-size="12" font-weight="bold">近轨 l₁ (交2点)</text>
+
+                <!-- 远轨 l2: 距 C 为 sqrt(5)=r -> 71.5px, H2 = (230.9, 153.0) 恰相切 -->
+                <line x1="289.0" y1="36.8" x2="172.8" y2="269.2" stroke="#059669" stroke-width="2" stroke-dasharray="6 4"/>
+                <text x="242" y="182" fill="#047857" font-size="12" font-weight="bold">远轨 l₂ (切1点)</text>
+
+                <!-- 圆心到远轨切点连线 -->
+                <line x1="167" y1="121" x2="230.9" y2="153.0" stroke="#64748b" stroke-width="1.5" stroke-dasharray="3 3"/>
+
+                <!-- 3个满足条件的红点 -->
+                <circle cx="179.7" cy="89.0" r="4.8" fill="#f43f5e" stroke="#ffffff" stroke-width="1.5"/>
+                <circle cx="230.9" cy="191.4" r="4.8" fill="#f43f5e" stroke="#ffffff" stroke-width="1.5"/>
+                <circle cx="230.9" cy="153.0" r="5.2" fill="#f43f5e" stroke="#ffffff" stroke-width="1.5"/>
+
+                <circle cx="167" cy="121" r="4.2" fill="#1d4ed8"/>
+                <text x="102" y="118" fill="#1e3a8a" font-size="12.5" font-weight="bold">C(1, 2), r=√5</text>
+              </svg>
+              <div class="svg-note">第（1）问先求 $3$ 个点的奇数临界：$d = r - h = \sqrt{5} - \frac{\sqrt{5}}{5} = \frac{4\sqrt{5}}{5}$；第（2）问再看 $1$ 个点临界 $d = r + h = \frac{6\sqrt{5}}{5}$，夹在两临界值之间即为 $2$ 个点！</div>
+            </div>
+          </div>
+        </details>
+
+        <details class="v-collapse sol-collapse">
+          <summary>
+            <span>📝 点此查看：完整解析与答案（深刻体会“由奇推偶”的威力）</span>
+            <span class="sum-tag">展开解析</span>
+          </summary>
+          <div class="v-collapse-body">
+            <p style="margin-top:0;"><strong>解：</strong>由圆 $C: (x - 1)^2 + (y - 2)^2 = 5$ 知圆心 $C(1, 2)$，半径 $r = \sqrt{5}$，定距 $h = \dfrac{\sqrt{5}}{5}$。</p>
+            <p>圆心 $C(1, 2)$ 到直线 $l: 2x - y + c = 0$ 的距离为：</p>
+            $$d = \frac{|2\times 1 - 2 + c|}{\sqrt{2^2 + (-1)^2}} = \frac{|c|}{\sqrt{5}}$$
+            <hr style="border:0; border-top:1px dashed var(--border); margin:12px 0;"/>
+            <p><strong>（1）求恰有 $3$ 个点（奇数点内切临界）时 $c$ 的值：</strong></p>
+            <p>当圆上恰有 $3$ 个点到直线 $l$ 的距离为 $h$ 时，必有一条平行虚线与圆相交（$2$点）、另一条平行虚线与圆相切（$1$点），此时圆心距 $d$ 满足：</p>
+            $$d = r - h = \sqrt{5} - \frac{\sqrt{5}}{5} = \frac{4\sqrt{5}}{5}$$
+            <p>代入 $d = \dfrac{|c|}{\sqrt{5}}$ 得：</p>
+            $$\frac{|c|}{\sqrt{5}} = \frac{4\sqrt{5}}{5} \implies |c| = 4 \implies \boldsymbol{c = 4 \text{ 或 } c = -4}$$
+            <hr style="border:0; border-top:1px dashed var(--border); margin:12px 0;"/>
+            <p><strong>（2）由奇推偶，求恰有 $2$ 个点（偶数点区间）时 $c$ 的范围：</strong></p>
+            <p>先找另一个奇数临界态——当圆上<strong>恰有 $1$ 个点</strong>（外切临界）时：</p>
+            $$d = r + h = \sqrt{5} + \frac{\sqrt{5}}{5} = \frac{6\sqrt{5}}{5} \implies \frac{|c|}{\sqrt{5}} = \frac{6\sqrt{5}}{5} \implies |c| = 6$$
+            <p>要使圆上恰有 $2$ 个点满足条件，圆心距 $d$ 必须夹在“$3$ 个点临界”与“$1$ 个点临界”之间：</p>
+            $$r - h < d < r + h \implies \frac{4\sqrt{5}}{5} < \frac{|c|}{\sqrt{5}} < \frac{6\sqrt{5}}{5} \implies 4 < |c| < 6$$
+            <p style="margin-bottom:0;">解得实数 $c$ 的取值范围是 <strong>$(-6, -4) \cup (4, 6)$</strong>。</p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 考场实战通法总结 -->
+  <section class="card" id="sec-summary">
+    <div class="sec-header">
+      <span class="sec-index">05 · 考场实战三步通法总结</span>
+      <h2>记住“先奇后偶”三步口诀，无需死背任何复杂公式</h2>
+    </div>
+
+    <div class="summary-grid">
+      <div class="sum-card">
+        <div class="sum-step">STEP 01 · 算距离</div>
+        <div class="sum-title">写出圆心距 $d$ 与半径 $r$</div>
+        <div class="sum-desc">
+          将直线化为一般式 $Ax+By+C=0$，用点到直线距离公式表示出圆心到主直线的距离 $d$，明确圆半径 $r$ 与给定距离 $h$。
+        </div>
+      </div>
+
+      <div class="sum-card">
+        <div class="sum-step">STEP 02 · 定奇数临界</div>
+        <div class="sum-title">找 $1$ 点与 $3$ 点的相切态</div>
+        <div class="sum-desc">
+          在主直线两侧画相距为 $h$ 的平行虚线：<strong>恰有 $3$ 点</strong>（远轨内切）对应 $\boldsymbol{d = r - h}$；<strong>恰有 $1$ 点</strong>（近轨外切）对应 $\boldsymbol{d = r + h}$。
+        </div>
+      </div>
+
+      <div class="sum-card">
+        <div class="sum-step">STEP 03 · 由奇推偶</div>
+        <div class="sum-title">按数轴切分偶数点区间</div>
+        <div class="sum-desc">
+          用两个奇数临界点把 $d$ 的范围切开：$0 \le d < r-h$ 为 <strong>$4$ 个点</strong>，$r-h < d < r+h$ 为 <strong>$2$ 个点</strong>，$d > r+h$ 为 <strong>$0$ 个点</strong>！
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  高中数学互动教学课件 · 圆上点到直线距离定值个数专题
+</footer>
+
+<script>
+  // 初始化 KaTeX 渲染
+  document.addEventListener("DOMContentLoaded", function () {
+    if (window.renderMathInElement) {
+      renderMathInElement(document.body, {
+        delimiters: [
+          { left: "$$", right: "$$", display: true },
+          { left: "$", right: "$", display: false }
+        ],
+        throwOnError: false
+      });
+    }
+  });
+
+  // 03 模块双视角 Tab 切换逻辑
+  document.querySelectorAll('[data-sol-tab]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('[data-sol-tab]').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.sol-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      const target = document.getElementById(btn.dataset.solTab);
+      if (target) target.classList.add('active');
+    });
+  });
+
+  // ================== 动态画板核心逻辑 ==================
+  const canvas = document.getElementById('graphCanvas');
+  const ctx = canvas.getContext('2d');
+  const paramSlider = document.getElementById('paramSlider');
+  const sliderLabel = document.getElementById('sliderLabel');
+  const sliderValueText = document.getElementById('sliderValueText');
+  const hudPointCount = document.getElementById('hudPointCount');
+  const mDistD = document.getElementById('mDistD');
+  const mRadiusR = document.getElementById('mRadiusR');
+  const mTrackDist = document.getElementById('mTrackDist');
+  const mStatusText = document.getElementById('mStatusText');
+
+  const modeBtnA = document.getElementById('modeBtnA');
+  const modeBtnB = document.getElementById('modeBtnB');
+
+  // 当前模式：'A' (主例题：圆定 r=2, 直线 x-y+m=0 动) | 'B' (2025高考：直线 sqrt(3)x-y+2=0 定, 圆 r 动)
+  let currentMode = 'A';
+  let paramM = -3.0; // 模式 A 参数 m
+  let paramR = 2.0;  // 模式 B 参数 r
+
+  // 严格遵循留白原则：初始只开启 base（基础圆与主直线），平行虚线、距离、交点默认隐藏
+  const layers = {
+    base: true,
+    parallels: false,
+    dist: false,
+    points: false
+  };
+
+  function syncButtonsUI() {
+    document.querySelectorAll('[data-layer]').forEach(btn => {
+      const k = btn.dataset.layer;
+      btn.classList.toggle('layer-on', Boolean(layers[k]));
+    });
+  }
+
+  function highlightPresetUI(pointCount) {
+    document.querySelectorAll('[data-preset]').forEach(btn => {
+      btn.classList.toggle('preset-on', Number(btn.dataset.preset) === pointCount);
+    });
+    document.querySelectorAll('[data-state-jump]').forEach(cell => {
+      cell.classList.toggle('active-state', Number(cell.dataset.stateJump) === pointCount);
+    });
+  }
+
+  // 计算一条直线 Ax + By + C = 0 与圆 (x - cx)^2 + (y - cy)^2 = r^2 的交点数组
+  function getCircleLineIntersections(cx, cy, r, A, B, C) {
+    const norm = Math.hypot(A, B);
+    const nx = A / norm;
+    const ny = B / norm;
+    // 有向距离 signedD：圆心到直线的投影
+    const signedD = (A * cx + B * cy + C) / norm;
+    const absD = Math.abs(signedD);
+    // 垂足坐标 H
+    const hx = cx - signedD * nx;
+    const hy = cy - signedD * ny;
+
+    const eps = 0.025;
+    if (absD > r + eps) {
+      return { count: 0, pts: [], Foot: [hx, hy], dist: absD };
+    }
+    if (Math.abs(absD - r) <= eps) {
+      return { count: 1, pts: [[hx, hy]], Foot: [hx, hy], dist: absD };
+    }
+    const halfChord = Math.sqrt(Math.max(0, r * r - absD * absD));
+    const tx = -ny;
+    const ty = nx;
+    return {
+      count: 2,
+      pts: [
+        [hx + tx * halfChord, hy + ty * halfChord],
+        [hx - tx * halfChord, hy - ty * halfChord]
+      ],
+      Foot: [hx, hy],
+      dist: absD
+    };
+  }
+
+  // 在画布上画无限延伸直线 Ax + By + C = 0
+  function drawInfiniteLine(A, B, C, P, color, width = 2, dash = []) {
+    ctx.save();
+    ctx.beginPath();
+    ctx.setLineDash(dash);
+    ctx.strokeStyle = color;
+    ctx.lineWidth = width;
+
+    const xMin = -12, xMax = 12;
+    if (Math.abs(B) > 1e-5) {
+      const y1 = (-A * xMin - C) / B;
+      const y2 = (-A * xMax - C) / B;
+      const p1 = P(xMin, y1);
+      const p2 = P(xMax, y2);
+      ctx.moveTo(p1[0], p1[1]);
+      ctx.lineTo(p2[0], p2[1]);
+    } else {
+      const x0 = -C / A;
+      const p1 = P(x0, -12);
+      const p2 = P(x0, 12);
+      ctx.moveTo(p1[0], p1[1]);
+      ctx.lineTo(p2[0], p2[1]);
+    }
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function renderCanvas() {
+    const rect = canvas.getBoundingClientRect();
+    const w = rect.width;
+    const h = rect.height;
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = w * dpr;
+    canvas.height = h * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, w, h);
+
+    // 根据模式设定几何参数
+    let cx, cy, r, A, B, C, norm;
+    if (currentMode === 'A') {
+      cx = 2; cy = -1; r = 2;
+      A = 1; B = -1; C = paramM;
+      norm = Math.SQRT2;
+    } else {
+      cx = 0; cy = -2; r = paramR;
+      A = Math.sqrt(3); B = -1; C = 2;
+      norm = 2;
+    }
+
+    const scale = Math.min((w - 40) / 10.5, (h - 30) / 7.8);
+    const ox = currentMode === 'A' ? w * 0.36 : w * 0.52;
+    const oy = currentMode === 'A' ? h * 0.42 : h * 0.34;
+    const P = (x, y) => [ox + x * scale, oy - y * scale];
+
+    // 1. 绘制背景坐标网格
+    ctx.strokeStyle = '#f1f5f9';
+    ctx.lineWidth = 1;
+    for (let i = -10; i <= 10; i++) {
+      const [gx] = P(i, 0);
+      ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, h); ctx.stroke();
+      const [, gy] = P(0, i);
+      ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(w, gy); ctx.stroke();
+    }
+
+    // 2. 绘制坐标轴
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(12, oy); ctx.lineTo(w - 12, oy);
+    ctx.moveTo(ox, 12); ctx.lineTo(ox, h - 12);
+    ctx.stroke();
+
+    ctx.fillStyle = '#64748b';
+    ctx.font = 'italic 14px "KaTeX_Math", "Times New Roman", serif';
+    ctx.fillText('x', w - 22, oy + 17);
+    ctx.fillText('y', ox + 8, 22);
+    ctx.fillText('O', ox - 15, oy + 15);
+
+    // 两条平行虚线方程：Ax + By + (C ± norm*1) = 0
+    const C1 = C - norm * 1; // 紫红色虚线 l1
+    const C2 = C + norm * 1; // 翠绿色虚线 l2
+
+    const resMain = getCircleLineIntersections(cx, cy, r, A, B, C);
+    const resL1 = getCircleLineIntersections(cx, cy, r, A, B, C1);
+    const resL2 = getCircleLineIntersections(cx, cy, r, A, B, C2);
+    const totalPoints = resL1.count + resL2.count;
+
+    // 图层 ②：两侧异色平行虚线 l1, l2 及半透明走廊带
+    if (layers.parallels) {
+      // 绘制两平行虚线之间的淡色走廊带
+      ctx.save();
+      const xMin = -12, xMax = 12;
+      const p1a = P(xMin, (-A * xMin - C1) / B);
+      const p1b = P(xMax, (-A * xMax - C1) / B);
+      const p2b = P(xMax, (-A * xMax - C2) / B);
+      const p2a = P(xMin, (-A * xMin - C2) / B);
+      ctx.beginPath();
+      ctx.moveTo(p1a[0], p1a[1]);
+      ctx.lineTo(p1b[0], p1b[1]);
+      ctx.lineTo(p2b[0], p2b[1]);
+      ctx.lineTo(p2a[0], p2a[1]);
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(148, 163, 184, 0.09)';
+      ctx.fill();
+      ctx.restore();
+
+      // 紫红色虚线 l1
+      drawInfiniteLine(A, B, C1, P, '#e11d48', 2.2, [7, 5]);
+      // 翠绿色虚线 l2
+      drawInfiniteLine(A, B, C2, P, '#059669', 2.2, [7, 5]);
+
+      // 在虚线旁标注 l1, l2
+      const f1 = P(resL1.Foot[0], resL1.Foot[1]);
+      const f2 = P(resL2.Foot[0], resL2.Foot[1]);
+      ctx.font = 'bold 13px -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif';
+      ctx.fillStyle = '#be123c';
+      ctx.fillText(`平行虚线 l₁ (距C:${resL1.dist.toFixed(2)})`, f1[0] + 12, f1[1] + 16);
+      ctx.fillStyle = '#047857';
+      ctx.fillText(`平行虚线 l₂ (距C:${resL2.dist.toFixed(2)})`, f2[0] - 135, f2[1] - 10);
+    }
+
+    // 图层 ①：基础圆 C 与主直线 l
+    if (layers.base) {
+      const cPt = P(cx, cy);
+      ctx.beginPath();
+      ctx.arc(cPt[0], cPt[1], r * scale, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(37, 99, 235, 0.06)';
+      ctx.fill();
+      ctx.strokeStyle = '#2563eb';
+      ctx.lineWidth = 2.6;
+      ctx.stroke();
+
+      // 主直线 l
+      drawInfiniteLine(A, B, C, P, '#1d4ed8', 2.4, []);
+
+      // 圆心标注
+      ctx.beginPath();
+      ctx.arc(cPt[0], cPt[1], 4.5, 0, Math.PI * 2);
+      ctx.fillStyle = '#1d4ed8';
+      ctx.fill();
+      ctx.font = 'bold 13px "Times New Roman", sans-serif';
+      ctx.fillStyle = '#1e3a8a';
+      ctx.fillText(`C(${cx}, ${cy})`, cPt[0] + 8, cPt[1] + 15);
+    }
+
+    // 图层 ③：圆心距 d 与带宽 h=1 垂线段
+    if (layers.dist) {
+      const cPt = P(cx, cy);
+      const hMain = P(resMain.Foot[0], resMain.Foot[1]);
+      const h1 = P(resL1.Foot[0], resL1.Foot[1]);
+      const h2 = P(resL2.Foot[0], resL2.Foot[1]);
+
+      // 连结 l1 垂足与 l2 垂足展示带宽
+      ctx.beginPath();
+      ctx.setLineDash([3, 3]);
+      ctx.moveTo(h1[0], h1[1]);
+      ctx.lineTo(h2[0], h2[1]);
+      ctx.strokeStyle = '#64748b';
+      ctx.lineWidth = 1.6;
+      ctx.stroke();
+
+      // 圆心到主直线垂线段 d
+      ctx.beginPath();
+      ctx.setLineDash([]);
+      ctx.moveTo(cPt[0], cPt[1]);
+      ctx.lineTo(hMain[0], hMain[1]);
+      ctx.strokeStyle = '#d97706';
+      ctx.lineWidth = 2.4;
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.arc(hMain[0], hMain[1], 3.8, 0, Math.PI * 2);
+      ctx.fillStyle = '#d97706';
+      ctx.fill();
+
+      ctx.font = 'bold 13px "Times New Roman", sans-serif';
+      ctx.fillStyle = '#b45309';
+      ctx.fillText(`d = ${resMain.dist.toFixed(2)}`, (cPt[0] + hMain[0]) / 2 + 8, (cPt[1] + hMain[1]) / 2 - 4);
+    }
+
+    // 图层 ④：满足条件的交点高亮
+    if (layers.points) {
+      const allPts = [...resL1.pts, ...resL2.pts];
+      allPts.forEach((pt, idx) => {
+        const sPt = P(pt[0], pt[1]);
+        // 发光外圈
+        ctx.beginPath();
+        ctx.arc(sPt[0], sPt[1], 9, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(244, 63, 94, 0.25)';
+        ctx.fill();
+
+        // 实心红点
+        ctx.beginPath();
+        ctx.arc(sPt[0], sPt[1], 5, 0, Math.PI * 2);
+        ctx.fillStyle = '#f43f5e';
+        ctx.fill();
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1.8;
+        ctx.stroke();
+
+        ctx.font = 'bold 12px "Times New Roman", sans-serif';
+        ctx.fillStyle = '#be123c';
+        ctx.fillText(`P${idx + 1}`, sPt[0] + 8, sPt[1] - 8);
+      });
+    }
+
+    // 若平行线未开启，顶部给出温和引导提示
+    if (!layers.parallels) {
+      ctx.fillStyle = 'rgba(248, 250, 252, 0.94)';
+      ctx.strokeStyle = '#cbd5e1';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.roundRect(14, 12, Math.min(w - 190, 390), 34, 8);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#334155';
+      ctx.font = '12.5px -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif';
+      ctx.fillText('💡 请点击上方【② 两侧异色平行虚线】开启双轨转化视角', 24, 33);
+    }
+
+    // 更新顶部 HUD 与底部数据看板
+    hudPointCount.textContent = `${totalPoints} 个`;
+    highlightPresetUI(totalPoints);
+
+    const dVal = resMain.dist;
+    const crit3 = Math.max(0, r - 1);
+    const crit1 = r + 1;
+
+    mDistD.textContent = `d = ${dVal.toFixed(2)}`;
+    mRadiusR.textContent = `r = ${r.toFixed(2)}, h = 1`;
+    mTrackDist.textContent = `r-h = ${crit3.toFixed(2)}, r+h = ${crit1.toFixed(2)}`;
+
+    const statusMap = {
+      0: 'd > r+h (0个点·双离)',
+      1: '★ d = r+h (1个点·外切临界)',
+      2: 'r-h < d < r+h (2个点)',
+      3: '★ d = r-h (3个点·内切临界)',
+      4: '0 ≤ d < r-h (4个点·双交)'
+    };
+    mStatusText.textContent = statusMap[totalPoints] || '';
+
+    if (currentMode === 'A') {
+      sliderValueText.textContent = `m = ${paramM.toFixed(2)} （d = ${dVal.toFixed(2)}，共 ${totalPoints} 个点）`;
+    } else {
+      sliderValueText.textContent = `r = ${paramR.toFixed(2)} （d = 2.00，共 ${totalPoints} 个点）`;
+    }
+  }
+
+  // 分步图层按钮点击事件
+  document.querySelectorAll('[data-layer]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const k = btn.dataset.layer;
+      layers[k] = !layers[k];
+      syncButtonsUI();
+      renderCanvas();
+    });
+  });
+
+  document.getElementById('btnShowAll').addEventListener('click', () => {
+    Object.keys(layers).forEach(k => layers[k] = true);
+    syncButtonsUI();
+    renderCanvas();
+  });
+
+  document.getElementById('btnResetBlank').addEventListener('click', () => {
+    layers.base = true;
+    layers.parallels = false;
+    layers.dist = false;
+    layers.points = false;
+    syncButtonsUI();
+    renderCanvas();
+  });
+
+  // 模式切换：模式 A vs 模式 B
+  function switchMode(mode) {
+    currentMode = mode;
+    modeBtnA.classList.toggle('active', mode === 'A');
+    modeBtnB.classList.toggle('active', mode === 'B');
+
+    if (mode === 'A') {
+      paramSlider.min = '-8.0';
+      paramSlider.max = '2.0';
+      paramSlider.step = '0.01';
+      paramSlider.value = paramM;
+      sliderLabel.textContent = '拖动滑块平移直线参数 m（观察 d 跨过奇数点临界值 1 和 3 时的突变）：';
+    } else {
+      paramSlider.min = '0.3';
+      paramSlider.max = '4.2';
+      paramSlider.step = '0.01';
+      paramSlider.value = paramR;
+      sliderLabel.textContent = '拖动滑块缩放圆的半径 r（2025高考模型：观察 r 跨过临界值 1 和 3 时的交点个数）：';
+    }
+    renderCanvas();
+  }
+
+  modeBtnA.addEventListener('click', () => switchMode('A'));
+  modeBtnB.addEventListener('click', () => switchMode('B'));
+
+  // 一键体验 0 ~ 4 个点预设值（支持平滑过渡动画）
+  let animFrameId = null;
+  function animateParamTo(targetVal) {
+    if (animFrameId) cancelAnimationFrame(animFrameId);
+    const startVal = currentMode === 'A' ? paramM : paramR;
+    const duration = 360;
+    const startTime = performance.now();
+
+    function step(now) {
+      const t = Math.min(1, (now - startTime) / duration);
+      const ease = 1 - Math.pow(1 - t, 3);
+      const cur = startVal + (targetVal - startVal) * ease;
+      if (currentMode === 'A') {
+        paramM = cur;
+      } else {
+        paramR = cur;
+      }
+      paramSlider.value = cur;
+      renderCanvas();
+      if (t < 1) {
+        animFrameId = requestAnimationFrame(step);
+      }
+    }
+    animFrameId = requestAnimationFrame(step);
+  }
+
+  function jumpToPointCount(targetCount) {
+    // 自动开启平行虚线、圆心距和交点高亮，方便学生直接观察
+    layers.base = true;
+    layers.parallels = true;
+    layers.dist = true;
+    layers.points = true;
+    syncButtonsUI();
+
+    if (currentMode === 'A') {
+      // 圆 C(2,-1), r=2, d = |m+3|/sqrt(2)
+      const mapM = {
+        0: -3 - 3.6 * Math.SQRT2, // d = 3.6 > 3 (0个点)
+        1: -3 - 3.0 * Math.SQRT2, // d = 3.0 (外切1个点)
+        2: -3 - 2.0 * Math.SQRT2, // d = 2.0 (2个点)
+        3: -3 - 1.0 * Math.SQRT2, // d = 1.0 (内切3个点)
+        4: -3.0                   // d = 0.0 (4个点)
+      };
+      animateParamTo(mapM[targetCount]);
+    } else {
+      // 2025高考题：d = 2, 近轨距C=1, 远轨距C=3
+      const mapR = {
+        0: 0.65, // r < 1 (0个点)
+        1: 1.00, // r = 1 (1个点)
+        2: 2.00, // 1 < r < 3 (2个点)
+        3: 3.00, // r = 3 (3个点)
+        4: 3.65  // r > 3 (4个点)
+      };
+      animateParamTo(mapR[targetCount]);
+    }
+  }
+
+  document.querySelectorAll('[data-preset]').forEach(btn => {
+    btn.addEventListener('click', () => jumpToPointCount(Number(btn.dataset.preset)));
+  });
+
+  document.querySelectorAll('[data-state-jump]').forEach(cell => {
+    cell.addEventListener('click', () => jumpToPointCount(Number(cell.dataset.stateJump)));
+  });
+
+  // 滑块拖动事件
+  paramSlider.addEventListener('input', () => {
+    if (currentMode === 'A') {
+      paramM = Number(paramSlider.value);
+    } else {
+      paramR = Number(paramSlider.value);
+    }
+    // 拖动滑块时若还未开启平行线，自动开启平行线与交点
+    if (!layers.parallels) {
+      layers.parallels = true;
+      layers.points = true;
+      syncButtonsUI();
+    }
+    renderCanvas();
+  });
+
+  window.addEventListener('resize', renderCanvas);
+  window.addEventListener('load', () => {
+    syncButtonsUI();
+    renderCanvas();
+  });
+  syncButtonsUI();
+  renderCanvas();
+</script>
+</body>
+</html>
