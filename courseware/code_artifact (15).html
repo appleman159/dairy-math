@@ -1,0 +1,2020 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f172a" />
+  <title>圆的方程：待定系数法与弦长问题</title>
+  <!-- 引入 KaTeX 教科书级数学公式渲染引擎 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" crossorigin="anonymous">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+  <style>
+    :root {
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --ink: #0f172a;
+      --ink-secondary: #334155;
+      --muted: #64748b;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --primary-soft: #eff6ff;
+      --primary-border: #bfdbfe;
+      --emerald: #059669;
+      --emerald-soft: #ecfdf5;
+      --emerald-border: #a7f3d0;
+      --amber: #d97706;
+      --amber-soft: #fffbeb;
+      --amber-border: #fde68a;
+      --rose: #e11d48;
+      --border: #e2e8f0;
+      --radius-lg: 20px;
+      --radius-md: 14px;
+      --radius-sm: 10px;
+      --shadow-card: 0 10px 30px -5px rgba(15, 23, 42, 0.05), 0 4px 12px -2px rgba(15, 23, 42, 0.03);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background-color: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      font-size: 16px;
+      line-height: 1.75;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* KaTeX 微调：保证在手机端公式不溢出且字号协调 */
+    .katex {
+      font-size: 1.06em;
+    }
+    .katex-display {
+      margin: 0.6em 0;
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding: 4px 0;
+    }
+
+    /* 顶部 Hero 区域 */
+    header {
+      position: relative;
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 55%, #2563eb 100%);
+      color: #ffffff;
+      padding: 42px 20px 36px;
+      border-bottom-left-radius: 32px;
+      border-bottom-right-radius: 32px;
+      box-shadow: 0 14px 35px rgba(30, 58, 138, 0.22);
+      overflow: hidden;
+    }
+
+    header::before {
+      content: "";
+      position: absolute;
+      top: -60px;
+      right: -40px;
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      border: 32px solid rgba(255, 255, 255, 0.05);
+      pointer-events: none;
+    }
+
+    header::after {
+      content: "";
+      position: absolute;
+      bottom: -80px;
+      left: 10%;
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      border: 20px solid rgba(56, 189, 248, 0.07);
+      pointer-events: none;
+    }
+
+    .container {
+      max-width: 840px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.14);
+      backdrop-filter: blur(8px);
+      padding: 5px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #e0f2fe;
+      letter-spacing: 0.6px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+    }
+
+    header h1 {
+      font-size: clamp(24px, 5vw, 34px);
+      font-weight: 800;
+      margin: 14px 0 8px;
+      line-height: 1.3;
+      letter-spacing: -0.3px;
+    }
+
+    header p {
+      margin: 0;
+      color: #bfdbfe;
+      font-size: 15px;
+      max-width: 680px;
+    }
+
+    /* 毛玻璃吸顶导航栏 */
+    .sticky-nav {
+      position: sticky;
+      top: 0;
+      z-index: 60;
+      background: rgba(241, 245, 249, 0.86);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(226, 232, 240, 0.9);
+      padding: 10px 16px;
+    }
+
+    .nav-scroll {
+      max-width: 840px;
+      margin: 0 auto;
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .nav-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    .nav-pill {
+      text-decoration: none;
+      background: #ffffff;
+      color: var(--ink-secondary);
+      font-size: 13.5px;
+      font-weight: 600;
+      padding: 6px 15px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      white-space: nowrap;
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+    }
+
+    .nav-pill:hover, .nav-pill:active {
+      color: var(--primary);
+      border-color: var(--primary-border);
+      background: var(--primary-soft);
+      transform: translateY(-1px);
+    }
+
+    /* 主体区域 */
+    main {
+      max-width: 840px;
+      margin: 0 auto;
+      padding: 20px 16px 70px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius-lg);
+      padding: 26px 24px;
+      margin-bottom: 22px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-card);
+    }
+
+    .sec-header {
+      margin-bottom: 18px;
+    }
+
+    .sec-index {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--primary);
+      background: var(--primary-soft);
+      border: 1px solid var(--primary-border);
+      padding: 3px 10px;
+      border-radius: 999px;
+      letter-spacing: 0.8px;
+      margin-bottom: 8px;
+    }
+
+    h2 {
+      font-size: 21px;
+      font-weight: 800;
+      color: var(--ink);
+      margin: 0;
+      line-height: 1.4;
+    }
+
+    /* 题目高亮卡片 */
+    .question-box {
+      background: linear-gradient(135deg, #f8fafc 0%, #eff6ff 100%);
+      border: 1px solid var(--primary-border);
+      border-left: 5px solid var(--primary);
+      border-radius: var(--radius-md);
+      padding: 18px 20px;
+      font-size: 16.5px;
+      color: var(--ink);
+      margin-bottom: 18px;
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.04);
+    }
+
+    /* 数学公式独立展示条 */
+    .math-banner {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      text-align: center;
+      margin: 12px 0;
+      overflow-x: auto;
+    }
+
+    /* 三个条件转化列表 */
+    .cond-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .cond-row {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      align-items: center;
+      gap: 14px;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      transition: border-color 0.2s;
+    }
+
+    .cond-row:hover {
+      border-color: #cbd5e1;
+    }
+
+    .cond-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      color: #1e3a8a;
+      font-size: 15px;
+    }
+
+    .num-circle {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .cond-right {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 15px;
+      color: var(--ink-secondary);
+    }
+
+    .eq-pill {
+      background: #ffffff;
+      border: 1px solid var(--primary-border);
+      color: var(--primary-dark);
+      padding: 2px 12px;
+      border-radius: 8px;
+      font-weight: 600;
+    }
+
+    /* 02 四宫格核心公式 */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .know-box {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .know-head {
+      font-weight: 800;
+      color: #1e3a8a;
+      font-size: 15.5px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .know-formula {
+      background: #ffffff;
+      border: 1px solid #dbeafe;
+      border-radius: var(--radius-sm);
+      padding: 12px 10px;
+      text-align: center;
+      margin: 6px 0 10px;
+      box-shadow: inset 0 1px 3px rgba(15, 23, 42, 0.02);
+    }
+
+    .know-tip {
+      font-size: 13.5px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* 03 动态画板区域 */
+    .step-bar {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+      margin-bottom: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .step-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      align-items: center;
+    }
+
+    .bar-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--muted);
+      margin-right: 4px;
+    }
+
+    .pill-btn {
+      font: inherit;
+      font-size: 13.5px;
+      font-weight: 600;
+      padding: 6px 13px;
+      border-radius: 999px;
+      border: 1px solid #cbd5e1;
+      background: #ffffff;
+      color: var(--ink-secondary);
+      cursor: pointer;
+      transition: all 0.18s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .pill-btn:hover {
+      border-color: #94a3b8;
+      background: #f8fafc;
+    }
+
+    .pill-btn.layer-on {
+      background: var(--emerald-soft);
+      color: #047857;
+      border-color: #6ee7b7;
+      box-shadow: 0 2px 6px rgba(5, 150, 105, 0.12);
+    }
+
+    .pill-btn.quad-on {
+      background: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
+      box-shadow: 0 3px 10px rgba(37, 99, 235, 0.22);
+    }
+
+    .pill-btn.action-primary {
+      background: var(--primary-soft);
+      color: var(--primary-dark);
+      border-color: var(--primary-border);
+    }
+
+    .canvas-card {
+      border: 1px solid #cbd5e1;
+      border-radius: 16px;
+      background: #ffffff;
+      overflow: hidden;
+      box-shadow: inset 0 2px 6px rgba(15, 23, 42, 0.02);
+    }
+
+    canvas#graphCanvas {
+      display: block;
+      width: 100%;
+      height: 390px;
+      cursor: grab;
+      touch-action: pan-y;
+    }
+    canvas#graphCanvas:active {
+      cursor: grabbing;
+    }
+
+    .legend-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 16px;
+      padding: 10px 14px;
+      background: #f8fafc;
+      border-top: 1px solid var(--border);
+      font-size: 13px;
+      color: var(--ink-secondary);
+    }
+
+    .dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+
+    .slider-panel {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      margin-top: 12px;
+    }
+
+    .slider-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--primary);
+      height: 6px;
+      cursor: pointer;
+    }
+
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .metric-card {
+      background: var(--primary-soft);
+      border: 1px solid var(--primary-border);
+      border-radius: var(--radius-sm);
+      padding: 9px 10px;
+      text-align: center;
+    }
+
+    .metric-label {
+      font-size: 12px;
+      color: #1e40af;
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .metric-val {
+      font-weight: 800;
+      font-size: 14.5px;
+      color: var(--ink);
+      font-family: "Times New Roman", Georgia, serif;
+    }
+
+    /* 04 方法 Tabs 与步骤卡片 */
+    .method-tabs {
+      display: flex;
+      gap: 10px;
+      background: #f1f5f9;
+      padding: 6px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+
+    .m-tab {
+      flex: 1;
+      font: inherit;
+      font-size: 14.5px;
+      font-weight: 700;
+      padding: 10px 14px;
+      border-radius: 9px;
+      border: none;
+      background: transparent;
+      color: var(--ink-secondary);
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+
+    .m-tab.active {
+      background: #ffffff;
+      color: var(--primary-dark);
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+    }
+
+    .m-pane {
+      display: none;
+    }
+    .m-pane.active {
+      display: block;
+    }
+
+    .main-step {
+      display: grid;
+      grid-template-columns: 38px 1fr;
+      gap: 14px;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 18px;
+      margin-bottom: 14px;
+    }
+
+    .step-num {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: var(--primary);
+      color: #ffffff;
+      font-weight: 800;
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 2px;
+    }
+
+    .step-body h3 {
+      margin: 0 0 8px;
+      font-size: 16.5px;
+      color: var(--ink);
+    }
+
+    .step-body p {
+      margin: 4px 0;
+      color: var(--ink-secondary);
+      font-size: 15px;
+    }
+
+    /* 专为计算薄弱学生设计的折叠消元框 */
+    details.elim-details {
+      border: 1.5px dashed #93c5fd;
+      background: #f0f7ff;
+      border-radius: var(--radius-md);
+      margin: 14px 0;
+      overflow: hidden;
+      transition: all 0.2s;
+    }
+
+    details.elim-details summary {
+      padding: 12px 18px;
+      color: var(--primary-dark);
+      font-weight: 700;
+      font-size: 14.5px;
+      cursor: pointer;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      user-select: none;
+    }
+    details.elim-details summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .sum-tag {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--primary);
+      background: #ffffff;
+      padding: 3px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--primary-border);
+      white-space: nowrap;
+    }
+
+    details.elim-details[open] .sum-tag::after {
+      content: " ▲";
+    }
+    details.elim-details:not([open]) .sum-tag::after {
+      content: " ▼";
+    }
+
+    .elim-content {
+      padding: 16px 20px;
+      background: #ffffff;
+      border-top: 1px solid #dbeafe;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .sub-step {
+      padding-left: 12px;
+      border-left: 3px solid #93c5fd;
+    }
+
+    .sub-step-title {
+      font-weight: 700;
+      font-size: 14.5px;
+      color: #1e3a8a;
+      margin-bottom: 4px;
+    }
+
+    .answer-banner {
+      background: var(--emerald-soft);
+      border: 1.5px solid var(--emerald-border);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      margin-top: 14px;
+    }
+
+    .answer-label {
+      font-weight: 800;
+      color: #065f46;
+      font-size: 14.5px;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* 05 变式训练卡片 */
+    .variant-card {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 18px;
+    }
+
+    .variant-card:last-child {
+      margin-bottom: 0;
+    }
+
+    /* 变式 3 作业本专属配色与边框 */
+    .variant-card.homework-variant {
+      background: linear-gradient(145deg, #fffbeb 0%, #fef3c7 25%, #ffffff 100%);
+      border: 2px solid #f59e0b;
+      box-shadow: 0 8px 24px rgba(217, 119, 6, 0.08);
+    }
+
+    .v-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .v-pill {
+      background: var(--primary);
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 13px;
+      padding: 4px 12px;
+      border-radius: 999px;
+    }
+
+    .v-pill.hw-pill {
+      background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(180, 83, 9, 0.25);
+    }
+
+    .v-meta {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink-secondary);
+      background: #e2e8f0;
+      padding: 3px 10px;
+      border-radius: 6px;
+    }
+
+    .v-meta.hw-meta {
+      background: #fde68a;
+      color: #92400e;
+      border: 1px solid #f59e0b;
+    }
+
+    .v-question {
+      font-size: 16px;
+      color: var(--ink);
+      margin: 8px 0 14px;
+    }
+
+    .v-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* 变式折叠框（看图 & 看解析） */
+    details.v-collapse {
+      border: 1px solid #cbd5e1;
+      background: #ffffff;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    details.v-collapse summary {
+      padding: 11px 16px;
+      font-weight: 700;
+      font-size: 14.5px;
+      color: var(--ink-secondary);
+      background: #f1f5f9;
+      cursor: pointer;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      user-select: none;
+    }
+    details.v-collapse summary::-webkit-details-marker {
+      display: none;
+    }
+
+    details.v-collapse.sol-collapse {
+      border-color: var(--primary-border);
+    }
+    details.v-collapse.sol-collapse summary {
+      background: var(--primary-soft);
+      color: var(--primary-dark);
+    }
+
+    details.v-collapse.hw-collapse {
+      border-color: #fcd34d;
+    }
+    details.v-collapse.hw-collapse summary {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .v-collapse-body {
+      padding: 16px;
+      border-top: 1px solid var(--border);
+      font-size: 15px;
+    }
+
+    .svg-box {
+      max-width: 520px;
+      margin: 0 auto;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      background: #ffffff;
+    }
+
+    .svg-box svg {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .svg-note {
+      font-size: 12.5px;
+      color: var(--muted);
+      text-align: center;
+      padding: 8px 12px;
+      background: #f8fafc;
+      border-top: 1px solid var(--border);
+    }
+
+    /* 06 通法四步卡片 */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .sum-card {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px 14px;
+    }
+
+    .sum-step {
+      font-size: 11.5px;
+      font-weight: 800;
+      color: var(--primary);
+      letter-spacing: 0.6px;
+      margin-bottom: 4px;
+    }
+
+    .sum-title {
+      font-weight: 800;
+      font-size: 16px;
+      color: var(--ink);
+      margin-bottom: 6px;
+    }
+
+    .sum-desc {
+      font-size: 13.5px;
+      color: var(--ink-secondary);
+      line-height: 1.55;
+    }
+
+    footer {
+      text-align: center;
+      font-size: 13px;
+      color: var(--muted);
+      padding: 20px 16px 40px;
+    }
+
+    @media (max-width: 680px) {
+      .cond-row {
+        grid-template-columns: 1fr;
+        gap: 6px;
+      }
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+      .metrics-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+      .summary-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+      .card {
+        padding: 20px 16px;
+      }
+      canvas#graphCanvas {
+        height: 320px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <div class="hero-badge">高中数学 · 解析几何核心微专题</div>
+    <h1>圆的方程：待定系数法与弦长问题</h1>
+    <p>以圆的标准方程为主线，紧扣“圆心位置、相切距离、垂径勾股定理”建立三元方程组。</p>
+  </div>
+</header>
+
+<nav class="sticky-nav" aria-label="课堂模块导航">
+  <div class="nav-scroll">
+    <a class="nav-pill" href="#sec-example">01 典例拆解</a>
+    <a class="nav-pill" href="#sec-knowledge">02 核心公式</a>
+    <a class="nav-pill" href="#sec-canvas">03 动态画板</a>
+    <a class="nav-pill" href="#sec-methods">04 规范解答</a>
+    <a class="nav-pill" href="#sec-practice">05 变式训练</a>
+    <a class="nav-pill" href="#sec-summary">06 通法归纳</a>
+  </div>
+</nav>
+
+<main>
+  <!-- 01 典例与条件转化 -->
+  <section class="card" id="sec-example">
+    <div class="sec-header">
+      <span class="sec-index">01 · 典例分析与条件翻译</span>
+      <h2>抓准三个几何条件，逐一翻译为代数方程</h2>
+    </div>
+
+    <div class="question-box">
+      <strong>【典例】</strong>已知圆 $C$ 和 $y$ 轴相切，圆心在直线 $x - 3y = 0$ 上，且被直线 $y = x$ 截得的弦长为 $2\sqrt{7}$，求圆 $C$ 的方程。
+    </div>
+
+    <p style="margin: 0 0 8px; color: var(--ink-secondary); font-size: 15px;">
+      <strong>思路引导：</strong>由于条件直接给出了圆心所在直线、与坐标轴相切及弦长，优先设圆的<strong>标准方程</strong>，共有 $a, b, r$ 三个待定参数：
+    </p>
+
+    <div class="math-banner">
+      $$(x - a)^2 + (y - b)^2 = r^2 \quad (r > 0)$$
+    </div>
+
+    <div class="cond-list">
+      <div class="cond-row">
+        <div class="cond-left">
+          <span class="num-circle">1</span>
+          <span>圆与 $y$ 轴相切</span>
+        </div>
+        <div class="cond-right">
+          <span>圆心 $(a,b)$ 到 $y$ 轴距离等于半径</span>
+          <span>$\Longrightarrow$</span>
+          <span class="eq-pill">$|a| = r$</span>
+          <span style="color:var(--muted);font-size:13.5px;">（即 $a^2 = r^2$）</span>
+        </div>
+      </div>
+
+      <div class="cond-row">
+        <div class="cond-left">
+          <span class="num-circle">2</span>
+          <span>圆心在 $x - 3y = 0$ 上</span>
+        </div>
+        <div class="cond-right">
+          <span>将圆心坐标 $(a,b)$ 代入直线方程</span>
+          <span>$\Longrightarrow$</span>
+          <span class="eq-pill">$a - 3b = 0$</span>
+          <span style="color:var(--muted);font-size:13.5px;">（即 $a = 3b$）</span>
+        </div>
+      </div>
+
+      <div class="cond-row">
+        <div class="cond-left">
+          <span class="num-circle">3</span>
+          <span>被 $y = x$ 截得弦长 $2\sqrt{7}$</span>
+        </div>
+        <div class="cond-right">
+          <span>弦心距 $d = \dfrac{|a - b|}{\sqrt{2}}$，半弦长 $m = \sqrt{7}$</span>
+          <span>$\Longrightarrow$</span>
+          <span class="eq-pill">$\dfrac{(a - b)^2}{2} + 7 = r^2$</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 必备核心公式 -->
+  <section class="card" id="sec-knowledge">
+    <div class="sec-header">
+      <span class="sec-index">02 · 必备核心知识点</span>
+      <h2>解决本类题型的四个基本工具</h2>
+    </div>
+
+    <div class="grid-2">
+      <div class="know-box">
+        <div>
+          <div class="know-head">① 圆的标准方程</div>
+          <div class="know-formula">
+            $$(x - a)^2 + (y - b)^2 = r^2$$
+          </div>
+        </div>
+        <div class="know-tip">
+          圆心为 $C(a, b)$，半径为 $r > 0$。几何特征直观，凡涉及圆心与直线距离的问题均优先选用。
+        </div>
+      </div>
+
+      <div class="know-box">
+        <div>
+          <div class="know-head">② 直线与圆相切</div>
+          <div class="know-formula">
+            $$d = r$$
+          </div>
+        </div>
+        <div class="know-tip">
+          圆心到切线的距离等于半径。特别地：与 $x$ 轴相切 $\Rightarrow r = |b|$；与 $y$ 轴相切 $\Rightarrow r = |a|$。
+        </div>
+      </div>
+
+      <div class="know-box">
+        <div>
+          <div class="know-head">③ 点到直线的距离</div>
+          <div class="know-formula">
+            $$d = \frac{|Ax_0 + By_0 + C|}{\sqrt{A^2 + B^2}}$$
+          </div>
+        </div>
+        <div class="know-tip">
+          计算圆心 $(a,b)$ 到直线的弦心距或切线距离前，务必先将直线化为一般式 $Ax + By + C = 0$。
+        </div>
+      </div>
+
+      <div class="know-box">
+        <div>
+          <div class="know-head">④ 垂径定理（勾股关系）</div>
+          <div class="know-formula">
+            $$d^2 + m^2 = r^2 \quad \left(m = \frac{L}{2}\right)$$
+          </div>
+        </div>
+        <div class="know-tip">
+          弦心距 $d$、半弦长 $m$ 与半径 $r$ 构成 $\text{Rt}\triangle AHC$。本题弦长 $L = 2\sqrt{7}$，故半弦长 $m = \sqrt{7}$。
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 动态探究画板（初始留白，逐步点开） -->
+  <section class="card" id="sec-canvas">
+    <div class="sec-header">
+      <span class="sec-index">03 · 动态几何探究画板</span>
+      <h2>先在脑海中构建图形，再点击步骤按钮逐一生成</h2>
+    </div>
+
+    <div class="step-bar">
+      <div class="step-group">
+        <span class="bar-label">分步构建：</span>
+        <button type="button" class="pill-btn" data-layer="center">① 标出圆心 C</button>
+        <button type="button" class="pill-btn" data-layer="circle">② 画相切圆 (|a|=r)</button>
+        <button type="button" class="pill-btn" data-layer="secant">③ 画截弦直线 y=x</button>
+        <button type="button" class="pill-btn" data-layer="chord">④ 显示截弦 AB</button>
+        <button type="button" class="pill-btn" data-layer="triangle">⑤ 弦心距与勾股 Rt△</button>
+      </div>
+      <div class="step-group">
+        <button type="button" class="pill-btn action-primary" id="btnShowAll">✨ 一键全部显示</button>
+        <button type="button" class="pill-btn" id="btnHideAll">↺ 恢复初始留白</button>
+      </div>
+    </div>
+
+    <div class="step-bar" style="padding: 9px 14px;">
+      <div class="step-group">
+        <span class="bar-label">象限切换：</span>
+        <button type="button" class="pill-btn quad-on" id="btnQuad1">第一象限圆心 (3, 1)</button>
+        <button type="button" class="pill-btn" id="btnQuad3">第三象限圆心 (-3, -1)</button>
+        <button type="button" class="pill-btn" id="btnQuadBoth">同时显示双解</button>
+      </div>
+    </div>
+
+    <div class="canvas-card">
+      <canvas id="graphCanvas" aria-label="圆与直线位置关系动态画板"></canvas>
+      <div class="legend-bar">
+        <span><i class="dot" style="background:#d97706"></i>圆心轨迹 $x - 3y = 0$</span>
+        <span><i class="dot" style="background:#2563eb"></i>相切圆 $C$ 与切点 $T$</span>
+        <span><i class="dot" style="background:#e11d48"></i>截弦 $AB$（长 $2\sqrt{7}$）</span>
+        <span><i class="dot" style="background:#059669"></i>勾股 $\text{Rt}\triangle AHC$（$d^2+m^2=r^2$）</span>
+      </div>
+    </div>
+
+    <div class="slider-panel">
+      <div class="slider-top">
+        <span>拖动滑块改变弦长 $L$（保持与 $y$ 轴相切及圆心在 $x-3y=0$ 上不变）：</span>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span id="sliderStatus" style="color:var(--primary-dark);">原题状态：L = 2√7 ≈ 5.29</span>
+          <button type="button" class="pill-btn" id="btnReset" style="padding:3px 10px; font-size:12.5px;">恢复原题数值</button>
+        </div>
+      </div>
+      <input id="chordRange" type="range" min="2.0" max="7.5" step="0.01" value="5.2915" />
+    </div>
+
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <span class="metric-label">圆心坐标 $C(a, b)$</span>
+        <span class="metric-val" id="mCenter">(3.00, 1.00)</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-label">半径 $r = |a|$</span>
+        <span class="metric-val" id="mRadius">r = 3.00</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-label">弦心距 $d$ 与半弦长 $m$</span>
+        <span class="metric-val" id="mDM">d = √2, m = √7</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-label">勾股验证 $d^2 + m^2 = r^2$</span>
+        <span class="metric-val" id="mPyth">2.00 + 7.00 = 9.00</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 两种方法规范解答（主干精简 + 消元细节可展开） -->
+  <section class="card" id="sec-methods">
+    <div class="sec-header">
+      <span class="sec-index">04 · 两种方法规范解答</span>
+      <h2>方法一（标准方程法主讲）与方法二（一般方程法对照）</h2>
+    </div>
+
+    <div class="method-tabs">
+      <button type="button" class="m-tab active" data-target="pane-std">方法一：标准方程法（推荐主线）</button>
+      <button type="button" class="m-tab" data-target="pane-gen">方法二：一般方程法（对照拓展）</button>
+    </div>
+
+    <!-- 方法一：标准方程法 -->
+    <div class="m-pane active" id="pane-std">
+      <div class="main-step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h3>设圆的标准方程并列出方程组</h3>
+          <p>设圆 $C$ 的标准方程为 $(x - a)^2 + (y - b)^2 = r^2 \ (r > 0)$。圆心 $C(a, b)$ 到直线 $x - y = 0$ 的弦心距为 $d = \dfrac{|a - b|}{\sqrt{2}}$，半弦长 $m = \sqrt{7}$，由题意得：</p>
+          <div class="math-banner">
+            $$\begin{cases} |a| = r & \text{①（与 } y \text{ 轴相切）} \\[6pt] a - 3b = 0 & \text{②（圆心在直线 } x - 3y = 0 \text{ 上）} \\[6pt] \dfrac{(a - b)^2}{2} + 7 = r^2 & \text{③（垂径定理 } d^2 + m^2 = r^2\text{）} \end{cases}$$
+          </div>
+        </div>
+      </div>
+
+      <!-- 可展开的详细联立消元步骤 -->
+      <details class="elim-details">
+        <summary>
+          <span>💡 基础薄弱同学点此查看：详细联立消元步骤（如何解出 $a, b, r$）</span>
+          <span class="sum-tag">查看消元演算</span>
+        </summary>
+        <div class="elim-content">
+          <div class="sub-step">
+            <div class="sub-step-title">Step 1：用参数 $b$ 统一表示 $a$ 和 $r^2$</div>
+            由方程 ② 得 $a = 3b$；代入方程 ① 并两边平方，得 $r^2 = a^2 = (3b)^2 = 9b^2$。
+          </div>
+          <div class="sub-step">
+            <div class="sub-step-title">Step 2：代入方程 ③ 化为一元二次方程</div>
+            将 $a = 3b$ 与 $r^2 = 9b^2$ 代入方程 ③ 中消去 $a$ 和 $r$：
+            $$\frac{(3b - b)^2}{2} + 7 = 9b^2 \implies \frac{4b^2}{2} + 7 = 9b^2 \implies 2b^2 + 7 = 9b^2 \implies 7b^2 = 7 \implies b = \pm 1$$
+          </div>
+          <div class="sub-step">
+            <div class="sub-step-title">Step 3：分类回代求得两组解</div>
+            &bull; 当 $b = 1$ 时，$a = 3b = 3$，半径 $r = |a| = 3$；<br/>
+            &bull; 当 $b = -1$ 时，$a = 3b = -3$，半径 $r = |a| = 3$。
+          </div>
+        </div>
+      </details>
+
+      <div class="main-step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h3>解得参数并写出圆的方程</h3>
+          <p>联立 ①②③ 解得：</p>
+          <div class="math-banner">
+            $$\begin{cases} a = 3 \\ b = 1 \\ r = 3 \end{cases} \quad \text{或} \quad \begin{cases} a = -3 \\ b = -1 \\ r = 3 \end{cases}$$
+          </div>
+        </div>
+      </div>
+
+      <div class="answer-banner">
+        <div class="answer-label">✅ 最终答案</div>
+        <div>
+          故圆 $C$ 的方程为 <strong>$(x - 3)^2 + (y - 1)^2 = 9$</strong> 或 <strong>$(x + 3)^2 + (y + 1)^2 = 9$</strong>。
+        </div>
+      </div>
+    </div>
+
+    <!-- 方法二：一般方程法 -->
+    <div class="m-pane" id="pane-gen">
+      <div class="main-step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h3>设圆的一般方程并列出方程组</h3>
+          <p>设圆的一般方程为 $x^2 + y^2 + Dx + Ey + F = 0 \ (D^2 + E^2 - 4F > 0)$，其圆心为 $\left(-\dfrac{D}{2}, -\dfrac{E}{2}\right)$，半径 $r = \dfrac{1}{2}\sqrt{D^2 + E^2 - 4F}$。由三个条件列方程组：</p>
+          <div class="math-banner">
+            $$\begin{cases} E^2 - 4F = 0 & \text{①（与 } y \text{ 轴相切，令 } x=0 \text{ 得 } \Delta=0\text{）} \\[6pt] D - 3E = 0 & \text{②（圆心在直线 } x - 3y = 0 \text{ 上）} \\[6pt] \dfrac{(D - E)^2}{8} + 7 = \dfrac{D^2 + E^2 - 4F}{4} & \text{③（由 } d^2 + 7 = r^2 \text{ 化简所得）} \end{cases}$$
+          </div>
+        </div>
+      </div>
+
+      <details class="elim-details">
+        <summary>
+          <span>💡 基础薄弱同学点此查看：一般方程法的联立消元步骤</span>
+          <span class="sum-tag">查看消元演算</span>
+        </summary>
+        <div class="elim-content">
+          <div class="sub-step">
+            <div class="sub-step-title">Step 1：利用 ①② 将 $D$ 和 $4F$ 用 $E$ 表示</div>
+            由 ① 得 $E^2 - 4F = 0$（即 $4F = E^2$）；由 ② 得 $D = 3E$。
+          </div>
+          <div class="sub-step">
+            <div class="sub-step-title">Step 2：代入方程 ③ 解出 $E$</div>
+            将 $D = 3E$ 和 $E^2 - 4F = 0$ 代入方程 ③：
+            $$\frac{(3E - E)^2}{8} + 7 = \frac{(3E)^2 + 0}{4} \implies \frac{4E^2}{8} + 7 = \frac{9E^2}{4} \implies \frac{7E^2}{4} = 7 \implies E^2 = 4 \implies E = \pm 2$$
+          </div>
+          <div class="sub-step">
+            <div class="sub-step-title">Step 3：回代求得 $D, F$</div>
+            &bull; 当 $E = -2$ 时，$D = 3E = -6$，$F = \dfrac{E^2}{4} = 1$；<br/>
+            &bull; 当 $E = 2$ 时，$D = 3E = 6$，$F = \dfrac{E^2}{4} = 1$。
+          </div>
+        </div>
+      </details>
+
+      <div class="main-step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h3>解得系数并写出圆的一般方程</h3>
+          <p>联立 ①②③ 解得：</p>
+          <div class="math-banner">
+            $$\begin{cases} D = -6 \\ E = -2 \\ F = 1 \end{cases} \quad \text{或} \quad \begin{cases} D = 6 \\ E = 2 \\ F = 1 \end{cases}$$
+          </div>
+        </div>
+      </div>
+
+      <div class="answer-banner">
+        <div class="answer-label">✅ 一般式答案</div>
+        <div>
+          故圆 $C$ 的一般方程为 <strong>$x^2 + y^2 - 6x - 2y + 1 = 0$</strong> 或 <strong>$x^2 + y^2 + 6x + 2y + 1 = 0$</strong>。
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 变式训练（配图默认折叠隐藏 + 变式3作业本全一般直线定制） -->
+  <section class="card" id="sec-practice">
+    <div class="sec-header">
+      <span class="sec-index">05 · 阶梯变式训练</span>
+      <h2>独立思考作图与列式，再展开辅助图与解析核对</h2>
+    </div>
+
+    <!-- 变式 1 -->
+    <div class="variant-card">
+      <div class="v-top">
+        <span class="v-pill">变式训练 1</span>
+        <span class="v-meta">基础巩固 · 割线过圆心特例</span>
+      </div>
+      <div class="v-question">
+        已知圆 $C$ 与 $x$ 轴相切，圆心在直线 $x + y - 4 = 0$ 上，且被直线 $x = 2$ 截得的弦长为 $4$，求圆 $C$ 的方程。
+      </div>
+
+      <div class="v-actions">
+        <details class="v-collapse">
+          <summary>
+            <span>📐 思考后点此展开：几何辅助图</span>
+            <span class="sum-tag">查看配图</span>
+          </summary>
+          <div class="v-collapse-body">
+            <div class="svg-box">
+              <svg viewBox="0 0 360 230" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <pattern id="g1" width="40" height="40" patternUnits="userSpaceOnUse" x="80" y="195">
+                    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#f1f5f9" stroke-width="1"/>
+                  </pattern>
+                </defs>
+                <rect width="360" height="230" fill="#ffffff"/>
+                <rect width="360" height="230" fill="url(#g1)"/>
+                <!-- 坐标轴 O(80,195), scale=40 -->
+                <line x1="25" y1="195" x2="335" y2="195" stroke="#64748b" stroke-width="1.5"/>
+                <polygon points="335,195 327,191 327,199" fill="#64748b"/>
+                <line x1="80" y1="220" x2="80" y2="15" stroke="#64748b" stroke-width="1.5"/>
+                <polygon points="80,15 76,23 84,23" fill="#64748b"/>
+                <text x="325" y="212" fill="#475569" font-size="13" font-family="Times New Roman, serif" font-style="italic">x</text>
+                <text x="64" y="24" fill="#475569" font-size="13" font-family="Times New Roman, serif" font-style="italic">y</text>
+                <text x="66" y="211" fill="#64748b" font-size="12" font-family="Times New Roman, serif">O</text>
+
+                <!-- 直线 x+y-4=0: (0,4)->(80,35), (4,0)->(240,195) -->
+                <line x1="65" y1="20" x2="260" y2="215" stroke="#d97706" stroke-width="1.8" stroke-dasharray="6 4"/>
+                <text x="220" y="152" fill="#b45309" font-size="13" font-family="Times New Roman, serif" font-style="italic">x + y &minus; 4 = 0</text>
+
+                <!-- 直线 x=2 -> x=160 -->
+                <line x1="160" y1="15" x2="160" y2="218" stroke="#6366f1" stroke-width="1.5" stroke-dasharray="4 4"/>
+                <text x="166" y="26" fill="#4338ca" font-size="13" font-family="Times New Roman, serif" font-style="italic">x = 2</text>
+
+                <!-- 圆 C(2,2)->(160,115), r=2->80 -->
+                <circle cx="160" cy="115" r="80" fill="rgba(37, 99, 235, 0.05)" stroke="#2563eb" stroke-width="2.4"/>
+                <!-- 弦 AB: (2,4)->(160,35) 到 (2,0)->(160,195) -->
+                <line x1="160" y1="35" x2="160" y2="195" stroke="#e11d48" stroke-width="3.6"/>
+                <circle cx="160" cy="35" r="3.5" fill="#e11d48"/>
+                <text x="112" y="34" fill="#be123c" font-size="12" font-weight="bold">A(2, 4)</text>
+
+                <!-- 切点 B(2,0) -->
+                <polyline points="160,186 169,186 169,195" fill="none" stroke="#059669" stroke-width="1.5"/>
+                <circle cx="160" cy="195" r="4" fill="#059669"/>
+                <text x="166" y="211" fill="#047857" font-size="12" font-weight="bold">切点 B(2, 0)</text>
+
+                <!-- 圆心 C(2,2) -->
+                <circle cx="160" cy="115" r="4" fill="#1d4ed8"/>
+                <text x="168" y="112" fill="#1e3a8a" font-size="13" font-weight="bold">C(2, 2)</text>
+              </svg>
+              <div class="svg-note">圆心 $C(2,2)$ 恰在直线 $x=2$ 上（$d=0$），截得弦长 $4$ 即为直径，且与 $x$ 轴相切于 $(2,0)$</div>
+            </div>
+          </div>
+        </details>
+
+        <details class="v-collapse sol-collapse">
+          <summary>
+            <span>📝 点此查看：完整解析过程与答案</span>
+            <span class="sum-tag">展开解析</span>
+          </summary>
+          <div class="v-collapse-body">
+            <p style="margin-top:0;"><strong>解：</strong>设圆的标准方程为 $(x - a)^2 + (y - b)^2 = r^2 \ (r > 0)$。</p>
+            <p>圆心 $C(a,b)$ 到直线 $x = 2$ 的弦心距为 $d = |a - 2|$，半弦长 $m = 2$，由题意列方程组：</p>
+            $$\begin{cases} |b| = r & \text{①} \\ a + b - 4 = 0 & \text{②} \\ (a - 2)^2 + 2^2 = r^2 & \text{③} \end{cases}$$
+            <p>由 ①② 得 $r^2 = b^2 = (4 - a)^2$，代入 ③ 得：</p>
+            $$(a - 2)^2 + 4 = (4 - a)^2 \implies a^2 - 4a + 8 = 16 - 8a + a^2 \implies 4a = 8 \implies a = 2$$
+            <p style="margin-bottom:0;">回代得 $b = 2, \ r = 2$。故所求圆的方程为 <strong>$(x - 2)^2 + (y - 2)^2 = 4$</strong>。</p>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <!-- 变式 2 -->
+    <div class="variant-card">
+      <div class="v-top">
+        <span class="v-pill">变式训练 2</span>
+        <span class="v-meta">对称双解 · 斜线截弦</span>
+      </div>
+      <div class="v-question">
+        已知圆 $C$ 与 $x$ 轴相切，圆心在直线 $x - 2y = 0$ 上，且被直线 $y = x$ 截得的弦长为 $2\sqrt{2}$，求圆 $C$ 的方程。
+      </div>
+
+      <div class="v-actions">
+        <details class="v-collapse">
+          <summary>
+            <span>📐 思考后点此展开：几何辅助图</span>
+            <span class="sum-tag">查看配图</span>
+          </summary>
+          <div class="v-collapse-body">
+            <div class="svg-box">
+              <svg viewBox="0 0 360 230" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <pattern id="g2" width="24" height="24" patternUnits="userSpaceOnUse" x="180" y="115">
+                    <path d="M 24 0 L 0 0 0 24" fill="none" stroke="#f1f5f9" stroke-width="1"/>
+                  </pattern>
+                </defs>
+                <rect width="360" height="230" fill="#ffffff"/>
+                <rect width="360" height="230" fill="url(#g2)"/>
+                <!-- 坐标轴 O(180,115), scale=24 -->
+                <line x1="16" y1="115" x2="344" y2="115" stroke="#64748b" stroke-width="1.5"/>
+                <polygon points="344,115 336,111 336,119" fill="#64748b"/>
+                <line x1="180" y1="220" x2="180" y2="12" stroke="#64748b" stroke-width="1.5"/>
+                <polygon points="180,12 176,20 184,20" fill="#64748b"/>
+                <text x="334" y="131" fill="#475569" font-size="13" font-family="Times New Roman, serif" font-style="italic">x</text>
+                <text x="165" y="22" fill="#475569" font-size="13" font-family="Times New Roman, serif" font-style="italic">y</text>
+                <text x="167" y="130" fill="#64748b" font-size="11" font-family="Times New Roman, serif">O</text>
+
+                <!-- 直线 y=x -->
+                <line x1="76" y1="219" x2="284" y2="11" stroke="#6366f1" stroke-width="1.5" stroke-dasharray="5 4"/>
+                <text x="288" y="23" fill="#4338ca" font-size="13" font-family="Times New Roman, serif" font-style="italic">y = x</text>
+
+                <!-- 直线 x-2y=0 -->
+                <line x1="24" y1="193" x2="336" y2="37" stroke="#d97706" stroke-width="1.8" stroke-dasharray="6 4"/>
+                <text x="276" y="59" fill="#b45309" font-size="12.5" font-family="Times New Roman, serif" font-style="italic">x &minus; 2y = 0</text>
+
+                <!-- 第三象限解 C2(-4,-2)->(84,163), r=48 -->
+                <circle cx="84" cy="163" r="48" fill="rgba(100, 116, 139, 0.04)" stroke="#64748b" stroke-width="1.8" stroke-dasharray="5 4"/>
+                <line x1="84" y1="163" x2="84" y2="115" stroke="#64748b" stroke-width="1.2" stroke-dasharray="3 3"/>
+                <circle cx="84" cy="163" r="3" fill="#475569"/>
+                <text x="44" y="179" fill="#475569" font-size="11.5">C₂(&minus;4, &minus;2)</text>
+                <line x1="84" y1="163" x2="132" y2="211" stroke="#e11d48" stroke-width="2.5" stroke-opacity="0.6"/>
+
+                <!-- 第一象限解 C1(4,2)->(276,67), r=48 -->
+                <circle cx="276" cy="67" r="48" fill="rgba(37, 99, 235, 0.06)" stroke="#2563eb" stroke-width="2.4"/>
+                <line x1="276" y1="67" x2="276" y2="115" stroke="#059669" stroke-width="1.6" stroke-dasharray="3 3"/>
+                <polyline points="276,107 268,107 268,115" fill="none" stroke="#059669" stroke-width="1.4"/>
+                <circle cx="276" cy="115" r="3.5" fill="#059669"/>
+                <text x="262" y="129" fill="#047857" font-size="11.5">(4, 0)</text>
+
+                <!-- C1 弦与勾股三角形 -->
+                <polygon points="276,67 252,43 228,67" fill="rgba(5, 150, 105, 0.16)"/>
+                <line x1="228" y1="67" x2="276" y2="19" stroke="#e11d48" stroke-width="3.5"/>
+                <line x1="276" y1="67" x2="252" y2="43" stroke="#059669" stroke-width="1.8" stroke-dasharray="3 2"/>
+                <circle cx="276" cy="67" r="3.8" fill="#1d4ed8"/>
+                <text x="282" y="71" fill="#1e3a8a" font-size="12" font-weight="bold">C₁(4, 2)</text>
+              </svg>
+              <div class="svg-note">第一、三象限各有一个满足条件的圆，圆心分别为 $(4,2)$ 和 $(-4,-2)$，半径均为 $2$</div>
+            </div>
+          </div>
+        </details>
+
+        <details class="v-collapse sol-collapse">
+          <summary>
+            <span>📝 点此查看：完整解析过程与答案</span>
+            <span class="sum-tag">展开解析</span>
+          </summary>
+          <div class="v-collapse-body">
+            <p style="margin-top:0;"><strong>解：</strong>设圆的标准方程为 $(x - a)^2 + (y - b)^2 = r^2 \ (r > 0)$。</p>
+            <p>圆心 $C(a,b)$ 到直线 $x - y = 0$ 的距离 $d = \dfrac{|a - b|}{\sqrt{2}}$，半弦长 $m = \sqrt{2}$，列方程组：</p>
+            $$\begin{cases} |b| = r & \text{①} \\ a - 2b = 0 & \text{②} \\ \dfrac{(a - b)^2}{2} + 2 = r^2 & \text{③} \end{cases}$$
+            <p>将 $a = 2b$ 与 $r^2 = b^2$ 代入 ③ 得：</p>
+            $$\frac{(2b - b)^2}{2} + 2 = b^2 \implies \frac{b^2}{2} = 2 \implies b^2 = 4 \implies b = \pm 2$$
+            <p style="margin-bottom:0;">从而 $a = \pm 4$（与 $b$ 同号），$r = 2$。故圆 $C$ 的方程为 <strong>$(x - 4)^2 + (y - 2)^2 = 4$</strong> 或 <strong>$(x + 4)^2 + (y + 2)^2 = 4$</strong>。</p>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <!-- 变式 3（作业本题目 + 专属琥珀金配色 + 全一般直线） -->
+    <div class="variant-card homework-variant">
+      <div class="v-top">
+        <span class="v-pill hw-pill">变式训练 3（本题为作业本题目）</span>
+        <span class="v-meta hw-meta">📘 综合拔高 · 与一般直线相切及斜线截弦</span>
+      </div>
+      <div class="v-question">
+        已知圆 $C$ 的圆心在直线 $x + y - 2 = 0$ 上，圆 $C$ 与直线 $3x + 4y + 5 = 0$ 相切，且被直线 $4x + 3y - 14 = 0$ 截得的弦长为 $2\sqrt{3}$，求圆 $C$ 的标准方程。
+      </div>
+
+      <div class="v-actions">
+        <details class="v-collapse hw-collapse">
+          <summary>
+            <span>📐 思考后点此展开：变式 3 几何辅助图</span>
+            <span class="sum-tag" style="color:#b45309; border-color:#fcd34d;">查看配图</span>
+          </summary>
+          <div class="v-collapse-body">
+            <!-- 精确坐标：Origin(100, 96), scale=32px/unit -->
+            <!-- 圆心 C(3,-1)->(196,128), r=2->64px -->
+            <!-- 切点 T(1.8,-2.6)->(157.6,179.2) -->
+            <!-- 割线 4x+3y-14=0: H(3.8,-0.4)->(221.6,108.8), A(188.3,64.5), B(254.9,153.1) -->
+            <div class="svg-box" style="border-color:#fde68a;">
+              <svg viewBox="0 0 360 235" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <pattern id="g3" width="32" height="32" patternUnits="userSpaceOnUse" x="100" y="96">
+                    <path d="M 32 0 L 0 0 0 32" fill="none" stroke="#f8fafc" stroke-width="1"/>
+                  </pattern>
+                </defs>
+                <rect width="360" height="235" fill="#ffffff"/>
+                <rect width="360" height="235" fill="url(#g3)"/>
+
+                <!-- 坐标轴 O(100,96) -->
+                <line x1="16" y1="96" x2="344" y2="96" stroke="#64748b" stroke-width="1.5"/>
+                <polygon points="344,96 336,92 336,100" fill="#64748b"/>
+                <line x1="100" y1="224" x2="100" y2="12" stroke="#64748b" stroke-width="1.5"/>
+                <polygon points="100,12 96,20 104,20" fill="#64748b"/>
+                <text x="334" y="112" fill="#475569" font-size="13" font-family="Times New Roman, serif" font-style="italic">x</text>
+                <text x="85" y="22" fill="#475569" font-size="13" font-family="Times New Roman, serif" font-style="italic">y</text>
+                <text x="86" y="111" fill="#64748b" font-size="11" font-family="Times New Roman, serif">O</text>
+
+                <!-- 圆心轨迹直线 x+y-2=0 -->
+                <line x1="74.4" y1="6.4" x2="285.6" y2="217.6" stroke="#d97706" stroke-width="1.8" stroke-dasharray="6 4"/>
+                <text x="110" y="28" fill="#b45309" font-size="12.5" font-family="Times New Roman, serif" font-style="italic">x + y &minus; 2 = 0</text>
+
+                <!-- 切线 3x+4y+5=0 -->
+                <line x1="20" y1="76" x2="244" y2="244" stroke="#0284c7" stroke-width="1.8"/>
+                <text x="20" y="156" fill="#0369a1" font-size="12.5" font-family="Times New Roman, serif" font-style="italic">3x + 4y + 5 = 0 (切线)</text>
+
+                <!-- 割线 4x+3y-14=0 -->
+                <line x1="148" y1="10.7" x2="282.4" y2="189.9" stroke="#6366f1" stroke-width="1.5" stroke-dasharray="5 4"/>
+                <text x="234" y="50" fill="#4338ca" font-size="12.5" font-family="Times New Roman, serif" font-style="italic">4x + 3y &minus; 14 = 0</text>
+
+                <!-- 圆 C(3,-1)->(196,128), r=64 -->
+                <circle cx="196" cy="128" r="64" fill="rgba(37, 99, 235, 0.05)" stroke="#2563eb" stroke-width="2.5"/>
+
+                <!-- 勾股直角三角形 Rt△AHC -->
+                <polygon points="196,128 221.6,108.8 188.3,64.5" fill="rgba(5, 150, 105, 0.16)"/>
+                <line x1="196" y1="128" x2="188.3" y2="64.5" stroke="#2563eb" stroke-width="1.5" stroke-dasharray="3 3"/>
+                <line x1="196" y1="128" x2="221.6" y2="108.8" stroke="#059669" stroke-width="2" stroke-dasharray="3 2"/>
+
+                <!-- 切线半径 CT -->
+                <line x1="196" y1="128" x2="157.6" y2="179.2" stroke="#0284c7" stroke-width="2" stroke-dasharray="4 3"/>
+                <circle cx="157.6" cy="179.2" r="3.6" fill="#0284c7"/>
+                <text x="116" y="194" fill="#0369a1" font-size="11.5" font-weight="bold">切点 T</text>
+                <text x="150" y="152" fill="#0369a1" font-size="11.5" font-weight="bold">r = 2</text>
+
+                <!-- 截弦 AB -->
+                <line x1="188.3" y1="64.5" x2="254.9" y2="153.1" stroke="#e11d48" stroke-width="3.6"/>
+                <circle cx="188.3" cy="64.5" r="3.3" fill="#e11d48"/>
+                <circle cx="254.9" cy="153.1" r="3.3" fill="#e11d48"/>
+                <circle cx="221.6" cy="108.8" r="3" fill="#059669"/>
+                <text x="175" y="59" fill="#be123c" font-size="12" font-weight="bold">A</text>
+                <text x="260" y="160" fill="#be123c" font-size="12" font-weight="bold">B</text>
+                <text x="227" y="110" fill="#047857" font-size="11.5" font-weight="bold">H(d=1)</text>
+
+                <!-- 圆心 C(3,-1) -->
+                <circle cx="196" cy="128" r="4" fill="#1d4ed8"/>
+                <text x="180" y="145" fill="#1e3a8a" font-size="12.5" font-weight="bold">C(3, &minus;1)</text>
+              </svg>
+              <div class="svg-note">圆心 $C(3,-1)$ 到切线 $3x+4y+5=0$ 的距离 $r=2$，到割线 $4x+3y-14=0$ 的距离 $d=1$，半弦长 $m=\sqrt{3}$</div>
+            </div>
+          </div>
+        </details>
+
+        <details class="v-collapse hw-collapse">
+          <summary>
+            <span>📝 点此查看：作业本题目完整解析过程</span>
+            <span class="sum-tag" style="color:#b45309; border-color:#fcd34d;">展开解析</span>
+          </summary>
+          <div class="v-collapse-body">
+            <p style="margin-top:0;"><strong>解：</strong>设圆 $C$ 的标准方程为 $(x - a)^2 + (y - b)^2 = r^2 \ (r > 0)$。</p>
+            <p>① 因圆心在直线 $x + y - 2 = 0$ 上，故 $a + b - 2 = 0 \implies b = 2 - a$；</p>
+            <p>② 因圆与直线 $3x + 4y + 5 = 0$ 相切，圆心到切线的距离等于半径 $r$：</p>
+            $$r = \frac{|3a + 4b + 5|}{\sqrt{3^2 + 4^2}} = \frac{|3a + 4(2 - a) + 5|}{5} = \frac{|13 - a|}{5}$$
+            <p>③ 圆心到割线 $4x + 3y - 14 = 0$ 的弦心距 $d$ 为：</p>
+            $$d = \frac{|4a + 3b - 14|}{\sqrt{4^2 + 3^2}} = \frac{|4a + 3(2 - a) - 14|}{5} = \frac{|a - 8|}{5}$$
+            <p>已知弦长为 $2\sqrt{3}$，故半弦长 $m = \sqrt{3}$。由垂径定理 $d^2 + m^2 = r^2$ 得：</p>
+            $$\frac{(a - 8)^2}{25} + 3 = \frac{(13 - a)^2}{25}$$
+            <p>两边同乘 $25$ 并展开消去 $a^2$：</p>
+            $$(a^2 - 16a + 64) + 75 = a^2 - 26a + 169 \implies 10a = 30 \implies a = 3$$
+            <p style="margin-bottom:0;">回代得 $b = 2 - 3 = -1$，半径 $r = \dfrac{|13 - 3|}{5} = 2$。故圆 $C$ 的标准方程为 <strong>$(x - 3)^2 + (y + 1)^2 = 4$</strong>。</p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- 06 通法总结 -->
+  <section class="card" id="sec-summary">
+    <div class="sec-header">
+      <span class="sec-index">06 · 通法归纳</span>
+      <h2>待定系数法求圆方程的四步标准流程</h2>
+    </div>
+
+    <div class="summary-grid">
+      <div class="sum-card">
+        <div class="sum-step">STEP 01</div>
+        <div class="sum-title">设标准方程</div>
+        <div class="sum-desc">凡涉及圆心位置、相切或弦长条件，优先设 $(x-a)^2+(y-b)^2=r^2$。</div>
+      </div>
+      <div class="sum-card">
+        <div class="sum-step">STEP 02</div>
+        <div class="sum-title">译几何条件</div>
+        <div class="sum-desc">相切译为 $d=r$；圆心在直线上直接代入 $(a,b)$；弦长必用 $d^2+m^2=r^2$。</div>
+      </div>
+      <div class="sum-card">
+        <div class="sum-step">STEP 03</div>
+        <div class="sum-title">单参数消元</div>
+        <div class="sum-desc">先利用一次方程将 $a,b$ 用同一个字母表示，再代入勾股关系式求解。</div>
+      </div>
+      <div class="sum-card">
+        <div class="sum-step">STEP 04</div>
+        <div class="sum-title">验根写方程</div>
+        <div class="sum-desc">注意平方开方可能产生双解，逐一回代求得 $(a,b,r)$ 并写出标准式。</div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  高中数学互动教学课件 · 圆的方程与弦长专题
+</footer>
+
+<script>
+  // 初始化 KaTeX 自动渲染
+  document.addEventListener("DOMContentLoaded", function () {
+    if (window.renderMathInElement) {
+      renderMathInElement(document.body, {
+        delimiters: [
+          { left: "$$", right: "$$", display: true },
+          { left: "$", right: "$", display: false }
+        ],
+        throwOnError: false
+      });
+    }
+  });
+
+  // 1. 方法一 / 方法二 Tab 切换
+  const mTabs = document.querySelectorAll('.m-tab');
+  const mPanes = document.querySelectorAll('.m-pane');
+  mTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      mTabs.forEach(t => t.classList.remove('active'));
+      mPanes.forEach(p => p.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById(tab.dataset.target).classList.add('active');
+    });
+  });
+
+  // 2. 动态几何画板（初始仅显示坐标轴与圆心所在直线，其余图层默认隐藏）
+  const canvas = document.getElementById('graphCanvas');
+  const ctx = canvas.getContext('2d');
+  const chordRange = document.getElementById('chordRange');
+  const sliderStatus = document.getElementById('sliderStatus');
+  const mCenter = document.getElementById('mCenter');
+  const mRadius = document.getElementById('mRadius');
+  const mDM = document.getElementById('mDM');
+  const mPyth = document.getElementById('mPyth');
+
+  const ORIG_L = 2 * Math.sqrt(7);
+  let L = ORIG_L;
+  let quadMode = 'pos'; // 'pos' | 'neg' | 'both'
+  let isDragging = false;
+
+  // 默认全部关闭（只展示网格、坐标轴、圆心轨迹线 x-3y=0）
+  const layers = {
+    center: false,
+    circle: false,
+    secant: false,
+    chord: false,
+    triangle: false
+  };
+
+  function syncLayerButtons() {
+    document.querySelectorAll('[data-layer]').forEach(btn => {
+      const k = btn.dataset.layer;
+      btn.classList.toggle('layer-on', Boolean(layers[k]));
+    });
+  }
+
+  function drawCircleSolution(sign, P, scale, isGhost = false) {
+    const b = sign * L / (2 * Math.sqrt(7));
+    const a = 3 * b;
+    const r = Math.abs(a);
+
+    const hx = (a + b) / 2;
+    const hy = (a + b) / 2;
+    const half = L / 2;
+    const ux = Math.SQRT1_2;
+    const uy = Math.SQRT1_2;
+
+    const ax = hx + ux * half;
+    const ay = hy + uy * half;
+    const bx = hx - ux * half;
+    const by = hy - uy * half;
+
+    const cPt = P(a, b);
+    const tPt = P(0, b);
+    const hPt = P(hx, hy);
+    const aPt = P(ax, ay);
+    const bPt = P(bx, by);
+
+    const alpha = isGhost ? 0.42 : 1.0;
+
+    // ⑤ 弦心距与勾股 Rt△AHC
+    if (layers.triangle) {
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      ctx.beginPath();
+      ctx.moveTo(cPt[0], cPt[1]);
+      ctx.lineTo(hPt[0], hPt[1]);
+      ctx.lineTo(aPt[0], aPt[1]);
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(5, 150, 105, 0.16)';
+      ctx.fill();
+
+      // 斜边 CA (半径 r)
+      ctx.beginPath();
+      ctx.setLineDash([4, 3]);
+      ctx.moveTo(cPt[0], cPt[1]);
+      ctx.lineTo(aPt[0], aPt[1]);
+      ctx.strokeStyle = '#2563eb';
+      ctx.lineWidth = 1.8;
+      ctx.stroke();
+
+      // 弦心距 CH (d)
+      ctx.beginPath();
+      ctx.setLineDash([5, 3]);
+      ctx.moveTo(cPt[0], cPt[1]);
+      ctx.lineTo(hPt[0], hPt[1]);
+      ctx.strokeStyle = '#059669';
+      ctx.lineWidth = 2.2;
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // 直角标记
+      const sz = 8;
+      const vHA = [aPt[0] - hPt[0], aPt[1] - hPt[1]];
+      const lHA = Math.hypot(vHA[0], vHA[1]) || 1;
+      const uHA = [vHA[0] / lHA * sz, vHA[1] / lHA * sz];
+
+      const vHC = [cPt[0] - hPt[0], cPt[1] - hPt[1]];
+      const lHC = Math.hypot(vHC[0], vHC[1]) || 1;
+      const uHC = [vHC[0] / lHC * sz, vHC[1] / lHC * sz];
+
+      ctx.beginPath();
+      ctx.moveTo(hPt[0] + uHA[0], hPt[1] + uHA[1]);
+      ctx.lineTo(hPt[0] + uHA[0] + uHC[0], hPt[1] + uHA[1] + uHC[1]);
+      ctx.lineTo(hPt[0] + uHC[0], hPt[1] + uHC[1]);
+      ctx.strokeStyle = '#059669';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      if (!isGhost) {
+        ctx.font = 'italic bold 14px "KaTeX_Math", "Times New Roman", serif';
+        ctx.fillStyle = '#047857';
+        ctx.fillText('d', (cPt[0] + hPt[0]) / 2 - 14, (cPt[1] + hPt[1]) / 2 + 4);
+        ctx.fillStyle = '#be123c';
+        ctx.fillText('m', (hPt[0] + aPt[0]) / 2 - 5, (hPt[1] + aPt[1]) / 2 - 8);
+        ctx.fillStyle = '#1d4ed8';
+        ctx.fillText('r', (cPt[0] + aPt[0]) / 2 + 6, (cPt[1] + aPt[1]) / 2 + 4);
+      }
+      ctx.restore();
+    }
+
+    // ② 相切圆与切点 T(0, b)
+    if (layers.circle) {
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      ctx.beginPath();
+      ctx.arc(cPt[0], cPt[1], r * scale, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(37, 99, 235, 0.04)';
+      ctx.fill();
+      ctx.strokeStyle = '#2563eb';
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+
+      // 水平相切半径 CT
+      ctx.beginPath();
+      ctx.setLineDash([4, 3]);
+      ctx.moveTo(cPt[0], cPt[1]);
+      ctx.lineTo(tPt[0], tPt[1]);
+      ctx.strokeStyle = '#3b82f6';
+      ctx.lineWidth = 1.6;
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // y 轴切点直角符号
+      const dirX = a >= 0 ? 8 : -8;
+      ctx.beginPath();
+      ctx.moveTo(tPt[0] + dirX, tPt[1]);
+      ctx.lineTo(tPt[0] + dirX, tPt[1] - 8);
+      ctx.lineTo(tPt[0], tPt[1] - 8);
+      ctx.strokeStyle = '#2563eb';
+      ctx.lineWidth = 1.4;
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.arc(tPt[0], tPt[1], 3.8, 0, Math.PI * 2);
+      ctx.fillStyle = '#2563eb';
+      ctx.fill();
+
+      if (!isGhost) {
+        ctx.font = '12.5px -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif';
+        ctx.fillStyle = '#1e40af';
+        ctx.fillText(`切点 T(0, ${b.toFixed(1)})`, a >= 0 ? tPt[0] - 82 : tPt[0] + 8, tPt[1] + 4);
+      }
+      ctx.restore();
+    }
+
+    // ④ 截弦 AB 与中点 H
+    if (layers.chord) {
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      ctx.beginPath();
+      ctx.moveTo(aPt[0], aPt[1]);
+      ctx.lineTo(bPt[0], bPt[1]);
+      ctx.strokeStyle = '#e11d48';
+      ctx.lineWidth = 4;
+      ctx.stroke();
+
+      [
+        { pt: aPt, text: 'A', color: '#e11d48', dx: 7, dy: -6 },
+        { pt: bPt, text: 'B', color: '#e11d48', dx: -16, dy: 15 },
+        { pt: hPt, text: 'H', color: '#059669', dx: -15, dy: -6 }
+      ].forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p.pt[0], p.pt[1], 3.6, 0, Math.PI * 2);
+        ctx.fillStyle = p.color;
+        ctx.fill();
+        if (!isGhost) {
+          ctx.font = 'italic bold 14px "KaTeX_Math", "Times New Roman", serif';
+          ctx.fillStyle = p.color;
+          ctx.fillText(p.text, p.pt[0] + p.dx, p.pt[1] + p.dy);
+        }
+      });
+      ctx.restore();
+    }
+
+    // ① 圆心 C(a, b)
+    if (layers.center || layers.circle || layers.triangle) {
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      ctx.beginPath();
+      ctx.arc(cPt[0], cPt[1], 4.8, 0, Math.PI * 2);
+      ctx.fillStyle = '#1d4ed8';
+      ctx.fill();
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 1.6;
+      ctx.stroke();
+
+      ctx.font = 'bold 13px "Times New Roman", sans-serif';
+      ctx.fillStyle = '#1e3a8a';
+      ctx.fillText(`C(${a.toFixed(1)}, ${b.toFixed(1)})`, cPt[0] + 8, cPt[1] + 15);
+      ctx.restore();
+    }
+  }
+
+  function drawBoard() {
+    const rect = canvas.getBoundingClientRect();
+    const w = rect.width;
+    const h = rect.height;
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = w * dpr;
+    canvas.height = h * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, w, h);
+
+    const bAbs = L / (2 * Math.sqrt(7));
+    const aAbs = 3 * bAbs;
+    const maxCoord = Math.max(6.6, aAbs * 2 + 1.2);
+    const scale = Math.min((w - 40) / (2 * maxCoord), (h - 30) / (1.55 * maxCoord));
+    const ox = w / 2;
+    const oy = h / 2;
+    const P = (x, y) => [ox + x * scale, oy - y * scale];
+
+    // 1. 细腻坐标网格
+    ctx.strokeStyle = '#f1f5f9';
+    ctx.lineWidth = 1;
+    const maxTick = Math.ceil(maxCoord * 1.5);
+    for (let i = -maxTick; i <= maxTick; i++) {
+      const [gx] = P(i, 0);
+      ctx.beginPath();
+      ctx.moveTo(gx, 0);
+      ctx.lineTo(gx, h);
+      ctx.stroke();
+
+      const [, gy] = P(0, i);
+      ctx.beginPath();
+      ctx.moveTo(0, gy);
+      ctx.lineTo(w, gy);
+      ctx.stroke();
+    }
+
+    // 2. 坐标轴与箭头
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 1.6;
+    ctx.beginPath();
+    ctx.moveTo(12, oy);
+    ctx.lineTo(w - 12, oy);
+    ctx.moveTo(ox, 12);
+    ctx.lineTo(ox, h - 12);
+    ctx.stroke();
+
+    ctx.fillStyle = '#64748b';
+    ctx.beginPath();
+    ctx.moveTo(w - 10, oy);
+    ctx.lineTo(w - 18, oy - 4);
+    ctx.lineTo(w - 18, oy + 4);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.moveTo(ox, 10);
+    ctx.lineTo(ox - 4, 18);
+    ctx.lineTo(ox + 4, 18);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.font = 'italic 15px "KaTeX_Math", "Times New Roman", serif';
+    ctx.fillText('x', w - 22, oy + 18);
+    ctx.fillText('y', ox + 10, 22);
+    ctx.fillText('O', ox - 16, oy + 16);
+
+    // 3. 圆心所在直线 x - 3y = 0（初始默认显示）
+    const lim = maxCoord * 1.6;
+    const [lx1, ly1] = P(-lim, -lim / 3);
+    const [lx2, ly2] = P(lim, lim / 3);
+    ctx.beginPath();
+    ctx.setLineDash([6, 4]);
+    ctx.moveTo(lx1, ly1);
+    ctx.lineTo(lx2, ly2);
+    ctx.strokeStyle = '#d97706';
+    ctx.lineWidth = 1.9;
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.font = 'italic 14px "KaTeX_Math", "Times New Roman", serif';
+    ctx.fillStyle = '#b45309';
+    ctx.fillText('x − 3y = 0', w - 95, oy - (w / 2 - 50) / 3 - 8);
+
+    // 4. ③ 截弦直线 y = x
+    if (layers.secant) {
+      const [sx1, sy1] = P(-lim, -lim);
+      const [sx2, sy2] = P(lim, lim);
+      ctx.beginPath();
+      ctx.setLineDash([5, 4]);
+      ctx.moveTo(sx1, sy1);
+      ctx.lineTo(sx2, sy2);
+      ctx.strokeStyle = '#6366f1';
+      ctx.lineWidth = 1.6;
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = '#4338ca';
+      ctx.fillText('y = x', ox + (h / 2 - 28) + 8, 28);
+    }
+
+    // 5. 若处于初始留白状态，显示轻量提示条
+    const hasActiveLayer = Object.values(layers).some(Boolean);
+    if (!hasActiveLayer) {
+      ctx.fillStyle = 'rgba(248, 250, 252, 0.92)';
+      ctx.strokeStyle = '#cbd5e1';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.roundRect(16, 14, Math.min(w - 32, 420), 34, 8);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#475569';
+      ctx.font = '13px -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif';
+      ctx.fillText('💡 先想象圆的位置，再依次点击上方【① ~ ⑤】按钮逐步生成几何元素', 26, 35);
+    }
+
+    // 6. 绘制第一/第三象限解
+    if (quadMode === 'pos') {
+      drawCircleSolution(1, P, scale, false);
+    } else if (quadMode === 'neg') {
+      drawCircleSolution(-1, P, scale, false);
+    } else {
+      drawCircleSolution(-1, P, scale, true);
+      drawCircleSolution(1, P, scale, false);
+    }
+
+    // 7. 更新实时仪表盘
+    const sign = quadMode === 'neg' ? -1 : 1;
+    const bVal = sign * L / (2 * Math.sqrt(7));
+    const aVal = 3 * bVal;
+    const rVal = Math.abs(aVal);
+    const mVal = L / 2;
+    const dVal = Math.abs(aVal - bVal) / Math.SQRT2;
+    const isOrig = Math.abs(L - ORIG_L) < 0.02;
+
+    sliderStatus.textContent = isOrig
+      ? '原题状态：L = 2√7 ≈ 5.29'
+      : `当前弦长：L = ${L.toFixed(2)}`;
+
+    mCenter.textContent = quadMode === 'both'
+      ? `(±${Math.abs(aVal).toFixed(2)}, ±${Math.abs(bVal).toFixed(2)})`
+      : `(${aVal.toFixed(2)}, ${bVal.toFixed(2)})`;
+    mRadius.textContent = `r = ${rVal.toFixed(2)}`;
+    mDM.textContent = isOrig
+      ? 'd = √2, m = √7'
+      : `d=${dVal.toFixed(2)}, m=${mVal.toFixed(2)}`;
+    mPyth.textContent = `${(dVal * dVal).toFixed(2)} + ${(mVal * mVal).toFixed(2)} = ${(rVal * rVal).toFixed(2)}`;
+  }
+
+  // 分步图层按钮
+  document.querySelectorAll('[data-layer]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const k = btn.dataset.layer;
+      layers[k] = !layers[k];
+      syncLayerButtons();
+      drawBoard();
+    });
+  });
+
+  document.getElementById('btnShowAll').addEventListener('click', () => {
+    Object.keys(layers).forEach(k => layers[k] = true);
+    syncLayerButtons();
+    drawBoard();
+  });
+
+  document.getElementById('btnHideAll').addEventListener('click', () => {
+    Object.keys(layers).forEach(k => layers[k] = false);
+    syncLayerButtons();
+    drawBoard();
+  });
+
+  // 象限切换
+  const btnQuad1 = document.getElementById('btnQuad1');
+  const btnQuad3 = document.getElementById('btnQuad3');
+  const btnQuadBoth = document.getElementById('btnQuadBoth');
+
+  function setQuad(mode) {
+    quadMode = mode;
+    [btnQuad1, btnQuad3, btnQuadBoth].forEach(b => b.classList.remove('quad-on'));
+    if (mode === 'pos') btnQuad1.classList.add('quad-on');
+    if (mode === 'neg') btnQuad3.classList.add('quad-on');
+    if (mode === 'both') btnQuadBoth.classList.add('quad-on');
+    drawBoard();
+  }
+
+  btnQuad1.addEventListener('click', () => setQuad('pos'));
+  btnQuad3.addEventListener('click', () => setQuad('neg'));
+  btnQuadBoth.addEventListener('click', () => setQuad('both'));
+
+  // 滑块事件
+  chordRange.addEventListener('input', () => {
+    L = Number(chordRange.value);
+    if (!Object.values(layers).some(Boolean)) {
+      Object.keys(layers).forEach(k => layers[k] = true);
+      syncLayerButtons();
+    }
+    drawBoard();
+  });
+
+  document.getElementById('btnReset').addEventListener('click', () => {
+    L = ORIG_L;
+    chordRange.value = L;
+    setQuad('pos');
+  });
+
+  // 画布拖拽改变圆心与弦长
+  function onDrag(clientX, clientY) {
+    if (!isDragging || !layers.circle) return;
+    const rect = canvas.getBoundingClientRect();
+    const ox = rect.width / 2;
+    const oy = rect.height / 2;
+    const dx = clientX - rect.left - ox;
+    const dy = oy - (clientY - rect.top);
+
+    const bAbs = L / (2 * Math.sqrt(7));
+    const aAbs = 3 * bAbs;
+    const maxCoord = Math.max(6.6, aAbs * 2 + 1.2);
+    const scale = Math.min((rect.width - 40) / (2 * maxCoord), (rect.height - 30) / (1.55 * maxCoord));
+
+    const mathX = dx / scale;
+    const mathY = dy / scale;
+    const projB = (3 * mathX + mathY) / 10;
+    if (projB < -0.2 && quadMode === 'pos') setQuad('neg');
+    if (projB > 0.2 && quadMode === 'neg') setQuad('pos');
+
+    L = Math.min(7.5, Math.max(2.0, Math.abs(projB) * 2 * Math.sqrt(7)));
+    chordRange.value = L;
+    drawBoard();
+  }
+
+  canvas.addEventListener('pointerdown', e => {
+    isDragging = true;
+    canvas.setPointerCapture(e.pointerId);
+    onDrag(e.clientX, e.clientY);
+  });
+  canvas.addEventListener('pointermove', e => onDrag(e.clientX, e.clientY));
+  canvas.addEventListener('pointerup', () => { isDragging = false; });
+
+  window.addEventListener('resize', drawBoard);
+  window.addEventListener('load', () => {
+    syncLayerButtons();
+    drawBoard();
+  });
+  syncLayerButtons();
+  drawBoard();
+</script>
+</body>
+</html>
