@@ -32,27 +32,36 @@ body { margin: 0; padding: 0; background-color: #f5f5f7; display: flex; flex-dir
 .empty-state { text-align: center; padding: 50px 20px; color: #86868b; font-size: 15px; }
 .empty-icon { font-size: 42px; margin-bottom: 10px; display: block; }
 .footer { margin-top: auto; padding: 30px 0; color: #86868b; font-size: 12px; text-align: center; width: 100%; background-color: #f5f5f7; }
-.cw-latest-card { background: linear-gradient(135deg, #f0f7ff 0%, #e0effe 100%); border: 1.5px solid #bae0fd; border-radius: 16px; padding: 18px; text-align: left; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,113,227,0.08); }
+.cw-latest-card { background: linear-gradient(135deg, #f0f7ff 0%, #e0effe 100%); border: 1.5px solid #bae0fd; border-radius: 16px; padding: 18px; text-align: left; margin-bottom: 14px; box-shadow: 0 4px 15px rgba(0,113,227,0.08); }
 .cw-item-card { background: white; border-radius: 12px; padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border: 1px solid rgba(0,0,0,0.04); box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
 .cw-open-btn { background: #0071e3; color: white; border: none; padding: 10px 18px; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
 .ask-box-card { background: linear-gradient(135deg, #ffffff, #f4f9ff); border: 1px solid rgba(0,113,227,0.1); text-align: left; padding: 20px; border-radius: 16px; margin-top: 30px; }
 .ask-title { font-size: 16px; color: #1d1d1f; font-weight: bold; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
 .ask-btn { background: #0071e3; color: white; border: none; width: 100%; padding: 14px; border-radius: 12px; font-size: 15px; font-weight: bold; margin-top: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(0,113,227,0.2); }
+
+/* 轻提示弹窗（替代原生 alert） */
+.toast-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: none; align-items: center; justify-content: center; z-index: 999; padding: 20px; }
+.toast-modal.show { display: flex; }
+.toast-box { background: white; border-radius: 16px; max-width: 340px; width: 100%; padding: 20px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.18); }
+.toast-title { font-size: 16px; font-weight: bold; color: #1d1d1f; margin-bottom: 8px; }
+.toast-msg { font-size: 14px; color: #555; line-height: 1.5; margin-bottom: 16px; }
+.toast-close { background: #0071e3; color: white; border: none; border-radius: 10px; padding: 10px 24px; font-size: 14px; font-weight: bold; cursor: pointer; width: 100%; }
 </style>
 </head>
 <body>
 
 <div class="header">📅 zzz</div>
 
+<!-- 修改点1：默认激活“📊 课堂课件”按钮 -->
 <div class="tab-container">
-<div class="tab-btn active" id="btn-math" onclick="switchTab('math-page', this)">📅 每日一题</div>
-<div class="tab-btn" id="btn-cw" onclick="switchTab('courseware-page', this)">📊 课堂课件</div>
+<div class="tab-btn" id="btn-math" onclick="switchTab('math-page', this)">📅 每日一题</div>
+<div class="tab-btn active" id="btn-cw" onclick="switchTab('courseware-page', this)">📊 课堂课件</div>
 <div class="tab-btn" id="btn-res" onclick="switchTab('resource-page', this)">📂 提分干货</div>
 </div>
 
 <div class="container">
 <!-- 1. 每日一题页面 -->
-<div id="math-page" class="page-content active">
+<div id="math-page" class="page-content">
 <div id="today-section" style="display:none;"><div class="section-title">📌 今日最新题目</div><div id="today-box"></div></div>
 <div id="preview-section" style="display:none;"><div class="section-title">🔮 提前预习通道</div><div id="preview-box"></div></div>
 <div id="history-section" style="display:none;"><div class="section-title">📚 往期复习</div><div id="history-box"></div></div>
@@ -69,8 +78,8 @@ body { margin: 0; padding: 0; background-color: #f5f5f7; display: flex; flex-dir
 </div>
 </div>
 
-<!-- 2. 课堂课件页面（独立平级，不再嵌套） -->
-<div id="courseware-page" class="page-content">
+<!-- 2. 课堂课件页面（修改点1：默认加上 active 类，打开网页直接显示） -->
+<div id="courseware-page" class="page-content active">
 <div class="section-title">📌 今日最新课件</div>
 <div id="cw-latest-box"></div>
 <div id="cw-history-section" style="display:none;">
@@ -86,6 +95,15 @@ body { margin: 0; padding: 0; background-color: #f5f5f7; display: flex; flex-dir
 
 </div>
 
+<!-- 温馨提示弹窗 -->
+<div class="toast-modal" id="toastModal">
+  <div class="toast-box">
+    <div class="toast-title">💡 Z 老师温馨提示</div>
+    <div class="toast-msg" id="toastMsg">该题暂未上传独立答案 PDF，学生可直接点击上方图片放大查看！</div>
+    <button class="toast-close" onclick="document.getElementById('toastModal').classList.remove('show')">我知道了</button>
+  </div>
+</div>
+
 <div class="footer">锲而舍之，朽木不折；锲而不舍，金石可镂</div>
 <div id="past-pool" style="display:none;"></div>
 
@@ -93,9 +111,15 @@ body { margin: 0; padding: 0; background-color: #f5f5f7; display: flex; flex-dir
 const GITHUB_USER = 'appleman159';
 const GITHUB_REPO = 'dairy-math';
 const CACHE_KEY_V8 = 'z_math_tree_cache_v8';
+const CW_TIME_CACHE_KEY = 'z_math_cw_time_cache_v1';
+const FORTY_EIGHT_HOURS_MS = 48 * 60 * 60 * 1000;
 
 const fallbackTree = [
+{ path: 'courseware/习题答疑(晓洁).html', type: 'blob' },
+{ path: 'courseware/26.11.13.html', type: 'blob' },
 { path: 'courseware/26.11.10.html', type: 'blob' },
+{ path: 'courseware/26.11.09.html', type: 'blob' },
+{ path: 'courseware/26.11.08.html', type: 'blob' },
 { path: 'courseware/complex_modulus_guide.html', type: 'blob' },
 { path: '椭圆定义_希沃86寸宽屏版.html', type: 'blob' },
 { path: 'images/20260709.jpg', type: 'blob' },
@@ -127,6 +151,79 @@ var d = new Date();
 var m = String(d.getMonth() + 1).padStart(2, '0');
 var day = String(d.getDate()).padStart(2, '0');
 return '' + d.getFullYear() + m + day;
+}
+
+/* 辅助函数：从课件文件名解析日期时间戳（支持 26.11.13 / 2026.11.13 / 2026-11-13 / 20261113） */
+function parseTimeFromFilename(filename) {
+var base = filename.replace(/\.html$/i, '');
+// 匹配 YY.MM.DD 或 YYYY.MM.DD 或 YYYY-MM-DD
+var m1 = base.match(/(?:^|[^\d])(\d{2}|\d{4})[.\-_](\d{1,2})[.\-_](\d{1,2})(?:$|[^\d])/);
+if (m1) {
+var y = parseInt(m1[1], 10);
+if (y < 100) y += 2000;
+var mo = parseInt(m1[2], 10) - 1;
+var da = parseInt(m1[3], 10);
+// 设为当天 23:59:59，保证整天加上次日共 48 小时内有效
+return new Date(y, mo, da, 23, 59, 59).getTime();
+}
+// 匹配连续 8 位数字 YYYYMMDD
+var m2 = base.match(/(?:^|[^\d])(20\d{2})(\d{2})(\d{2})(?:$|[^\d])/);
+if (m2) {
+return new Date(parseInt(m2[1], 10), parseInt(m2[2], 10) - 1, parseInt(m2[3], 10), 23, 59, 59).getTime();
+}
+return null;
+}
+
+/* 读取与保存课件的 GitHub 提交时间缓存 */
+function getCwTimeCache() {
+try {
+var raw = localStorage.getItem(CW_TIME_CACHE_KEY);
+return raw ? JSON.parse(raw) : {};
+} catch (e) {
+return {};
+}
+}
+
+function saveCwTimeCache(cacheObj) {
+try {
+localStorage.setItem(CW_TIME_CACHE_KEY, JSON.stringify(cacheObj));
+} catch (e) {}
+}
+
+/* 异步从 GitHub Commits API 获取课件真实上传/修改时间，判断 48 小时归属 */
+function fetchCoursewareCommitTimes(cwList) {
+var timeCache = getCwTimeCache();
+var tasks = cwList.map(function(item) {
+// 如果文件名已经能提取出明确的日期，直接用文件名日期，免去额外请求
+var nameTs = parseTimeFromFilename(item.name);
+if (nameTs !== null) {
+item.timestamp = nameTs;
+return Promise.resolve();
+}
+// 否则查询 GitHub 该文件的最新一次 Commit 时间
+var commitApi = 'https://api.github.com/repos/' + GITHUB_USER + '/' + GITHUB_REPO + '/commits?path=' + encodeURIComponent(item.fullPath) + '&per_page=1';
+return fetch(commitApi)
+.then(function(r) { return r.ok ? r.json() : null; })
+.then(function(commits) {
+if (Array.isArray(commits) && commits.length > 0 && commits[0].commit && commits[0].commit.committer) {
+var ts = new Date(commits[0].commit.committer.date).getTime();
+item.timestamp = ts;
+timeCache[item.fullPath] = ts;
+} else if (timeCache[item.fullPath]) {
+item.timestamp = timeCache[item.fullPath];
+}
+})
+.catch(function() {
+if (timeCache[item.fullPath]) {
+item.timestamp = timeCache[item.fullPath];
+}
+});
+});
+
+Promise.all(tasks).then(function() {
+saveCwTimeCache(timeCache);
+renderCourseware(cwList);
+});
 }
 
 function loadGitHubData() {
@@ -168,6 +265,7 @@ parseAndRender(fallbackTree);
 function parseAndRender(treeArray) {
 var todayStr = getTodayStr();
 var timestamp = new Date().getTime();
+var timeCache = getCwTimeCache();
 
 var imgFiles = [];
 var answerMap = new Map();
@@ -182,7 +280,8 @@ var filename = parts[parts.length - 1];
 var lowerName = filename.toLowerCase();
 
 if (lowerName.endsWith('.html') && lowerName !== 'index.html') {
-coursewareFiles.push({ name: filename, fullPath: path });
+var parsedTs = parseTimeFromFilename(filename) || timeCache[path] || null;
+coursewareFiles.push({ name: filename, fullPath: path, timestamp: parsedTs });
 } else if (lowerName.endsWith('.pdf')) {
 if (filename.indexOf('资料-') === 0) {
 resourceFiles.push({ name: filename, fullPath: path });
@@ -200,6 +299,8 @@ imgFiles.push({ date: datePart, fullPath: path });
 
 renderResources(resourceFiles);
 renderCourseware(coursewareFiles);
+// 异步拉取不含日期文件名的真实 GitHub 提交时间，动态刷新 48 小时状态
+fetchCoursewareCommitTimes(coursewareFiles);
 
 imgFiles.forEach(function(fileObj) {
 var imgUrl = './' + fileObj.fullPath + '?t=' + timestamp;
@@ -211,6 +312,7 @@ addCardToDOM(fileObj.date, imgUrl, pdfPath);
 reOrganizeCards(todayStr);
 }
 
+/* 修改点2：保留最近 48 小时内的所有课件在“最新课件”区域，其余放入归档 */
 function renderCourseware(cwList) {
 var latestBox = document.getElementById('cw-latest-box');
 var historySection = document.getElementById('cw-history-section');
@@ -222,28 +324,55 @@ historySection.style.display = 'none';
 return;
 }
 
+var now = Date.now();
+
 cwList.sort(function(a, b) {
+if (a.timestamp && b.timestamp && a.timestamp !== b.timestamp) {
+return b.timestamp - a.timestamp;
+}
 var aInFolder = a.fullPath.indexOf('courseware/') === 0 ? 1 : 0;
 var bInFolder = b.fullPath.indexOf('courseware/') === 0 ? 1 : 0;
 if (aInFolder !== bInFolder) return bInFolder - aInFolder;
 return b.name.localeCompare(a.name);
 });
 
-var latest = cwList[0];
-var latestTitle = latest.name.replace(/\.html$/i, '');
+var recentList = [];
+var archiveList = [];
 
-latestBox.innerHTML = '<div class="cw-latest-card">' +
-'<div style="margin-bottom:8px;">' +
+cwList.forEach(function(item) {
+// 判断是否在最近 48 小时内（兼容未来预发布日期或 48 小时内上传的课件）
+if (item.timestamp && (now - item.timestamp <= FORTY_EIGHT_HOURS_MS)) {
+recentList.push(item);
+} else {
+archiveList.push(item);
+}
+});
+
+if (recentList.length > 0) {
+latestBox.innerHTML = '';
+recentList.forEach(function(item) {
+var title = item.name.replace(/\.html$/i, '');
+latestBox.insertAdjacentHTML('beforeend',
+'<div class="cw-latest-card">' +
+'<div style="margin-bottom:8px; display:flex; align-items:center; justify-content:space-between;">' +
 '<span style="background:#0071e3;color:white;font-size:11px;padding:3px 8px;border-radius:6px;font-weight:bold;">最新推送</span>' +
 '</div>' +
-'<div style="font-size:18px;font-weight:bold;color:#1d1d1f;margin-bottom:14px;">📊 ' + latestTitle + '</div>' +
-'<a href="./' + encodeURI(latest.fullPath) + '" target="_blank" class="cw-open-btn" style="width:100%;box-sizing:border-box;justify-content:center;padding:12px;">🚀 立即打开最新课件</a>' +
+'<div style="font-size:18px;font-weight:bold;color:#1d1d1f;margin-bottom:14px;">📊 ' + title + '</div>' +
+'<a href="./' + encodeURI(item.fullPath) + '" target="_blank" class="cw-open-btn" style="width:100%;box-sizing:border-box;justify-content:center;padding:12px;">🚀 立即打开最新课件</a>' +
+'</div>'
+);
+});
+} else {
+latestBox.innerHTML = '<div class="empty-state" style="padding:24px 16px;background:white;border-radius:16px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,0.03);">' +
+'<span style="font-size:28px;display:block;margin-bottom:6px;">🕒</span>' +
+'<div style="font-size:14px;color:#86868b;">最近 48 小时内暂无新课件，请查看下方往期归档</div>' +
 '</div>';
+}
 
-if (cwList.length > 1) {
+if (archiveList.length > 0) {
 historySection.style.display = 'block';
 historyBox.innerHTML = '';
-cwList.slice(1).forEach(function(item) {
+archiveList.forEach(function(item) {
 var title = item.name.replace(/\.html$/i, '');
 historyBox.insertAdjacentHTML('beforeend',
 '<div class="cw-item-card">' +
@@ -338,7 +467,7 @@ function downloadAnswerPDF(pdfPath) {
 if (pdfPath) {
 window.location.href = './' + pdfPath;
 } else {
-alert("💡 Z 老师温馨提示：\n该题暂未上传独立答案 PDF，学生可直接点击上方图片放大查看！");
+document.getElementById('toastModal').classList.add('show');
 }
 }
 
