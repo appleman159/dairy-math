@@ -22,7 +22,7 @@
   .name-btn { padding: 13px 4px; font-size: 17px; text-align: center; background: #fff;
     border: 2px solid #DDD6C4; border-radius: 10px; cursor: pointer; }
   .name-btn.on { background: #D95D39; border-color: #D95D39; color: #fff; font-weight: bold; }
-  .name-btn.done { background: #E8F0E9; border-color: #0E6B66; color: #0E6B66; }
+  .name-btn.done { background: #E9E7E0; border-color: #D5D2C8; color: #9A968A; cursor: not-allowed; }
   #submit { width: 100%; padding: 16px 0; margin-top: 20px; font-size: 20px; font-weight: bold;
     background: #0E6B66; color: #fff; border: none; border-radius: 12px; cursor: pointer; }
   #submit:disabled { background: #B9B2A0; cursor: not-allowed; }
@@ -55,7 +55,7 @@
 </div>
 
 <script>
-let roster = {}, curClass = null, selected = null;
+let roster = {}, curClass = null, selected = null, signed = {};
 
 async function load() {
   try {
@@ -64,11 +64,22 @@ async function load() {
     showMsg('err', '名单加载失败，请检查网络后刷新页面再试。');
     return;
   }
+  await refreshSigned();
   const saved = JSON.parse(localStorage.getItem('qzm-qiandao') || 'null');
   if (saved && saved.name) {
     showMsg('ok', '✅ ' + saved.name + '，你已经签到过了<br>班级：' + saved.class + '<br>时间：' + saved.time);
     document.getElementById('pick-area').style.display = 'none';
   }
+}
+async function refreshSigned() {
+  try {
+    const d = await (await fetch('/api/list')).json();
+    const s = {};
+    for (const c in (d.classes || {})) {
+      s[c] = new Set((d.classes[c].signed_list || []).map(x => x.name));
+    }
+    signed = s;
+  } catch (e) { /* 取不到已签名单就不置灰，提交时服务端仍会拦重签 */ }
 }
 function pickClass(c) {
   curClass = c; selected = null;
@@ -77,17 +88,21 @@ function pickClass(c) {
   document.getElementById('pick-area').style.display = 'block';
   document.getElementById('search').value = '';
   renderNames();
+  refreshSigned().then(renderNames);
 }
 function renderNames() {
   const q = document.getElementById('search').value.trim();
   const grid = document.getElementById('grid');
   const names = (roster[curClass] || []).filter(n => !q || n.indexOf(q) !== -1);
-  grid.innerHTML = names.map(n =>
-    '<div class="name-btn' + (n === selected ? ' on' : '') + '" onclick="pickName(\'' + n + '\')">' + n + '</div>'
-  ).join('') || '<div style="grid-column:1/-1;color:#888;padding:10px">没找到这个名字，换个字试试</div>';
+  const done = signed[curClass] || new Set();
+  grid.innerHTML = names.map(n => {
+    if (done.has(n)) return '<div class="name-btn done">✓ ' + n + '</div>';
+    return '<div class="name-btn' + (n === selected ? ' on' : '') + '" onclick="pickName(\'' + n + '\')">' + n + '</div>';
+  }).join('') || '<div style="grid-column:1/-1;color:#888;padding:10px">没找到这个名字，换个字试试</div>';
   updateSubmit();
 }
 function pickName(n) {
+  if ((signed[curClass] || new Set()).has(n)) return;
   selected = n;
   renderNames();
 }
