@@ -150,6 +150,8 @@ Check your Browserslist config to be sure that your targets are set up correctly
       background: rgba(15,23,42,0.5);
       border: 1px solid rgba(51,65,85,0.6);
       overflow-x: auto;
+      overflow-y: hidden;
+      max-width: 100%;
     }
     html:not(.dark) .katex-display { background: rgba(241,245,249,0.95); border-color: #cbd5e1; }
 
@@ -810,7 +812,9 @@ img, svg, canvas { max-width: 100%; }
 /* 600 以下：手机，进一步收紧 */
 @media (max-width: 600px) {
   header { height: 50px !important; }
-  #fontGroup { display: none !important; }   /* 手机先收起字号 A-/A+，保留主题切换 */
+  #fontGroup { height: 34px !important; padding: 0 2px !important; }   /* 手机保留字号 A-/A+，按钮收紧 */
+  #fontGroup button { width: 26px !important; height: 26px !important; }
+  #fontScaleLabel { min-width: 40px !important; font-size: 11px !important; }
   .nav-dock { left: 6px; right: 6px; bottom: 6px; }
   .dock-btn { height: 34px; padding: 0 8px; font-size: 12px; }
   .dock-page { min-width: 48px; font-size: 12px; }
@@ -827,6 +831,14 @@ img, svg, canvas { max-width: 100%; }
   .nav-dock { gap: 5px; padding: 5px; }
   .dock-btn { height: 36px; padding: 0 10px; }
 }
+
+
+    /* 手机适配（v5）：温故表横向可滑；长公式不撑破版式；页面不横向溢出 */
+    .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    html, body { overflow-x: hidden; }
+    @media (max-width: 600px) {
+      .table-scroll table { min-width: 560px; }
+    }
 
 </style>
 </head>
@@ -1146,6 +1158,19 @@ function adjustFontScale(delta) {
   el('fontScaleLabel').textContent = Math.round(fontScale * 100) + '%';
 }
 
+/* 手机/平板/桌面三档字号初值（v5 手机适配） */
+var __fontTier = null;
+function __fontTierOf(w) { return w <= 600 ? 0 : (w <= 1100 ? 1 : 2); }
+function __applyResponsiveFont() {
+  var w = (window.innerWidth || document.documentElement.clientWidth || 1440);
+  var tier = __fontTierOf(w);
+  if (__fontTier !== null && tier === __fontTier) return;
+  __fontTier = tier;
+  fontScale = tier === 0 ? 1.0 : (tier === 1 ? 1.2 : 1.8);
+  document.documentElement.style.setProperty('--font-scale', fontScale);
+  el('fontScaleLabel').textContent = Math.round(fontScale * 100) + '%';
+}
+
 function toggleTheme() {
   const isDark = document.documentElement.classList.toggle('dark');
   el('themeIcon').className = isDark ? 'fa-solid fa-sun text-amber-400' : 'fa-solid fa-moon text-slate-700';
@@ -1420,6 +1445,7 @@ var pages = [
       {
         s: 0, html: R`
         <div class="pc">
+          <div class="table-scroll">
           <table class="w-full text-center" style="border-collapse:collapse;font-size:1rem">
             <tr>
               <th class="border border-slate-300 px-2 py-2" style="background:#1d4ed8;color:#fff;width:86px">焦点的位置</th>
@@ -1500,6 +1526,7 @@ var pages = [
               <td class="border border-slate-300 px-2 py-2" colspan="2">$e=\dfrac{c}{a}\in(0,1)$</td>
             </tr>
           </table>
+          </div>
         </div>`
       }
     ],
@@ -3310,6 +3337,12 @@ window.addEventListener('resize', function () {
 document.addEventListener('DOMContentLoaded', function () {
   document.documentElement.style.setProperty('--font-scale', fontScale);
   el('fontScaleLabel').textContent = Math.round(fontScale * 100) + '%';
+  __applyResponsiveFont();
+  var __rzT = null;
+  window.addEventListener('resize', function () {
+    if (__rzT) clearTimeout(__rzT);
+    __rzT = setTimeout(__applyResponsiveFont, 150);
+  });
   initSplitDrag();
   initGlobalCanvas();
   renderPage();
