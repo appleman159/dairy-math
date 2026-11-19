@@ -1,0 +1,2262 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0, user-scalable=yes">
+  <title>空间向量法解决动点存在性问题 · 3D交互自学实验室</title>
+  <style>
+    :root {
+      --bg-base: #070d19;
+      --bg-card: #0f172a;
+      --bg-panel: #162035;
+      --bg-inset: #0a101d;
+      --border-subtle: #1e293b;
+      --border-active: #3b82f6;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --accent-blue: #2563eb;
+      --accent-amber: #f59e0b;
+      --accent-emerald: #10b981;
+      --accent-rose: #f43f5e;
+      --math-font: "Times New Roman", "STIXGeneral", "Cambria Math", Georgia, serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+      background-color: var(--bg-base);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.65;
+      overflow-x: hidden;
+    }
+
+    /* ================= 出版级纯离线数学公式排版样式 ================= */
+    .m-var {
+      font-family: var(--math-font);
+      font-style: italic;
+      padding: 0 1px;
+    }
+    .m-num {
+      font-family: var(--math-font);
+    }
+    .m-op {
+      font-family: var(--math-font);
+      padding: 0 2px;
+    }
+    /* 向量箭头绝对定位悬浮于字母正上方，字母保持行内自然基线对齐 */
+    .m-vec {
+      position: relative;
+      display: inline-block;
+      font-family: var(--math-font);
+      font-style: italic;
+      padding: 0 1px;
+      margin-top: 0.35em;
+    }
+    .m-vec::before {
+      content: "→";
+      position: absolute;
+      top: -0.68em;
+      left: 50%;
+      transform: translateX(-50%) scaleX(1.15);
+      font-style: normal;
+      font-size: 0.78em;
+      line-height: 1;
+      color: currentColor;
+      pointer-events: none;
+    }
+    /* 上下居中分式 */
+    .m-frac {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      vertical-align: middle;
+      margin: 0 3px;
+      font-family: var(--math-font);
+      font-size: 0.92em;
+      line-height: 1.15;
+    }
+    .m-frac-num {
+      padding: 0 3px 1px 3px;
+      border-bottom: 1.2px solid currentColor;
+      text-align: center;
+      white-space: nowrap;
+    }
+    .m-frac-den {
+      padding: 2px 3px 0 3px;
+      text-align: center;
+      white-space: nowrap;
+    }
+    /* 规范二次根式 */
+    .m-sqrt {
+      display: inline-flex;
+      align-items: stretch;
+      vertical-align: middle;
+      margin: 0 2px;
+      font-family: var(--math-font);
+    }
+    .m-sqrt-sym {
+      font-size: 1.15em;
+      line-height: 1;
+      padding-right: 1px;
+      display: inline-flex;
+      align-items: center;
+    }
+    .m-sqrt-body {
+      border-top: 1.2px solid currentColor;
+      padding: 1px 2px 0 2px;
+      line-height: 1.2;
+    }
+    /* 方程组大括号 */
+    .m-cases {
+      display: inline-flex;
+      align-items: center;
+      vertical-align: middle;
+      margin: 4px 4px;
+      font-family: var(--math-font);
+    }
+    .m-cases-brace {
+      font-size: 2.3em;
+      line-height: 1;
+      font-weight: 300;
+      margin-right: 4px;
+      transform: scaleY(1.15);
+    }
+    .m-cases-rows {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      text-align: left;
+      font-size: 0.95em;
+    }
+    sup.m-sup, sub.m-sub {
+      font-family: var(--math-font);
+      font-size: 0.76em;
+      line-height: 0;
+    }
+
+    /* ================= 顶部导航栏 ================= */
+    header {
+      background: rgba(15, 23, 42, 0.96);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 12px 18px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 40;
+    }
+
+    .brand-box {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #2563eb, #4f46e5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 18px;
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+      flex-shrink: 0;
+    }
+    .brand-title {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .nav-tabs {
+      display: flex;
+      background: var(--bg-inset);
+      padding: 4px;
+      border-radius: 12px;
+      border: 1px solid var(--border-subtle);
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+    .nav-tab {
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      padding: 8px 14px;
+      border-radius: 9px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.18s;
+    }
+    .nav-tab:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .nav-tab.active {
+      background: var(--accent-blue);
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.4);
+    }
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .progress-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-panel);
+      border: 1px solid var(--border-subtle);
+      padding: 6px 12px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .progress-track {
+      width: 64px;
+      height: 6px;
+      background: #1e293b;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--accent-emerald);
+      width: 0%;
+      transition: width 0.3s;
+    }
+    .btn-cheat {
+      background: rgba(245, 158, 11, 0.16);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      color: #fbbf24;
+      padding: 8px 13px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+    .btn-cheat:hover {
+      background: rgba(245, 158, 11, 0.28);
+    }
+
+    /* ================= 主体响应式双栏布局 ================= */
+    main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1.18fr 1fr;
+      gap: 16px;
+      padding: 16px;
+      max-width: 1680px;
+      width: 100%;
+      margin: 0 auto;
+    }
+    @media (max-width: 1024px) {
+      main {
+        grid-template-columns: 1fr;
+        padding: 12px;
+      }
+    }
+
+    .col-left, .col-right {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+    }
+
+    /* 题干区 */
+    .prob-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .prob-badge {
+      font-size: 12px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 6px;
+      background: rgba(37, 99, 235, 0.2);
+      color: #93c5fd;
+      border: 1px solid rgba(59, 130, 246, 0.35);
+    }
+    .prob-hint {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .prob-body {
+      font-size: 16px;
+      color: #f8fafc;
+      line-height: 1.85;
+    }
+    @media (min-width: 1400px) {
+      .prob-body { font-size: 17px; }
+    }
+
+    /* 3D 画板卡片（零遮挡流式布局） */
+    .canvas-card {
+      padding: 0;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .canvas-toolbar {
+      background: var(--bg-inset);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 10px 14px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .tool-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .tool-btn {
+      background: var(--bg-panel);
+      border: 1px solid #334155;
+      color: #e2e8f0;
+      padding: 6px 11px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      user-select: none;
+    }
+    .tool-btn:hover {
+      background: #1e293b;
+      border-color: #475569;
+    }
+    .tool-btn.active-blue {
+      background: rgba(37, 99, 235, 0.28);
+      border-color: #3b82f6;
+      color: #93c5fd;
+    }
+    .tool-btn.active-emerald {
+      background: rgba(16, 185, 129, 0.25);
+      border-color: #10b981;
+      color: #6ee7b7;
+    }
+
+    .legend-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .canvas-viewport {
+      width: 100%;
+      height: 410px;
+      position: relative;
+      background: radial-gradient(circle at center, #0f172a 0%, #060a12 100%);
+      touch-action: none;
+      cursor: grab;
+    }
+    .canvas-viewport:active {
+      cursor: grabbing;
+    }
+    @media (max-width: 768px) {
+      .canvas-viewport { height: 330px; }
+    }
+    canvas#geo-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .canvas-footer {
+      background: var(--bg-inset);
+      border-top: 1px solid var(--border-subtle);
+      padding: 7px 14px;
+      font-size: 12px;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    /* 参数滑块与实时监控仪 */
+    .telemetry-card {
+      transition: box-shadow 0.3s, border-color 0.3s;
+    }
+    .telemetry-card.hit-glow {
+      border-color: var(--accent-emerald);
+      box-shadow: 0 0 22px rgba(16, 185, 129, 0.28);
+    }
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .slider-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #fbbf24;
+    }
+    .slider-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .param-badge {
+      background: var(--bg-inset);
+      border: 1px solid #334155;
+      color: #fbbf24;
+      padding: 3px 10px;
+      border-radius: 6px;
+      font-family: var(--math-font);
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .btn-snap {
+      background: rgba(16, 185, 129, 0.2);
+      border: 1px solid rgba(16, 185, 129, 0.45);
+      color: #34d399;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn-snap:hover {
+      background: rgba(16, 185, 129, 0.35);
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 10px;
+      border-radius: 5px;
+      background: linear-gradient(90deg, #1d4ed8, #3b82f6, #10b981);
+      outline: none;
+      margin: 6px 0 14px 0;
+      cursor: pointer;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #fbbf24;
+      border: 3px solid #ffffff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+      cursor: pointer;
+    }
+
+    .radar-box {
+      background: var(--bg-inset);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 12px 14px;
+    }
+    .radar-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 8px;
+      margin-bottom: 8px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .status-tag {
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 12px;
+    }
+    .status-searching {
+      background: rgba(245, 158, 11, 0.18);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.35);
+    }
+    .status-matched {
+      background: rgba(16, 185, 129, 0.22);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.45);
+    }
+    .radar-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 8px;
+      font-size: 13px;
+    }
+    .metric-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255,255,255,0.02);
+      padding: 6px 10px;
+      border-radius: 8px;
+    }
+    .metric-label { color: var(--text-muted); }
+    .metric-val { font-weight: 700; color: #fff; }
+
+    /* ================= 右侧闯关互动区 ================= */
+    .right-card {
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      flex: 1;
+    }
+    .subtabs-bar {
+      background: var(--bg-inset);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 10px 14px 0 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .subtabs-group {
+      display: flex;
+      gap: 6px;
+    }
+    .subtab {
+      border: 1px solid transparent;
+      border-bottom: none;
+      background: transparent;
+      color: var(--text-muted);
+      padding: 9px 14px;
+      border-radius: 10px 10px 0 0;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .subtab.active-guided {
+      background: var(--bg-card);
+      border-color: var(--border-subtle);
+      color: #60a5fa;
+    }
+    .subtab.active-variant {
+      background: var(--bg-card);
+      border-color: var(--border-subtle);
+      color: #fbbf24;
+    }
+
+    .pills-bar {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      background: rgba(15, 23, 42, 0.8);
+    }
+    .step-pill {
+      flex: 1;
+      min-width: 68px;
+      text-align: center;
+      padding: 5px 8px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-inset);
+      color: #64748b;
+    }
+    .step-pill.unlocked {
+      border-color: #3b82f6;
+      background: rgba(37, 99, 235, 0.2);
+      color: #93c5fd;
+    }
+    .step-pill.done {
+      border-color: #10b981;
+      background: rgba(16, 185, 129, 0.2);
+      color: #34d399;
+    }
+
+    .steps-scroll {
+      padding: 16px;
+      overflow-y: auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      max-height: 680px;
+    }
+
+    .step-card {
+      background: var(--bg-panel);
+      border: 1px solid #28354f;
+      border-radius: 14px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .step-card.done {
+      border-color: rgba(16, 185, 129, 0.45);
+    }
+    .step-card.locked {
+      background: var(--bg-inset);
+      border-color: var(--border-subtle);
+      opacity: 0.62;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      padding: 13px 16px;
+    }
+    .step-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+    .step-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: #93c5fd;
+    }
+    .step-card.done .step-title {
+      color: #34d399;
+    }
+    .step-status {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-weight: 700;
+      background: rgba(245, 158, 11, 0.18);
+      color: #fbbf24;
+    }
+    .step-card.done .step-status {
+      background: rgba(16, 185, 129, 0.2);
+      color: #34d399;
+    }
+
+    .step-question {
+      font-size: 15px;
+      color: #f1f5f9;
+      line-height: 1.8;
+    }
+
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .opt-btn {
+      width: 100%;
+      text-align: left;
+      background: #0f172a;
+      border: 1px solid #334155;
+      color: #e2e8f0;
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-size: 14px;
+      line-height: 1.75;
+      cursor: pointer;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      transition: all 0.15s;
+    }
+    .opt-btn:hover {
+      background: #1e293b;
+      border-color: #60a5fa;
+    }
+    .opt-btn.correct-selected {
+      background: rgba(6, 78, 59, 0.55);
+      border-color: #10b981;
+      color: #d1fae5;
+      font-weight: 600;
+    }
+    .opt-letter {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #1e293b;
+      color: #cbd5e1;
+      font-size: 12px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .opt-btn.correct-selected .opt-letter {
+      background: #10b981;
+      color: #064e3b;
+    }
+
+    .feedback-box {
+      padding: 11px 14px;
+      border-radius: 10px;
+      font-size: 13.5px;
+      line-height: 1.75;
+    }
+    .feedback-ok {
+      background: rgba(6, 78, 59, 0.45);
+      border: 1px solid rgba(16, 185, 129, 0.45);
+      color: #a7f3d0;
+    }
+    .feedback-err {
+      background: rgba(136, 19, 55, 0.45);
+      border: 1px solid rgba(244, 63, 94, 0.5);
+      color: #fecdd3;
+    }
+
+    .explanation-box {
+      background: var(--bg-inset);
+      border: 1px solid #1e293b;
+      border-left: 3px solid #3b82f6;
+      border-radius: 10px;
+      padding: 13px 15px;
+      font-size: 14px;
+      color: #e2e8f0;
+      line-height: 1.85;
+    }
+
+    .right-footer {
+      background: var(--bg-inset);
+      border-top: 1px solid var(--border-subtle);
+      padding: 10px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .btn-teacher {
+      background: rgba(37, 99, 235, 0.18);
+      border: 1px solid rgba(59, 130, 246, 0.45);
+      color: #93c5fd;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn-teacher:hover {
+      background: rgba(37, 99, 235, 0.32);
+      color: #fff;
+    }
+
+    /* ================= 锦囊抽屉弹窗 ================= */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 6, 23, 0.84);
+      z-index: 60;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-backdrop.open {
+      display: flex;
+    }
+    .modal-box {
+      background: var(--bg-card);
+      border: 1px solid #334155;
+      border-radius: 18px;
+      max-width: 920px;
+      width: 100%;
+      max-height: 88vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+    }
+    .modal-head {
+      background: var(--bg-inset);
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-head h2 {
+      font-size: 17px;
+      font-weight: 800;
+      color: #fbbf24;
+    }
+    .btn-close {
+      background: var(--bg-panel);
+      border: 1px solid #334155;
+      color: #cbd5e1;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .modal-body {
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      font-size: 14.5px;
+      line-height: 1.85;
+    }
+    .cheat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 12px;
+    }
+    .cheat-item {
+      background: var(--bg-panel);
+      border: 1px solid #28354f;
+      border-radius: 12px;
+      padding: 14px;
+    }
+    .cheat-item h4 {
+      color: #60a5fa;
+      margin-bottom: 6px;
+      font-size: 15px;
+    }
+    .cheat-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+    }
+    .cheat-table th, .cheat-table td {
+      border: 1px solid #28354f;
+      padding: 10px 12px;
+      text-align: left;
+    }
+    .cheat-table th {
+      background: var(--bg-inset);
+      color: #93c5fd;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 顶部导航栏 -->
+  <header>
+    <div class="brand-box">
+      <div class="brand-icon">3D</div>
+      <div>
+        <div class="brand-title">
+          空间向量法解决动点存在性问题
+        </div>
+      </div>
+    </div>
+
+    <nav class="nav-tabs" aria-label="练习切换">
+      <button class="nav-tab active" id="tab-0" onclick="switchExercise(0)">
+        <span class="dot" style="background:#38bdf8;"></span>练习一：直三棱柱线面平行
+      </button>
+      <button class="nav-tab" id="tab-1" onclick="switchExercise(1)">
+        <span class="dot" style="background:#34d399;"></span>练习二：四棱锥线面角存在性
+      </button>
+      <button class="nav-tab" id="tab-2" onclick="switchExercise(2)">
+        <span class="dot" style="background:#fbbf24;"></span>练习三：组合体二面角存在性
+      </button>
+    </nav>
+
+    <div class="header-actions">
+      <div class="progress-pill">
+        <span>闯关进度</span>
+        <span id="progress-text" style="color:#34d399;">0 / 17</span>
+        <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+      </div>
+      <button class="btn-cheat" onclick="toggleCheatModal()">核心方法与防坑锦囊</button>
+    </div>
+  </header>
+
+  <!-- 主工作区 -->
+  <main>
+    <!-- 左侧：题干 + 3D交互画板 + 参数滑块监控 -->
+    <div class="col-left">
+      <div class="card">
+        <div class="prob-header">
+          <span class="prob-badge" id="prob-badge">练习一 · 直三棱柱中的线面平行存在性</span>
+          <span class="prob-hint">先拖动下方滑块观察3D空间关系，再完成右侧闯关</span>
+        </div>
+        <div class="prob-body" id="prob-text"></div>
+      </div>
+
+      <div class="card canvas-card">
+        <div class="canvas-toolbar">
+          <div class="tool-group">
+            <button class="tool-btn" onclick="zoomCamera(1.18)">+ 放大</button>
+            <button class="tool-btn" onclick="zoomCamera(0.85)">- 缩小</button>
+            <button class="tool-btn" onclick="resetCamera()">重置视角</button>
+            <button class="tool-btn" id="btn-autorotate" onclick="toggleAutoRotate()">自动旋转</button>
+            <button class="tool-btn active-blue" id="btn-axes" onclick="toggleAxes()">坐标系：开</button>
+            <button class="tool-btn active-emerald" id="btn-aux" onclick="toggleAux()">法向量/辅助线：开</button>
+          </div>
+          <div class="legend-bar">
+            <span class="legend-item"><span class="dot" style="background:#fbbf24;"></span>动点/探索线</span>
+            <span class="legend-item"><span class="dot" style="background:#10b981;"></span>满足条件</span>
+            <span class="legend-item"><span class="dot" style="background:#f43f5e;"></span>法向量/辅助</span>
+          </div>
+        </div>
+
+        <div class="canvas-viewport" id="canvas-wrap">
+          <canvas id="geo-canvas"></canvas>
+        </div>
+
+        <div class="canvas-footer">
+          <span>单指 / 左键拖拽：360° 自由旋转</span>
+          <span>双指捏合 / 滚轮：无级缩放</span>
+          <span>双指拖动 / 右键：平移视图</span>
+        </div>
+      </div>
+
+      <div class="card telemetry-card" id="telemetry-card">
+        <div class="slider-header">
+          <div class="slider-title" id="slider-label">动点参数 λ 控制：</div>
+          <div class="slider-controls">
+            <span class="param-badge" id="param-badge">λ = 0.50</span>
+            <button class="btn-snap" onclick="snapToTarget()">一键定标</button>
+          </div>
+        </div>
+        <input type="range" id="param-slider" min="0" max="1" step="0.01" value="0.5" oninput="onSliderInput()">
+
+        <div class="radar-box">
+          <div class="radar-top">
+            <span>实时几何与空间向量监控仪</span>
+            <span class="status-tag status-searching" id="radar-status">调整 λ 寻找目标位置</span>
+          </div>
+          <div class="radar-grid" id="radar-grid"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 右侧：分步自学闯关 + 同源变式训练 -->
+    <div class="col-right">
+      <div class="card right-card">
+        <div class="subtabs-bar">
+          <div class="subtabs-group">
+            <button class="subtab active-guided" id="subtab-guided" onclick="switchSubMode('guided')">原题分步闯关拆解</button>
+            <button class="subtab" id="subtab-variant" onclick="switchSubMode('variant')">同源变式拔高训练</button>
+          </div>
+        </div>
+
+        <div class="pills-bar" id="pills-bar"></div>
+        <div class="steps-scroll" id="steps-container"></div>
+
+        <div class="right-footer">
+          <span>提示：点击选项作答，选错可查看启发提示，答对自动解锁下一关</span>
+          <button class="btn-teacher" onclick="unlockCurrentAll()">教师演示：一键展开本练习全部解析</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- 核心方法与防坑锦囊弹窗 -->
+  <div class="modal-backdrop" id="cheat-modal" onclick="if(event.target===this) toggleCheatModal()">
+    <div class="modal-box">
+      <div class="modal-head">
+        <h2>空间向量法解决动点存在性问题 · 核心通法与防坑锦囊</h2>
+        <button class="btn-close" onclick="toggleCheatModal()">×</button>
+      </div>
+      <div class="modal-body" id="cheat-modal-body">
+        <div class="cheat-grid">
+          <div class="cheat-item">
+            <h4>第二步：向量三角形直接拆解目标向量（首选）</h4>
+            <p>设动点比例 [[vec:A[[sub:1]]Q]] = λ[[vec:A[[sub:1]]N]]（λ ∈ [0, 1]）。若只求方向向量 [[vec:PQ]]，<strong>无需先求动点 <span class="m-var">Q</span> 的坐标</strong>，直接用三角形法则拆解：[[vec:PQ]] = [[vec:PA[[sub:1]]]] + λ[[vec:A[[sub:1]]N]]，一步到位且减少符号错误！</p>
+          </div>
+          <div class="cheat-item">
+            <h4>第二步（备选）：原点位置向量法（求坐标专用）</h4>
+            <p>只有当题目明确要求“写出动点 <span class="m-var">Q</span> 的坐标”时，才需通过原点位置向量计算：<strong>[[vec:AQ]] = [[vec:AA[[sub:1]]]] + λ[[vec:A[[sub:1]]N]]</strong>。严禁出现“<span class="m-var">Q</span> = <span class="m-var">A</span>[[sub:1]] + λ[[vec:A[[sub:1]]N]]”或“[[vec:PQ]] = <span class="m-var">Q</span> - <span class="m-var">P</span>”等扣分写法！</p>
+          </div>
+          <div class="cheat-item">
+            <h4>第三步：交叉赋整式，消灭分母</h4>
+            <p>求含参法向量遇到 2λ<span class="m-var">y</span> + (1 - λ)<span class="m-var">z</span> = 0 时，<strong>切忌令 <span class="m-var">y</span> = 1 产生分母</strong>！直接交叉令 <span class="m-var">y</span> = λ - 1，则 <span class="m-var">z</span> = 2λ，零分母零讨论。</p>
+          </div>
+          <div class="cheat-item">
+            <h4>第四步：解方程验范围，核对所求比值</h4>
+            <p>解出 λ 后先核对是否在定义域内（不合题意立即舍去）；最后务必看清题目求的是 [[frac:SE|SC]] = λ 还是 [[frac:SE|EC]] = [[frac:λ|1-λ]]！</p>
+          </div>
+        </div>
+
+        <table class="cheat-table">
+          <thead>
+            <tr>
+              <th>空间位置 / 角度关系</th>
+              <th>向量等价转化公式</th>
+              <th>考场高频易错点</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>线面平行（<span class="m-var">PQ</span> ∥ 平面 α）</td>
+              <td>[[vec:PQ]] · [[vec:n]] = 0（且 <span class="m-var">PQ</span> ⊄ 平面 α）</td>
+              <td>误用对应坐标成比例（那是线面垂直的条件）</td>
+            </tr>
+            <tr>
+              <td>线面垂直（<span class="m-var">PQ</span> ⊥ 平面 α）</td>
+              <td>[[vec:PQ]] ∥ [[vec:n]] ⇔ [[vec:PQ]] = <span class="m-var">k</span>[[vec:n]]</td>
+              <td>误用点积为 0</td>
+            </tr>
+            <tr>
+              <td>线面角 θ（直线与平面所成角）</td>
+              <td>sin θ = |cos〈[[vec:BE]], [[vec:n]]〉| = [[frac:|[[vec:BE]] · [[vec:n]]|| |[[vec:BE]]| · |[[vec:n]]|]]</td>
+              <td>误写成 cos θ = |cos〈[[vec:BE]], [[vec:n]]〉|</td>
+            </tr>
+            <tr>
+              <td>二面角 / 两平面夹角 θ</td>
+              <td>|cos θ| = |cos〈[[vec:m]], [[vec:n]]〉| = [[frac:|[[vec:m]] · [[vec:n]]|| |[[vec:m]]| · |[[vec:n]]|]]</td>
+              <td>二面角需结合图形判断锐钝，平面夹角直接取绝对值</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /************************************************************************
+     * 1. 单遍扫描词法公式渲染器 (Single-Pass Tokenizer)
+     *    彻底杜绝数字占位符冲突与任何反斜杠指令泄漏
+     ************************************************************************/
+    function parseBracketContent(str, startIdx) {
+      // 从 startIdx (紧跟 '[[' 之后) 开始匹配成对的 '[[' 和 ']]'
+      let depth = 1;
+      let i = startIdx;
+      while (i < str.length && depth > 0) {
+        if (str[i] === '[' && str[i + 1] === '[') {
+          depth++;
+          i += 2;
+        } else if (str[i] === ']' && str[i + 1] === ']') {
+          depth--;
+          if (depth === 0) {
+            return { content: str.slice(startIdx, i), nextIdx: i + 2 };
+          }
+          i += 2;
+        } else {
+          i++;
+        }
+      }
+      return { content: str.slice(startIdx), nextIdx: str.length };
+    }
+
+    function splitTopLevelPipe(content) {
+      const parts = [];
+      let depth = 0;
+      let last = 0;
+      for (let i = 0; i < content.length; i++) {
+        if (content[i] === '[' && content[i + 1] === '[') {
+          depth++;
+          i++;
+        } else if (content[i] === ']' && content[i + 1] === ']') {
+          depth--;
+          i++;
+        } else if (content[i] === '|' && depth === 0) {
+          parts.push(content.slice(last, i));
+          last = i + 1;
+        }
+      }
+      parts.push(content.slice(last));
+      return parts;
+    }
+
+    function renderFormulaText(input) {
+      if (!input) return "";
+      let out = "";
+      let i = 0;
+      while (i < input.length) {
+        // 1. 匹配自定义结构标记 [[tag:...]]
+        if (input[i] === '[' && input[i + 1] === '[') {
+          const parsed = parseBracketContent(input, i + 2);
+          const colonPos = parsed.content.indexOf(':');
+          if (colonPos !== -1) {
+            const tag = parsed.content.slice(0, colonPos);
+            const body = parsed.content.slice(colonPos + 1);
+            if (tag === 'frac') {
+              const [num, den] = splitTopLevelPipe(body);
+              out += `<span class="m-frac"><span class="m-frac-num">${renderFormulaText(num)}</span><span class="m-frac-den">${renderFormulaText(den || '')}</span></span>`;
+            } else if (tag === 'vec') {
+              out += `<span class="m-vec">${renderFormulaText(body)}</span>`;
+            } else if (tag === 'sqrt') {
+              out += `<span class="m-sqrt"><span class="m-sqrt-sym">√</span><span class="m-sqrt-body">${renderFormulaText(body)}</span></span>`;
+            } else if (tag === 'cases') {
+              const rows = splitTopLevelPipe(body);
+              const rowsHtml = rows.map(r => `<div>${renderFormulaText(r)}</div>`).join('');
+              out += `<span class="m-cases"><span class="m-cases-brace">{</span><span class="m-cases-rows">${rowsHtml}</span></span>`;
+            } else if (tag === 'sup') {
+              out += `<sup class="m-sup">${renderFormulaText(body)}</sup>`;
+            } else if (tag === 'sub') {
+              out += `<sub class="m-sub">${renderFormulaText(body)}</sub>`;
+            } else {
+              out += renderFormulaText(body);
+            }
+          } else {
+            out += parsed.content;
+          }
+          i = parsed.nextIdx;
+          continue;
+        }
+
+        // 2. 跳过已有 HTML 标签（如 <strong>, <br>）
+        if (input[i] === '<') {
+          const closeTag = input.indexOf('>', i);
+          if (closeTag !== -1) {
+            out += input.slice(i, closeTag + 1);
+            i = closeTag + 1;
+            continue;
+          }
+        }
+
+        // 3. 单个英文字母渲染为数学衬线斜体（避免英文单词误触，仅在单字符上下文）
+        const ch = input[i];
+        if (/[A-Za-z]/.test(ch)) {
+          out += `<span class="m-var">${ch}</span>`;
+          i++;
+          continue;
+        }
+
+        out += ch;
+        i++;
+      }
+      return out;
+    }
+
+    /************************************************************************
+     * 2. 三大经典练习题库（练习一、练习二、练习三）
+     ************************************************************************/
+    const EXERCISES = [
+      // ==================== 练习一：直三棱柱线面平行 ====================
+      {
+        id: 0,
+        badge: "练习一 · 直三棱柱中的线面平行存在性",
+        problem: `如图，在直三棱柱 ABC-A[[sub:1]]B[[sub:1]]C[[sub:1]] 中，∠BAC = 90°，AB = AC = 2，AA[[sub:1]] = 3。M 是 AB 的中点，N 是 B[[sub:1]]C[[sub:1]] 的中点，P 是 BC[[sub:1]] 与 B[[sub:1]]C 的交点。<br>
+          <strong style="color:#fbbf24;">【探究问题】</strong>在线段 A[[sub:1]]N 上是否存在点 Q，使得 PQ ∥ 平面 A[[sub:1]]CM？若存在，求出 [[frac:A[[sub:1]]Q|A[[sub:1]]N]] 的值；若不存在，请说明理由。`,
+        sliderLabel: "拖动滑块改变点 Q 在线段 A[[sub:1]]N 上的比例 λ（[[vec:A[[sub:1]]Q]] = λ[[vec:A[[sub:1]]N]]）：",
+        defaultVal: 0.30,
+        targetVal: 0.67,
+        guidedSteps: [
+          {
+            title: "第 1 关：建立空间直角坐标系与确定定点坐标",
+            question: "在直三棱柱 ABC-A[[sub:1]]B[[sub:1]]C[[sub:1]] 中，∠BAC = 90°，AB = AC = 2，AA[[sub:1]] = 3。以 A 为原点，AB、AC、AA[[sub:1]] 所在直线分别为 x、y、z 轴建立空间直角坐标系 A-xyz。已知 M 是 AB 中点，N 是 B[[sub:1]]C[[sub:1]] 中点，P 是 BC[[sub:1]] 与 B[[sub:1]]C 的交点，则点 M、N、P 的坐标分别为？",
+            options: [
+              {
+                text: "M(1, 0, 0)，N(1, 1, 3)，P(1, 1, [[frac:3|2]])",
+                correct: true,
+                feedback: "完全正确！B(2,0,0)、C(0,2,0)，中点 M(1,0,0)；顶面 B[[sub:1]](2,0,3)、C[[sub:1]](0,2,3)，中点 N(1,1,3)；矩形 BCC[[sub:1]]B[[sub:1]] 对角线交点即 BC[[sub:1]] 中点 P(1,1,[[frac:3|2]])。"
+              },
+              {
+                text: "M(1, 0, 0)，N(2, 2, 3)，P(1, 1, 3)",
+                correct: false,
+                feedback: "注意中点坐标公式是两端点坐标相加除以 2！B[[sub:1]](2,0,3) 与 C[[sub:1]](0,2,3) 的中点 N 应为 (1,1,3)，P 的竖坐标是 [[frac:3|2]]。"
+              }
+            ],
+            explanation: `<strong>【定点坐标汇总】</strong><br>
+              A(0, 0, 0)，B(2, 0, 0)，C(0, 2, 0)，A[[sub:1]](0, 0, 3)，B[[sub:1]](2, 0, 3)，C[[sub:1]](0, 2, 3)。<br>
+              由中点公式得：M(1, 0, 0)，N(1, 1, 3)，P(1, 1, [[frac:3|2]])。`
+          },
+          {
+            title: "第 2 关：求定平面 A[[sub:1]]CM 的法向量 [[vec:n]]",
+            question: "在平面 A[[sub:1]]CM 中，[[vec:MC]] = (-1, 2, 0)，[[vec:MA[[sub:1]]]] = (-1, 0, 3)。设平面 A[[sub:1]]CM 的法向量为 [[vec:n]] = (x, y, z)，则 [[cases:-x + 2y = 0|-x + 3z = 0]]。为避免分数，令 z = 2，则法向量 [[vec:n]] 为？",
+            options: [
+              {
+                text: "[[vec:n]] = (6, 3, 2)",
+                correct: true,
+                feedback: "计算非常精准！令 z = 2，由 -x + 3z = 0 得 x = 6；再代入 -x + 2y = 0 得 y = 3，即 [[vec:n]] = (6, 3, 2)，全整数零分母！"
+              },
+              {
+                text: "[[vec:n]] = (6, -3, 2)",
+                correct: false,
+                feedback: "检查符号：-x + 2y = 0 ⇒ 2y = x = 6 ⇒ y = 3，不是 -3 哦！"
+              }
+            ],
+            explanation: `<strong>【法向量求法】</strong><br>
+              由 [[cases:[[vec:n]] · [[vec:MC]] = -x + 2y = 0|[[vec:n]] · [[vec:MA[[sub:1]]]] = -x + 3z = 0]]，取 x 与 2、3 的公倍数 6（即令 z = 2），得 x = 6，y = 3，故 [[vec:n]] = (6, 3, 2)。`
+          },
+          {
+            title: "第 3 关：【考场提速首选】向量三角形法则直接拆解 [[vec:PQ]]",
+            question: "设在线段 A[[sub:1]]N 上存在点 Q 满足题意，令 [[vec:A[[sub:1]]Q]] = λ[[vec:A[[sub:1]]N]]（λ ∈ [0, 1]）。本题只需用到向量 [[vec:PQ]]，<strong>无需先求点 Q 的坐标</strong>，直接利用向量加法三角形法则将 [[vec:PQ]] 拆解为 [[vec:PA[[sub:1]]]] + [[vec:A[[sub:1]]Q]]。已知 P(1, 1, [[frac:3|2]])，A[[sub:1]](0, 0, 3)，N(1, 1, 3)，则 [[vec:PQ]] 的表达式为？",
+            options: [
+              {
+                text: "[[vec:PQ]] = [[vec:PA[[sub:1]]]] + λ[[vec:A[[sub:1]]N]] = (-1, -1, [[frac:3|2]]) + λ(1, 1, 0) = (λ - 1, λ - 1, [[frac:3|2]])",
+                correct: true,
+                feedback: "非常漂亮！直接用向量三角形法则 [[vec:PQ]] = [[vec:PA[[sub:1]]]] + [[vec:A[[sub:1]]Q]] = [[vec:PA[[sub:1]]]] + λ[[vec:A[[sub:1]]N]]，省去求点 Q 坐标的中间环节，直达目标向量且完全符合高考书写规范！"
+              },
+              {
+                text: "[[vec:PQ]] = [[vec:PA[[sub:1]]]] + λ[[vec:A[[sub:1]]N]] = (1, 1, -[[frac:3|2]]) + λ(1, 1, 0) = (λ + 1, λ + 1, -[[frac:3|2]])",
+                correct: false,
+                feedback: "注意起点与终点顺序：[[vec:PA[[sub:1]]]] 是由 P(1, 1, [[frac:3|2]]) 指向 A[[sub:1]](0, 0, 3)，坐标应为终点减起点 (-1, -1, [[frac:3|2]]) 哦！"
+              }
+            ],
+            explanation: `<strong>【双法对比与规范书写示范】</strong><br>
+              • <strong>方法一（首选 · 向量三角形直接拆解法，不求 Q 坐标）：</strong><br>
+              设 [[vec:A[[sub:1]]Q]] = λ[[vec:A[[sub:1]]N]]（λ ∈ [0, 1]）。由 A[[sub:1]](0, 0, 3)，N(1, 1, 3)，P(1, 1, [[frac:3|2]])，得 [[vec:PA[[sub:1]]]] = (-1, -1, [[frac:3|2]])，[[vec:A[[sub:1]]N]] = (1, 1, 0)。<br>
+              直接拆解：[[vec:PQ]] = [[vec:PA[[sub:1]]]] + [[vec:A[[sub:1]]Q]] = [[vec:PA[[sub:1]]]] + λ[[vec:A[[sub:1]]N]] = (-1, -1, [[frac:3|2]]) + λ(1, 1, 0) = (λ - 1, λ - 1, [[frac:3|2]])。<br>
+              • <strong>方法二（备选 · 原点位置向量法，仅当题目明确要求“求出 Q 点坐标”时使用）：</strong><br>
+              利用原点位置向量：[[vec:AQ]] = [[vec:AA[[sub:1]]]] + [[vec:A[[sub:1]]Q]] = [[vec:AA[[sub:1]]]] + λ[[vec:A[[sub:1]]N]] = (0, 0, 3) + λ(1, 1, 0) = (λ, λ, 3)，从而 Q(λ, λ, 3)，再写 [[vec:PQ]] = (λ - 1, λ - 1, [[frac:3|2]])（注意：高考严禁写成 Q = A[[sub:1]] + λ[[vec:A[[sub:1]]N]] 或 [[vec:PQ]] = Q - P）。`
+          },
+          {
+            title: "第 4 关：利用 [[vec:PQ]] · [[vec:n]] = 0 解出 λ 并检验存在性",
+            question: "因为 PQ ∥ 平面 A[[sub:1]]CM（且 PQ ⊄ 平面 A[[sub:1]]CM），所以 [[vec:PQ]] · [[vec:n]] = 0。代入 [[vec:PQ]] = (λ - 1, λ - 1, [[frac:3|2]]) 与 [[vec:n]] = (6, 3, 2)，解得 λ 与 [[frac:A[[sub:1]]Q|A[[sub:1]]N]] 的值为？",
+            options: [
+              {
+                text: "6(λ - 1) + 3(λ - 1) + 3 = 0 ⇒ 9λ = 6 ⇒ λ = [[frac:2|3]] ∈ [0, 1]，存在点 Q 且 [[frac:A[[sub:1]]Q|A[[sub:1]]N]] = [[frac:2|3]]",
+                correct: true,
+                feedback: "满分通关！解出 λ = [[frac:2|3]] ∈ [0, 1]，且点 Q 不在平面 A[[sub:1]]CM 内（故 PQ ⊄ 平面 A[[sub:1]]CM），严格满足线面平行判定条件！"
+              },
+              {
+                text: "6(λ - 1) + 3(λ - 1) + 3 = 0 ⇒ λ = [[frac:1|3]] ∈ [0, 1]",
+                correct: false,
+                feedback: "再算一遍方程：9(λ - 1) + 3 = 0 ⇒ 9λ - 6 = 0 ⇒ λ = [[frac:6|9]] = [[frac:2|3]] 哦！"
+              }
+            ],
+            explanation: `<strong>【收官检验与规范作答】</strong><br>
+              由 [[vec:PQ]] · [[vec:n]] = 6(λ - 1) + 3(λ - 1) + [[frac:3|2]] × 2 = 9λ - 6 = 0，解得 λ = [[frac:2|3]] ∈ [0, 1]。<br>
+              又点 Q ∉ 平面 A[[sub:1]]CM，故 PQ ⊄ 平面 A[[sub:1]]CM，所以在线段 A[[sub:1]]N 上存在点 Q，使得 PQ ∥ 平面 A[[sub:1]]CM，此时 [[frac:A[[sub:1]]Q|A[[sub:1]]N]] = [[frac:2|3]]。`
+          }
+        ],
+        variantSteps: [
+          {
+            title: "同源变式 1（第 1 关）：若改为求“存在点 Q 使得 PQ ⊥ 平面 A[[sub:1]]CM”",
+            question: "【变式训练】保持直三棱柱条件不变（[[vec:PQ]] = (λ - 1, λ - 1, [[frac:3|2]])，平面 A[[sub:1]]CM 法向量 [[vec:n]] = (6, 3, 2)）。在线段 A[[sub:1]]N 上是否存在点 Q，使得 PQ ⊥ 平面 A[[sub:1]]CM？此时向量条件应转化为？",
+            options: [
+              {
+                text: "[[vec:PQ]] ∥ [[vec:n]]，即存在实数 k 使得 (λ - 1, λ - 1, [[frac:3|2]]) = k(6, 3, 2)",
+                correct: true,
+                feedback: "精准！线面垂直等价于直线的方向向量与平面的法向量共线（平行），而非点积为 0。"
+              },
+              {
+                text: "[[vec:PQ]] · [[vec:n]] = 0",
+                correct: false,
+                feedback: "点积为 0 是“线面平行（或在面内）”的条件；线面垂直需要方向向量与法向量共线！"
+              }
+            ],
+            explanation: `直线 PQ ⊥ 平面 A[[sub:1]]CM ⇔ [[vec:PQ]] ∥ [[vec:n]] ⇔ 存在实数 k 使得 [[vec:PQ]] = k[[vec:n]]。`
+          },
+          {
+            title: "同源变式 1（第 2 关）：联立方程组判断是否存在实数解",
+            question: "由 (λ - 1, λ - 1, [[frac:3|2]]) = (6k, 3k, 2k)，可列出方程组 [[cases:λ - 1 = 6k|λ - 1 = 3k|[[frac:3|2]] = 2k]]。观察前两个方程得 6k = 3k ⇒ k = 0，与第三个方程 k = [[frac:3|4]] 矛盾！这说明？",
+            options: [
+              {
+                text: "方程组无解，故在线段 A[[sub:1]]N 上不存在点 Q 使得 PQ ⊥ 平面 A[[sub:1]]CM",
+                correct: true,
+                feedback: "非常严谨！存在性问题的否定回答必须通过方程组无解或参数超出 [0, 1] 来给出严密代数证明。"
+              },
+              {
+                text: "令 λ = 1，使前两个方程左边为 0 即可",
+                correct: false,
+                feedback: "若 λ = 1，则前两式推出 k = 0，代入第三式变成 [[frac:3|2]] = 0，依然矛盾无解！"
+              }
+            ],
+            explanation: `<strong>【规范否定结论】</strong><br>
+              由 [[cases:λ - 1 = 6k|λ - 1 = 3k|2k = [[frac:3|2]]]] 解得 k = 0 且 k = [[frac:3|4]]，矛盾无解，故线段 A[[sub:1]]N 上<strong>不存在</strong>点 Q 使得 PQ ⊥ 平面 A[[sub:1]]CM。`
+          }
+        ]
+      },
+
+      // ==================== 练习二：直角梯形四棱锥线面角存在性 ====================
+      {
+        id: 1,
+        badge: "练习二 · 四棱锥中的线面角存在性（标准真题）",
+        problem: `如图，已知四棱锥 S-ABCD 的底面 ABCD 是直角梯形，AD ∥ BC，AD = 3，∠ABC = 90°，SA ⊥ 平面 ABCD，SA = AB = BC = 1。<br>
+          <strong style="color:#fbbf24;">【探究问题】</strong>在棱 SC 上是否存在一点 E（不与端点重合），使得 BE 与平面 SCD 所成角的正弦值为 [[frac:[[sqrt:14]]|14]]？若存在，求 [[frac:SE|EC]] 的值；如不存在，试说明理由。`,
+        sliderLabel: "拖动滑块改变点 E 在棱 SC 上的比例 λ（[[vec:SE]] = λ[[vec:SC]]）：",
+        defaultVal: 0.65,
+        targetVal: 0.3333,
+        guidedSteps: [
+          {
+            title: "第 1 关：以 A 为原点建立空间直角坐标系与写定点坐标",
+            question: "因为 SA ⊥ 平面 ABCD，底面 ABCD 是直角梯形且 AD ∥ BC，∠ABC = 90°，所以 ∠BAD = 90°，AB、AD、AS 两两垂直。以 A 为原点，AB、AD、AS 分别为 x、y、z 轴建立空间直角坐标系，已知 SA = AB = BC = 1，AD = 3，则各顶点坐标为？",
+            options: [
+              {
+                text: "S(0, 0, 1)，B(1, 0, 0)，C(1, 1, 0)，D(0, 3, 0)",
+                correct: true,
+                feedback: "完全正确！B 在 x 轴正半轴 (1,0,0)，BC ∥ AD 且 BC = 1，故 C(1,1,0)，D 在 y 轴正半轴 (0,3,0)，S 在 z 轴正半轴 (0,0,1)。"
+              },
+              {
+                text: "S(0, 0, 1)，B(1, 0, 0)，C(1, 3, 0)，D(0, 1, 0)",
+                correct: false,
+                feedback: "注意题干长度：BC = 1，AD = 3！所以 C 的 y 坐标是 1，D 的 y 坐标是 3。"
+              }
+            ],
+            explanation: `<strong>【坐标系与定点坐标】</strong><br>
+              以 A 为原点建立空间直角坐标系 A-xyz，则 A(0, 0, 0)，B(1, 0, 0)，C(1, 1, 0)，D(0, 3, 0)，S(0, 0, 1)。`
+          },
+          {
+            title: "第 2 关：求平面 SCD 的法向量 [[vec:n]]",
+            question: "在平面 SCD 中，[[vec:SC]] = (1, 1, -1)，[[vec:CD]] = (-1, 2, 0)。设平面 SCD 的法向量为 [[vec:n]] = (x, y, z)，则 [[cases:x + y - z = 0|-x + 2y = 0]]。令 y = 1，则法向量 [[vec:n]] 为？",
+            options: [
+              {
+                text: "[[vec:n]] = (2, 1, 3)",
+                correct: true,
+                feedback: "计算准确！令 y = 1，由 -x + 2y = 0 得 x = 2；再代入 x + y - z = 0 得 z = 3，故 [[vec:n]] = (2, 1, 3)，模长 |[[vec:n]]| = [[sqrt:14]]。"
+              },
+              {
+                text: "[[vec:n]] = (2, 1, -3)",
+                correct: false,
+                feedback: "检查第二个方程：x + y - z = 0 ⇒ z = x + y = 2 + 1 = 3，不是 -3。"
+              }
+            ],
+            explanation: `<strong>【平面 SCD 法向量】</strong><br>
+              由 [[cases:[[vec:SC]] · [[vec:n]] = x + y - z = 0|[[vec:CD]] · [[vec:n]] = -x + 2y = 0]]，令 y = 1，得 x = 2，z = 3，即 [[vec:n]] = (2, 1, 3)，且 |[[vec:n]]| = [[sqrt:2[[sup:2]] + 1[[sup:2]] + 3[[sup:2]]]] = [[sqrt:14]]。`
+          },
+          {
+            title: "第 3 关：设参数 λ ∈ (0, 1)，用向量三角形直接拆解 [[vec:BE]]",
+            question: "因为点 E 在棱 SC 上（不与端点重合），设 [[vec:SE]] = λ[[vec:SC]]（0 < λ < 1）。不求点 E 的坐标，直接利用三角形法则将 [[vec:BE]] 拆解为 [[vec:BS]] + [[vec:SE]]。已知 B(1, 0, 0)，S(0, 0, 1)，[[vec:SC]] = (1, 1, -1)，则 [[vec:BE]] 的表达式为？",
+            options: [
+              {
+                text: "[[vec:BE]] = [[vec:BS]] + λ[[vec:SC]] = (-1, 0, 1) + λ(1, 1, -1) = (λ - 1, λ, 1 - λ)",
+                correct: true,
+                feedback: "完全正确！[[vec:BS]] = (-1, 0, 1)，加上 λ[[vec:SC]] = (λ, λ, -λ)，直接得出 [[vec:BE]] = (λ - 1, λ, 1 - λ)，一步到位！"
+              },
+              {
+                text: "[[vec:BE]] = [[vec:BS]] + λ[[vec:SC]] = (1, 0, -1) + λ(1, 1, -1) = (λ + 1, λ, -1 - λ)",
+                correct: false,
+                feedback: "注意 [[vec:BS]] 是从 B(1, 0, 0) 指向 S(0, 0, 1)，分量应为 (-1, 0, 1) 而不是 (1, 0, -1) 哦！"
+              }
+            ],
+            explanation: `<strong>【规范拆解推导】</strong><br>
+              设 [[vec:SE]] = λ[[vec:SC]]（0 < λ < 1），则 [[vec:BE]] = [[vec:BS]] + [[vec:SE]] = [[vec:BS]] + λ[[vec:SC]] = (-1, 0, 1) + λ(1, 1, -1) = (λ - 1, λ, 1 - λ)。<br>
+              （若题目额外要求 E 点坐标，则通过原点位置向量 [[vec:AE]] = [[vec:AS]] + λ[[vec:SC]] = (0, 0, 1) + (λ, λ, -λ) = (λ, λ, 1 - λ)，写出 E(λ, λ, 1 - λ)）。`
+          },
+          {
+            title: "第 4 关：代入线面角正弦公式解方程并舍去端点解",
+            question: "设 BE 与平面 SCD 所成角为 θ，则 sin θ = [[frac:|[[vec:BE]] · [[vec:n]]|| |[[vec:BE]]| · |[[vec:n]]|]] = [[frac:|2(λ - 1) + λ + 3(1 - λ)| | [[sqrt:14]] · [[sqrt:(λ - 1)[[sup:2]] + λ[[sup:2]] + (1 - λ)[[sup:2]]]]]] = [[frac:[[sqrt:14]]|14]]。注意到分子恰好化简为常数 1！两边平方整理得 3λ[[sup:2]] - 4λ + 1 = 0，解得有效参数 λ 为？",
+            options: [
+              {
+                text: "λ = [[frac:1|3]]（因为 0 < λ < 1，舍去端点解 λ = 1）",
+                correct: true,
+                feedback: "非常严谨！3λ[[sup:2]] - 4λ + 1 = (3λ - 1)(λ - 1) = 0，题目明确要求“不与端点重合”即 0 < λ < 1，因此必须舍去 λ = 1，保留 λ = [[frac:1|3]]！"
+              },
+              {
+                text: "λ = [[frac:1|3]] 或 λ = 1",
+                correct: false,
+                feedback: "小心题干括号里的限定条件“（不与端点重合）”！λ = 1 时点 E 与点 C 重合，必须舍去！"
+              }
+            ],
+            explanation: `<strong>【方程求解细节】</strong><br>
+              分子 |2λ - 2 + λ + 3 - 3λ| = 1；分母 [[sqrt:14]] · [[sqrt:3λ[[sup:2]] - 4λ + 2]]。<br>
+              由 [[frac:1| [[sqrt:14]] · [[sqrt:3λ[[sup:2]] - 4λ + 2]]]] = [[frac:[[sqrt:14]]|14]] ⇒ [[sqrt:3λ[[sup:2]] - 4λ + 2]] = 1 ⇒ 3λ[[sup:2]] - 4λ + 1 = 0。<br>
+              解得 λ = [[frac:1|3]] 或 λ = 1，又 0 < λ < 1，故 λ = [[frac:1|3]]。`
+          },
+          {
+            title: "第 5 关：最后一步换算所求线段比例 [[frac:SE|EC]]",
+            question: "已经解出 [[vec:SE]] = [[frac:1|3]][[vec:SC]]（即 λ = [[frac:1|3]]），那么题干所求的 [[frac:SE|EC]] 的值为？",
+            options: [
+              {
+                text: "[[frac:SE|EC]] = [[frac:λ|1 - λ]] = [[frac:1|2]]",
+                correct: true,
+                feedback: "满分收官！SE 占 1 份，SC 占 3 份，则 EC 占 2 份，所以 [[frac:SE|EC]] = [[frac:1|2]]！"
+              },
+              {
+                text: "[[frac:SE|EC]] = [[frac:1|3]]",
+                correct: false,
+                feedback: "[[frac:1|3]] 是 [[frac:SE|SC]] 的比值！EC = SC - SE = [[frac:2|3]]SC，所以 [[frac:SE|EC]] = [[frac:1|2]]。"
+              }
+            ],
+            explanation: `<strong>【最终答案】</strong><br>
+              在棱 SC 上存在一点 E，使得 BE 与平面 SCD 所成角的正弦值为 [[frac:[[sqrt:14]]|14]]，此时 [[frac:SE|EC]] = [[frac:λ|1 - λ]] = [[frac:1|2]]。`
+          }
+        ],
+        variantSteps: [
+          {
+            title: "同源变式 2（第 1 关）：求线面角正弦值的最大值（最值型问题）",
+            question: "【变式训练】保持四棱锥 S-ABCD 条件不变，当点 E 在棱 SC 上（含端点，即 λ ∈ [0, 1]）运动时，直线 BE 与平面 SCD 所成角 θ 的正弦值 sin θ = [[frac:1| [[sqrt:14]] · [[sqrt:3λ[[sup:2]] - 4λ + 2]]]]。当 λ 取何值时，sin θ 取得最大值？",
+            options: [
+              {
+                text: "当 λ = [[frac:2|3]] 时，二次函数 3λ[[sup:2]] - 4λ + 2 取得最小值 [[frac:2|3]]，此时 (sin θ)[[sub:max]] = [[frac:[[sqrt:21]]|14]]",
+                correct: true,
+                feedback: "太棒了！把立体几何动态最值转化为二次函数 f(λ) = 3(λ - [[frac:2|3]])[[sup:2]] + [[frac:2|3]] 在 [0, 1] 上的最小值，高三压轴常见考法！"
+              },
+              {
+                text: "当 λ = 0（即点 E 与 S 重合）时，sin θ 取得最大值",
+                correct: false,
+                feedback: "二次函数 f(λ) = 3λ[[sup:2]] - 4λ + 2 的对称轴为 λ = [[frac:2|3]] ∈ [0, 1]，在对称轴处分母最小、分数值最大哦！"
+              }
+            ],
+            explanation: `<strong>【二次函数求最值】</strong><br>
+              令 f(λ) = 3λ[[sup:2]] - 4λ + 2 = 3(λ - [[frac:2|3]])[[sup:2]] + [[frac:2|3]]。当 λ = [[frac:2|3]] ∈ [0, 1] 时，f(λ)[[sub:min]] = [[frac:2|3]]，此时 (sin θ)[[sub:max]] = [[frac:1| [[sqrt:14]] · [[sqrt:[[frac:2|3]]]]]] = [[frac:[[sqrt:21]]|14]]。`
+          },
+          {
+            title: "同源变式 2（第 2 关）：若题目改为“sin θ = [[frac:1|2]]”，判断存在性",
+            question: "由上一关已知 sin θ 的最大值为 [[frac:[[sqrt:21]]|14]] ≈ 0.327 < [[frac:1|2]]。若题目改为“是否存在点 E 使得 sin θ = [[frac:1|2]]”，代数方程 3λ[[sup:2]] - 4λ + 2 = [[frac:2|7]] 的判别式 Δ 为？",
+            options: [
+              {
+                text: "21λ[[sup:2]] - 28λ + 12 = 0，Δ = 28[[sup:2]] - 4 × 21 × 12 = 784 - 1008 = -224 < 0，无实数解，故不存在",
+                correct: true,
+                feedback: "判别式 Δ < 0 直接秒杀！这也是存在性问题“不存在”的另一大经典代数特征。"
+              },
+              {
+                text: "Δ > 0 但两根均大于 1",
+                correct: false,
+                feedback: "计算判别式：28[[sup:2]] = 784，4 × 21 × 12 = 1008，784 - 1008 < 0，根本没有实数根！"
+              }
+            ],
+            explanation: `由 [[frac:1| [[sqrt:14(3λ[[sup:2]] - 4λ + 2)]]]] = [[frac:1|2]] ⇒ 21λ[[sup:2]] - 28λ + 12 = 0，Δ = -224 < 0 无实根，故不存在。`
+          }
+        ]
+      },
+
+      // ==================== 练习三：正方形与梯形组合体二面角存在性 ====================
+      {
+        id: 2,
+        badge: "练习三 · 组合体中的二面角存在性（拔高综合）",
+        problem: `如图，正方形 ABCD 所在平面与梯形 ABMN 所在平面垂直，AN ∥ BM，AN = AB = 2，BM = 4，CN = 2[[sqrt:3]]。<br>
+          <strong style="color:#fbbf24;">【探究问题】</strong>在线段 CM 上是否存在一点 E，使得平面 EBN 与平面 BMN 的夹角的余弦值是 [[frac:[[sqrt:3]]|3]]？若存在，求出 [[frac:CE|EM]] 的值；若不存在，请说明理由。`,
+        sliderLabel: "拖动滑块改变点 E 在线段 CM 上的比例 λ（[[vec:CE]] = λ[[vec:CM]]）：",
+        defaultVal: 0.65,
+        targetVal: 0.3333,
+        guidedSteps: [
+          {
+            title: "第 1 关：【建系前提】证明三线两两垂直（隐含直角陷阱）",
+            question: "题干仅给出正方形 ABCD ⊥ 梯形 ABMN，并未直接说明梯形 ABMN 是直角梯形！已知 AB = AN = 2，CN = 2[[sqrt:3]]，选出正确的三线两两垂直证明链：",
+            options: [
+              {
+                text: "由面面垂直证 CB ⊥ 面 ABMN ⇒ CB ⊥ BN；再由勾股定理得 BN = [[sqrt:CN[[sup:2]] - CB[[sup:2]]]] = 2[[sqrt:2]]；最后由 AB[[sup:2]] + AN[[sup:2]] = 8 = BN[[sup:2]] 证出 AB ⊥ AN ⇒ AB ⊥ BM",
+                correct: true,
+                feedback: "满分证明链！高考建系题若不先用勾股逆定理证出 AB ⊥ BM，直接建系会被扣掉 2~3 分的逻辑分！"
+              },
+              {
+                text: "因为 ABMN 是梯形且 AN ∥ BM，所以直接可得 AB ⊥ BM",
+                correct: false,
+                feedback: "一般梯形腰与底不一定垂直！必须借助 CN = 2[[sqrt:3]] 算出 BN = 2[[sqrt:2]]，再用勾股逆定理证明 ∠BAN = 90°。"
+              }
+            ],
+            explanation: `<strong>【规范建系前提证明】</strong><br>
+              因为平面 ABCD ⊥ 平面 ABMN，交线为 AB，且 CB ⊥ AB，所以 CB ⊥ 平面 ABMN，故 CB ⊥ BN。<br>
+              在 Rt△CBN 中，BN = [[sqrt:CN[[sup:2]] - CB[[sup:2]]]] = [[sqrt:12 - 4]] = 2[[sqrt:2]]。又 AB = AN = 2，故 AB[[sup:2]] + AN[[sup:2]] = 8 = BN[[sup:2]]，从而 AB ⊥ AN。又 AN ∥ BM，所以 AB ⊥ BM，即 BA、BM、BC 两两垂直。`
+          },
+          {
+            title: "第 2 关：规范建系与利用向量三角形拆解 [[vec:BE]]",
+            question: "以 B 为原点，BA、BM、BC 分别为 x、y、z 轴建立空间直角坐标系 B-xyz，则 B(0,0,0)，N(2,2,0)，C(0,0,2)，M(0,4,0)。设 [[vec:CE]] = λ[[vec:CM]]（λ ∈ [0, 1]），直接拆解 [[vec:BE]] = [[vec:BC]] + λ[[vec:CM]]，则 [[vec:BE]] 的坐标为？",
+            options: [
+              {
+                text: "[[vec:BE]] = (0, 0, 2) + λ(0, 4, -2) = (0, 4λ, 2 - 2λ)",
+                correct: true,
+                feedback: "完全正确！因为原点就是 B，所以位置向量 [[vec:BE]] = [[vec:BC]] + λ[[vec:CM]] = (0, 4λ, 2 - 2λ)，既直接求出目标向量，又同时得到了 E(0, 4λ, 2 - 2λ) 的规范坐标！"
+              },
+              {
+                text: "[[vec:BE]] = (0, 0, 2) + λ(0, 4, 2) = (0, 4λ, 2 + 2λ)",
+                correct: false,
+                feedback: "小心起点是 C(0, 0, 2)，终点是 M(0, 4, 0)！[[vec:CM]] 的 z 分量为 0 - 2 = -2，所以 z 分量应为 2 - 2λ。"
+              }
+            ],
+            explanation: `<strong>【向量拆解推导】</strong><br>
+              [[vec:BC]] = (0, 0, 2)，[[vec:CM]] = (0, 4, -2) ⇒ [[vec:BE]] = [[vec:BC]] + [[vec:CE]] = [[vec:BC]] + λ[[vec:CM]] = (0, 4λ, 2 - 2λ)（此时 B 为原点，故点 E 坐标也为 (0, 4λ, 2 - 2λ)）。`
+          },
+          {
+            title: "第 3 关：【高三提速绝招】交叉赋整式求含参法向量",
+            question: "在平面 EBN 中，[[vec:BN]] = (2, 2, 0)，[[vec:BE]] = (0, 4λ, 2 - 2λ)。设法向量 [[vec:n]] = (x, y, z)，则 [[cases:2x + 2y = 0|4λy + (2 - 2λ)z = 0]] ⇔ [[cases:x = -y|2λy + (1 - λ)z = 0]]。为彻底避免分母，应该如何交叉赋值？",
+            options: [
+              {
+                text: "令 y = λ - 1，则 x = 1 - λ，z = 2λ，得全整式法向量 [[vec:n]] = (1 - λ, λ - 1, 2λ)",
+                correct: true,
+                feedback: "神仙操作！令 y = λ - 1 后，2λ(λ - 1) + (1 - λ)z = 0 ⇒ z = 2λ，没有任何分母，且 λ = 1 时依然成立，无需分类讨论！"
+              },
+              {
+                text: "令 y = 1，得 [[vec:n]] = (-1, 1, [[frac:2λ|λ - 1]])",
+                correct: false,
+                feedback: "带着分母 [[frac:2λ|λ - 1]] 去平方开根号极易算错，还要额外讨论 λ = 1，强烈建议用交叉赋整式！"
+              }
+            ],
+            explanation: `<strong>【交叉赋整口诀】</strong><br>
+              遇到 A(λ)y + B(λ)z = 0 时，直接令 y = B(λ)（或其相反数），z = -A(λ)。<br>
+              本题由 2λy + (1 - λ)z = 0，令 y = λ - 1，得 z = 2λ，x = 1 - λ，即 [[vec:n]] = (1 - λ, λ - 1, 2λ)。`
+          },
+          {
+            title: "第 4 关：列二面角余弦方程求解并检验范围",
+            question: "底面 BMN 的法向量为 [[vec:m]] = (0, 0, 1)。已知两平面夹角余弦值为 [[frac:[[sqrt:3]]|3]]，代入 |cos〈[[vec:m]], [[vec:n]]〉| = [[frac:|2λ| | [[sqrt:(1 - λ)[[sup:2]] + (λ - 1)[[sup:2]] + (2λ)[[sup:2]]]]]] = [[frac:[[sqrt:3]]|3]]，两边平方化简得 3λ[[sup:2]] + 2λ - 1 = 0，解得有效参数 λ 为？",
+            options: [
+              {
+                text: "λ = [[frac:1|3]]（因为 λ ∈ [0, 1]，舍去 λ = -1）",
+                correct: true,
+                feedback: "非常严谨！(3λ - 1)(λ + 1) = 0，结合点 E 在线段 CM 上（λ ∈ [0, 1]），唯一确定 λ = [[frac:1|3]]！"
+              },
+              {
+                text: "λ = [[frac:1|3]] 或 λ = -1",
+                correct: false,
+                feedback: "别忘了点 E 在线段 CM 上，必须满足 λ ∈ [0, 1]，所以 λ = -1 必须舍去！"
+              }
+            ],
+            explanation: `<strong>【方程化简细节】</strong><br>
+              由 [[frac:4λ[[sup:2]]|6λ[[sup:2]] - 4λ + 2]] = [[frac:1|3]] ⇒ 12λ[[sup:2]] = 6λ[[sup:2]] - 4λ + 2 ⇒ 3λ[[sup:2]] + 2λ - 1 = 0。<br>
+              因式分解得 (3λ - 1)(λ + 1) = 0，又 λ ∈ [0, 1]，故 λ = [[frac:1|3]]。`
+          },
+          {
+            title: "第 5 关：【终极防坑】看清题目最后问的是哪个比值！",
+            question: "已经算出 λ = [[frac:1|3]]（其中 [[vec:CE]] = λ[[vec:CM]]）。请仔细看原题最后一句话：“若存在，求出 [[frac:CE|EM]] 的值”。最终答案应填多少？",
+            options: [
+              {
+                text: "存在点 E，且 [[frac:CE|EM]] = [[frac:λ|1 - λ]] = [[frac:1|2]]",
+                correct: true,
+                feedback: "太漂亮了！高考阅卷中至少有 30% 算对 λ = [[frac:1|3]] 的同学最后一步直接填了 [[frac:1|3]] 而丢分！你成功避开了所有雷区！"
+              },
+              {
+                text: "存在点 E，且 [[frac:CE|EM]] = [[frac:1|3]]",
+                correct: false,
+                feedback: "掉进最后一米陷阱啦！λ = [[frac:1|3]] 是 [[frac:CE|CM]] 的值！CE 占 1 份，CM 占 3 份，则 EM 占 2 份，所以 [[frac:CE|EM]] = [[frac:1|2]]！"
+              }
+            ],
+            explanation: `<strong>【收官核对口诀】</strong><br>
+              [[vec:CE]] = [[frac:1|3]][[vec:CM]] ⇒ CE 占 1 份，EM = 3 - 1 = 2 份 ⇒ <strong>[[frac:CE|EM]] = [[frac:1|2]]</strong>！`
+          }
+        ],
+        variantSteps: [
+          {
+            title: "同源变式 3（第 1 关）：线面角正弦值存在性探索",
+            question: "【变式训练】保持正方形 ABCD ⊥ 梯形 ABMN 条件不变（D(2, 0, 2)，E(0, 4λ, 2 - 2λ)）。在线段 CM 上是否存在一点 E，使得直线 DE 与平面 ABMN 所成角的正弦值为 [[frac:[[sqrt:5]]|5]]？先写出向量 [[vec:DE]] 与平面 ABMN 的法向量 [[vec:m]]：",
+            options: [
+              {
+                text: "[[vec:DE]] = (-2, 4λ, -2λ)，法向量 [[vec:m]] = (0, 0, 1)",
+                correct: true,
+                feedback: "完全正确！E(0, 4λ, 2 - 2λ) 减去 D(2, 0, 2) 即得 [[vec:DE]] = (-2, 4λ, -2λ)。"
+              },
+              {
+                text: "[[vec:DE]] = (2, 4λ, 2 - 2λ)，法向量 [[vec:m]] = (1, 0, 0)",
+                correct: false,
+                feedback: "注意 D(2, 0, 2) 的 z 坐标为 2，相减后 z 分量为 (2 - 2λ) - 2 = -2λ。"
+              }
+            ],
+            explanation: `由 D(2, 0, 2) 与 E(0, 4λ, 2 - 2λ)，得 [[vec:DE]] = (-2, 4λ, -2λ)，平面 ABMN 的法向量为 [[vec:m]] = (0, 0, 1)。`
+          },
+          {
+            title: "同源变式 3（第 2 关）：渐近线极值型“不存在”证伪",
+            question: "设直线 DE 与平面 ABMN 所成角为 α，则 sin α = [[frac:|-2λ| | [[sqrt:4 + 16λ[[sup:2]] + 4λ[[sup:2]]]]]] = [[frac:λ| [[sqrt:5λ[[sup:2]] + 1]]]] = [[frac:[[sqrt:5]]|5]]。两边平方得 5λ[[sup:2]] = 5λ[[sup:2]] + 1，这说明了什么？",
+            options: [
+              {
+                text: "方程 0 = 1 矛盾无解！事实上对任意 λ ∈ [0, 1]，sin α = [[frac:λ| [[sqrt:5λ[[sup:2]] + 1]]]] < [[frac:λ| [[sqrt:5λ[[sup:2]]]]]] = [[frac:[[sqrt:5]]|5]]，故不存在这样的点 E",
+                correct: true,
+                feedback: "太震撼了！这是一道典型的“渐近线极值型不存在”压轴变式，直接把矛盾方程 5λ[[sup:2]] = 5λ[[sup:2]] + 1 写出来即可满分证伪！"
+              },
+              {
+                text: "说明点 E 与点 M 重合（λ = 1）",
+                correct: false,
+                feedback: "把 λ = 1 代入得 sin α = [[frac:1|[[sqrt:6]]]] = [[frac:[[sqrt:6]]|6]] < [[frac:[[sqrt:5]]|5]]，依然达不到 [[frac:[[sqrt:5]]|5]] 哦！"
+              }
+            ],
+            explanation: `<strong>【规范证伪结论】</strong><br>
+              由 [[frac:λ| [[sqrt:5λ[[sup:2]] + 1]]]] = [[frac:[[sqrt:5]]|5]] 平方得 5λ[[sup:2]] = 5λ[[sup:2]] + 1，矛盾无解，故线段 CM 上<strong>不存在</strong>满足条件的点 E。`
+          }
+        ]
+      }
+    ];
+
+    /************************************************************************
+     * 3. 全局状态与原生 HTML5 Canvas 3D 投影渲染引擎（零外部依赖，严格居中）
+     ************************************************************************/
+    let curExIdx = 0;
+    let curSubMode = 'guided';
+    let showAxes = true;
+    let showAux = true;
+    let autoRotate = false;
+
+    const progressState = {
+      unlocked: [
+        { guided: 0, variant: 0 },
+        { guided: 0, variant: 0 },
+        { guided: 0, variant: 0 }
+      ],
+      done: [
+        { guided: [false, false, false, false], variant: [false, false] },
+        { guided: [false, false, false, false, false], variant: [false, false] },
+        { guided: [false, false, false, false, false], variant: [false, false] }
+      ]
+    };
+
+    // 3D 相机与视图变换状态
+    // 3D 相机与视图变换状态（默认经典教材斜二测/正等测视角，竖直棱严格平行不收敛）
+    const cam = {
+      yaw: 0.56,
+      pitch: 0.36,
+      zoom: 1.0,
+      panX: 0,
+      panY: 0
+    };
+
+    const canvas = document.getElementById('geo-canvas');
+    const ctx = canvas.getContext('2d');
+    const wrap = document.getElementById('canvas-wrap');
+
+    // 数学坐标 (x: 前左, y: 右, z: 上) -> 3D 渲染空间坐标
+    function toWorld(x, y, z) {
+      return { x: y, y: z, z: x };
+    }
+
+    function rotateAndProject(pt, center, width, height, baseScale) {
+      const dx = pt.x - center.x;
+      const dy = pt.y - center.y;
+      const dz = pt.z - center.z;
+
+      // 绕 Y 轴旋转 (yaw)
+      const cosY = Math.cos(cam.yaw);
+      const sinY = Math.sin(cam.yaw);
+      const x1 = dx * cosY - dz * sinY;
+      const z1 = dx * sinY + dz * cosY;
+
+      // 绕 X 轴旋转 (pitch)
+      const cosP = Math.cos(cam.pitch);
+      const sinP = Math.sin(cam.pitch);
+      const y2 = dy * cosP - z1 * sinP;
+      const z2 = dy * sinP + z1 * cosP;
+
+      // 采用教材级平行正交投影（Orthographic Projection）：
+      // 消除近大远小透视畸变，确保直棱柱侧棱 AA1、BB1、CC1 严格平行且挺拔笔直
+      const scale = baseScale * cam.zoom;
+
+      return {
+        sx: width / 2 + cam.panX + x1 * scale,
+        sy: height / 2 + cam.panY - y2 * scale,
+        depth: z2
+      };
+    }
+
+    function drawLine3D(p1, p2, projFn, color, width = 2, dashed = false) {
+      const a = projFn(p1);
+      const b = projFn(p2);
+      ctx.save();
+      ctx.beginPath();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = width;
+      ctx.lineCap = 'round';
+      if (dashed) ctx.setLineDash([6, 5]);
+      ctx.moveTo(a.sx, a.sy);
+      ctx.lineTo(b.sx, b.sy);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function drawPoly3D(pts, projFn, fillStyle, strokeStyle = null) {
+      if (pts.length < 3) return;
+      const projected = pts.map(p => projFn(p));
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(projected[0].sx, projected[0].sy);
+      for (let i = 1; i < projected.length; i++) {
+        ctx.lineTo(projected[i].sx, projected[i].sy);
+      }
+      ctx.closePath();
+      ctx.fillStyle = fillStyle;
+      ctx.fill();
+      if (strokeStyle) {
+        ctx.strokeStyle = strokeStyle;
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    function drawArrow3D(p1, p2, projFn, color, label = "") {
+      const a = projFn(p1);
+      const b = projFn(p2);
+      drawLine3D(p1, p2, projFn, color, 2.2, false);
+      const angle = Math.atan2(b.sy - a.sy, b.sx - a.sx);
+      const headLen = 9;
+      ctx.save();
+      ctx.beginPath();
+      ctx.fillStyle = color;
+      ctx.moveTo(b.sx, b.sy);
+      ctx.lineTo(b.sx - headLen * Math.cos(angle - Math.PI / 6), b.sy - headLen * Math.sin(angle - Math.PI / 6));
+      ctx.lineTo(b.sx - headLen * Math.cos(angle + Math.PI / 6), b.sy - headLen * Math.sin(angle + Math.PI / 6));
+      ctx.closePath();
+      ctx.fill();
+      if (label) {
+        ctx.font = 'italic bold 14px "Times New Roman", serif';
+        ctx.fillStyle = color;
+        ctx.fillText(label, b.sx + 6, b.sy + 4);
+      }
+      ctx.restore();
+    }
+
+    function drawPoint3D(pt, projFn, color, radius = 4.5, label = "", offset = { x: 8, y: -6 }) {
+      const p = projFn(pt);
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(p.sx, p.sy, radius, 0, Math.PI * 2);
+      ctx.fillStyle = color;
+      ctx.fill();
+      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = '#070d19';
+      ctx.stroke();
+
+      if (label) {
+        ctx.font = 'bold 13px "Times New Roman", "PingFang SC", sans-serif';
+        const textW = ctx.measureText(label).width;
+        const bx = p.sx + offset.x - 4;
+        const by = p.sy + offset.y - 11;
+        ctx.fillStyle = 'rgba(10, 16, 29, 0.82)';
+        ctx.fillRect(bx, by, textW + 8, 16);
+        ctx.fillStyle = color;
+        ctx.fillText(label, p.sx + offset.x, p.sy + offset.y + 1);
+      }
+      ctx.restore();
+    }
+
+    function lerp3D(a, b, t) {
+      return {
+        x: a.x + (b.x - a.x) * t,
+        y: a.y + (b.y - a.y) * t,
+        z: a.z + (b.z - a.z) * t
+      };
+    }
+
+    function renderScene() {
+      const rect = wrap.getBoundingClientRect();
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const w = rect.width;
+      const h = rect.height;
+      if (canvas.width !== Math.round(w * dpr) || canvas.height !== Math.round(h * dpr)) {
+        canvas.width = Math.round(w * dpr);
+        canvas.height = Math.round(h * dpr);
+      }
+      ctx.save();
+      ctx.scale(dpr, dpr);
+      ctx.clearRect(0, 0, w, h);
+
+      const lam = parseFloat(document.getElementById('param-slider').value);
+      const baseScale = Math.min(w, h) * 0.175;
+
+      if (curExIdx === 0) {
+        // ========== 练习一：直三棱柱 ABC-A1B1C1 ==========
+        const A = toWorld(0, 0, 0), B = toWorld(2, 0, 0), C = toWorld(0, 2, 0);
+        const A1 = toWorld(0, 0, 3), B1 = toWorld(2, 0, 3), C1 = toWorld(0, 2, 3);
+        const M = toWorld(1, 0, 0), N = toWorld(1, 1, 3), P = toWorld(1, 1, 1.5);
+        const Q = lerp3D(A1, N, lam);
+        const center = toWorld(0.8, 0.8, 1.5);
+        const proj = (pt) => rotateAndProject(pt, center, w, h, baseScale);
+
+        // 目标平面 A1CM
+        drawPoly3D([A1, C, M], proj, 'rgba(37, 99, 235, 0.22)', 'rgba(96, 165, 250, 0.45)');
+
+        // 棱柱骨架
+        drawLine3D(A, B, proj, '#64748b', 1.6, true);
+        drawLine3D(A, C, proj, '#64748b', 1.6, true);
+        drawLine3D(A, A1, proj, '#64748b', 1.6, true);
+        drawLine3D(B, C, proj, '#cbd5e1', 2);
+        drawLine3D(A1, B1, proj, '#cbd5e1', 2);
+        drawLine3D(A1, C1, proj, '#cbd5e1', 2);
+        drawLine3D(B1, C1, proj, '#cbd5e1', 2);
+        drawLine3D(B, B1, proj, '#cbd5e1', 2);
+        drawLine3D(C, C1, proj, '#cbd5e1', 2);
+
+        // 辅助与面内线
+        drawLine3D(B, C1, proj, '#475569', 1.3);
+        drawLine3D(B1, C, proj, '#475569', 1.3);
+        drawLine3D(A1, N, proj, '#38bdf8', 2);
+        drawLine3D(A1, M, proj, '#3b82f6', 1.8);
+        drawLine3D(C, M, proj, '#3b82f6', 1.8);
+        drawLine3D(A1, C, proj, '#3b82f6', 1.8);
+
+        if (showAxes) {
+          drawArrow3D(A, toWorld(2.8, 0, 0), proj, '#f87171', 'x');
+          drawArrow3D(A, toWorld(0, 2.8, 0), proj, '#34d399', 'y');
+          drawArrow3D(A, toWorld(0, 0, 3.8), proj, '#60a5fa', 'z');
+        }
+
+        if (showAux) {
+          // 平面 A1CM 法向量 n=(6,3,2)
+          const midPlane = toWorld(0.35, 0.65, 1.0);
+          const nTip = toWorld(0.35 + 1.2, 0.65 + 0.6, 1.0 + 0.4);
+          drawArrow3D(midPlane, nTip, proj, '#f43f5e', 'n=(6,3,2)');
+        }
+
+        const isHit = Math.abs(lam - 2 / 3) < 0.02;
+        const activeCol = isHit ? '#10b981' : '#fbbf24';
+        drawLine3D(P, Q, proj, activeCol, 3.5);
+
+        // 顶点标注（错开位置防重叠）
+        drawPoint3D(A, proj, '#e2e8f0', 4, 'A', { x: -16, y: 12 });
+        drawPoint3D(B, proj, '#e2e8f0', 4, 'B', { x: -16, y: 12 });
+        drawPoint3D(C, proj, '#e2e8f0', 4, 'C', { x: 8, y: 10 });
+        drawPoint3D(A1, proj, '#e2e8f0', 4, 'A₁', { x: -20, y: -6 });
+        drawPoint3D(B1, proj, '#e2e8f0', 4, 'B₁', { x: -18, y: -6 });
+        drawPoint3D(C1, proj, '#e2e8f0', 4, 'C₁', { x: 8, y: -6 });
+        drawPoint3D(M, proj, '#38bdf8', 4.5, 'M', { x: -16, y: 12 });
+        drawPoint3D(N, proj, '#38bdf8', 4.5, 'N', { x: 8, y: -8 });
+        drawPoint3D(P, proj, '#38bdf8', 4.5, 'P', { x: 8, y: 4 });
+        drawPoint3D(Q, proj, activeCol, 6, `Q(λ=${lam.toFixed(2)})`, { x: 8, y: -10 });
+
+      } else if (curExIdx === 1) {
+        // ========== 练习二：直角梯形四棱锥 S-ABCD ==========
+        const A = toWorld(0, 0, 0), B = toWorld(1.5, 0, 0), C = toWorld(1.5, 1.5, 0);
+        const D = toWorld(0, 3.6, 0), S = toWorld(0, 0, 1.8);
+        const E = lerp3D(S, C, lam);
+        const center = toWorld(0.6, 1.5, 0.7);
+        const proj = (pt) => rotateAndProject(pt, center, w, h, baseScale * 1.15);
+
+        // 平面 SCD
+        drawPoly3D([S, C, D], proj, 'rgba(37, 99, 235, 0.22)', 'rgba(96, 165, 250, 0.45)');
+
+        // 四棱锥棱线
+        drawLine3D(A, B, proj, '#64748b', 1.6, true);
+        drawLine3D(A, D, proj, '#64748b', 1.6, true);
+        drawLine3D(S, A, proj, '#64748b', 1.6, true);
+        drawLine3D(B, C, proj, '#cbd5e1', 2);
+        drawLine3D(C, D, proj, '#cbd5e1', 2);
+        drawLine3D(S, B, proj, '#cbd5e1', 2);
+        drawLine3D(S, C, proj, '#38bdf8', 2.2);
+        drawLine3D(S, D, proj, '#cbd5e1', 2);
+
+        if (showAxes) {
+          drawArrow3D(A, toWorld(2.4, 0, 0), proj, '#f87171', 'x');
+          drawArrow3D(A, toWorld(0, 4.4, 0), proj, '#34d399', 'y');
+          drawArrow3D(A, toWorld(0, 0, 2.6), proj, '#60a5fa', 'z');
+        }
+
+        if (showAux) {
+          // 平面 SCD 法向量 n=(2,1,3)
+          const midSCD = toWorld(0.5, 1.7, 0.6);
+          const nTip = toWorld(0.5 + 0.8, 1.7 + 0.4, 0.6 + 1.2);
+          drawArrow3D(midSCD, nTip, proj, '#f43f5e', 'n=(2,1,3)');
+        }
+
+        const isHit = Math.abs(lam - 1 / 3) < 0.02;
+        const activeCol = isHit ? '#10b981' : '#fbbf24';
+        drawLine3D(B, E, proj, activeCol, 3.5);
+
+        drawPoint3D(A, proj, '#e2e8f0', 4, 'A', { x: -16, y: 10 });
+        drawPoint3D(B, proj, '#e2e8f0', 4.5, 'B', { x: -16, y: 12 });
+        drawPoint3D(C, proj, '#e2e8f0', 4.5, 'C', { x: 8, y: 12 });
+        drawPoint3D(D, proj, '#e2e8f0', 4.5, 'D', { x: 8, y: 6 });
+        drawPoint3D(S, proj, '#e2e8f0', 4.5, 'S', { x: -14, y: -8 });
+        drawPoint3D(E, proj, activeCol, 6, `E(λ=${lam.toFixed(2)})`, { x: 10, y: -6 });
+
+      } else if (curExIdx === 2) {
+        // ========== 练习三：正方形 ABCD ⊥ 梯形 ABMN ==========
+        const B = toWorld(0, 0, 0), A = toWorld(2, 0, 0), C = toWorld(0, 0, 2);
+        const D = toWorld(2, 0, 2), N = toWorld(2, 2, 0), M = toWorld(0, 4, 0);
+        const E = lerp3D(C, M, lam);
+        const center = toWorld(1.0, 1.6, 0.8);
+        const proj = (pt) => rotateAndProject(pt, center, w, h, baseScale * 0.95);
+
+        // 底面 BMN 与动平面 EBN
+        drawPoly3D([B, M, N], proj, 'rgba(37, 99, 235, 0.16)', 'rgba(96, 165, 250, 0.35)');
+        const isHit = Math.abs(lam - 1 / 3) < 0.02;
+        const activeCol = isHit ? '#10b981' : '#fbbf24';
+        drawPoly3D([E, B, N], proj, isHit ? 'rgba(16, 185, 129, 0.28)' : 'rgba(245, 158, 11, 0.26)', activeCol);
+
+        // 几何体棱线
+        drawLine3D(B, A, proj, '#64748b', 1.6, true);
+        drawLine3D(B, C, proj, '#64748b', 1.6, true);
+        drawLine3D(B, M, proj, '#64748b', 1.6, true);
+        drawLine3D(B, N, proj, '#3b82f6', 1.8, true);
+        drawLine3D(A, D, proj, '#cbd5e1', 2);
+        drawLine3D(C, D, proj, '#cbd5e1', 2);
+        drawLine3D(A, N, proj, '#cbd5e1', 2);
+        drawLine3D(N, M, proj, '#cbd5e1', 2);
+        drawLine3D(C, N, proj, '#cbd5e1', 1.6);
+        drawLine3D(C, M, proj, '#38bdf8', 2.2);
+        drawLine3D(D, M, proj, '#475569', 1.3);
+        drawLine3D(D, N, proj, '#475569', 1.3);
+
+        if (showAxes) {
+          drawArrow3D(B, toWorld(3.0, 0, 0), proj, '#f87171', 'x');
+          drawArrow3D(B, toWorld(0, 4.8, 0), proj, '#34d399', 'y');
+          drawArrow3D(B, toWorld(0, 0, 3.0), proj, '#60a5fa', 'z');
+        }
+
+        if (showAux) {
+          // 辅助线 BN=2√2 及底面法向量 m=(0,0,1)
+          drawLine3D(B, N, proj, '#f43f5e', 2, true);
+          const midBMN = toWorld(0.6, 2.2, 0);
+          drawArrow3D(midBMN, toWorld(0.6, 2.2, 1.3), proj, '#f43f5e', 'm=(0,0,1)');
+        }
+
+        drawLine3D(B, E, proj, activeCol, 3.2);
+        drawLine3D(N, E, proj, activeCol, 3.2);
+
+        drawPoint3D(B, proj, '#e2e8f0', 4.5, 'B', { x: -16, y: 12 });
+        drawPoint3D(A, proj, '#e2e8f0', 4.5, 'A', { x: -16, y: 12 });
+        drawPoint3D(C, proj, '#e2e8f0', 4.5, 'C', { x: -16, y: -6 });
+        drawPoint3D(D, proj, '#e2e8f0', 4.5, 'D', { x: -16, y: -6 });
+        drawPoint3D(N, proj, '#e2e8f0', 4.5, 'N', { x: 8, y: 10 });
+        drawPoint3D(M, proj, '#e2e8f0', 4.5, 'M', { x: 8, y: 8 });
+        drawPoint3D(E, proj, activeCol, 6, `E(λ=${lam.toFixed(2)})`, { x: 8, y: -10 });
+      }
+
+      ctx.restore();
+    }
+
+    function animLoop() {
+      if (autoRotate) {
+        cam.yaw += 0.008;
+      }
+      renderScene();
+      requestAnimationFrame(animLoop);
+    }
+
+    // 鼠标与双指触控交互绑定（适配希沃一体机和手机端）
+    let pointerMode = null; // 'rotate' | 'pan' | 'pinch'
+    let lastPt = { x: 0, y: 0 };
+    let lastDist = 0;
+
+    wrap.addEventListener('mousedown', (e) => {
+      autoRotate = false;
+      updateAutoRotateUI();
+      pointerMode = (e.button === 2 || e.shiftKey) ? 'pan' : 'rotate';
+      lastPt = { x: e.clientX, y: e.clientY };
+    });
+    window.addEventListener('mousemove', (e) => {
+      if (!pointerMode) return;
+      const dx = e.clientX - lastPt.x;
+      const dy = e.clientY - lastPt.y;
+      lastPt = { x: e.clientX, y: e.clientY };
+      if (pointerMode === 'rotate') {
+        cam.yaw -= dx * 0.008;
+        cam.pitch = Math.max(-1.35, Math.min(1.35, cam.pitch + dy * 0.008));
+      } else if (pointerMode === 'pan') {
+        cam.panX += dx;
+        cam.panY += dy;
+      }
+    });
+    window.addEventListener('mouseup', () => { pointerMode = null; });
+    wrap.addEventListener('contextmenu', e => e.preventDefault());
+    wrap.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const factor = e.deltaY < 0 ? 1.08 : 0.92;
+      cam.zoom = Math.max(0.45, Math.min(3.2, cam.zoom * factor));
+    }, { passive: false });
+
+    wrap.addEventListener('touchstart', (e) => {
+      autoRotate = false;
+      updateAutoRotateUI();
+      if (e.touches.length === 1) {
+        pointerMode = 'rotate';
+        lastPt = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      } else if (e.touches.length === 2) {
+        pointerMode = 'pinch';
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        lastDist = Math.hypot(dx, dy);
+        lastPt = {
+          x: (e.touches[0].clientX + e.touches[1].clientX) / 2,
+          y: (e.touches[0].clientY + e.touches[1].clientY) / 2
+        };
+      }
+    }, { passive: false });
+
+    wrap.addEventListener('touchmove', (e) => {
+      e.preventDefault();
+      if (pointerMode === 'rotate' && e.touches.length === 1) {
+        const dx = e.touches[0].clientX - lastPt.x;
+        const dy = e.touches[0].clientY - lastPt.y;
+        lastPt = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        cam.yaw -= dx * 0.009;
+        cam.pitch = Math.max(-1.35, Math.min(1.35, cam.pitch + dy * 0.009));
+      } else if (pointerMode === 'pinch' && e.touches.length === 2) {
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        const dist = Math.hypot(dx, dy);
+        if (lastDist > 0) {
+          cam.zoom = Math.max(0.45, Math.min(3.2, cam.zoom * (dist / lastDist)));
+        }
+        lastDist = dist;
+        const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+        const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+        cam.panX += midX - lastPt.x;
+        cam.panY += midY - lastPt.y;
+        lastPt = { x: midX, y: midY };
+      }
+    }, { passive: false });
+    wrap.addEventListener('touchend', () => { pointerMode = null; });
+
+    const ro = new ResizeObserver(() => renderScene());
+    ro.observe(wrap);
+
+    function zoomCamera(factor) {
+      cam.zoom = Math.max(0.45, Math.min(3.2, cam.zoom * factor));
+    }
+    function resetCamera() {
+      cam.yaw = 0.56;
+      cam.pitch = 0.36;
+      cam.zoom = 1.0;
+      cam.panX = 0;
+      cam.panY = 0;
+    }
+    function toggleAutoRotate() {
+      autoRotate = !autoRotate;
+      updateAutoRotateUI();
+    }
+    function updateAutoRotateUI() {
+      const btn = document.getElementById('btn-autorotate');
+      btn.classList.toggle('active-blue', autoRotate);
+    }
+    function toggleAxes() {
+      showAxes = !showAxes;
+      const btn = document.getElementById('btn-axes');
+      btn.textContent = showAxes ? '坐标系：开' : '坐标系：关';
+      btn.classList.toggle('active-blue', showAxes);
+    }
+    function toggleAux() {
+      showAux = !showAux;
+      const btn = document.getElementById('btn-aux');
+      btn.textContent = showAux ? '法向量/辅助线：开' : '法向量/辅助线：关';
+      btn.classList.toggle('active-emerald', showAux);
+    }
+
+    /************************************************************************
+     * 4. 滑块实时遥测监控与习题闯关渲染逻辑
+     ************************************************************************/
+    function onSliderInput() {
+      const lam = parseFloat(document.getElementById('param-slider').value);
+      document.getElementById('param-badge').textContent = `λ = ${lam.toFixed(2)}`;
+
+      const card = document.getElementById('telemetry-card');
+      const status = document.getElementById('radar-status');
+      const grid = document.getElementById('radar-grid');
+
+      if (curExIdx === 0) {
+        const dot = 9 * lam - 6;
+        const isHit = Math.abs(lam - 2 / 3) < 0.02;
+        card.classList.toggle('hit-glow', isHit);
+        status.className = `status-tag ${isHit ? 'status-matched' : 'status-searching'}`;
+        status.textContent = isHit ? '★ 点积 = 0，PQ ∥ 平面 A₁CM！' : '目标条件：向量点积 = 0';
+        grid.innerHTML = renderFormulaText(`
+          <div class="metric-row"><span class="metric-label">动点 Q(λ, λ, 3)：</span><span class="metric-val">(${lam.toFixed(2)}, ${lam.toFixed(2)}, 3.00)</span></div>
+          <div class="metric-row"><span class="metric-label">法向量点积 [[vec:PQ]] · [[vec:n]]：</span><span class="metric-val" style="color:${isHit ? '#34d399' : '#fbbf24'}">${isHit ? '0.00 (垂直!)' : dot.toFixed(2)}</span></div>
+          <div class="metric-row"><span class="metric-label">所求比值 [[frac:A[[sub:1]]Q|A[[sub:1]]N]]：</span><span class="metric-val">${isHit ? '2/3 (≈ 0.67)' : lam.toFixed(2)}</span></div>
+        `);
+      } else if (curExIdx === 1) {
+        const denom = Math.sqrt(14) * Math.sqrt(3 * lam * lam - 4 * lam + 2);
+        const sinVal = 1 / denom;
+        const targetSin = Math.sqrt(14) / 14; // ~0.2673
+        const isHit = Math.abs(lam - 1 / 3) < 0.02;
+        const ratio = lam < 0.99 ? (lam / (1 - lam)).toFixed(2) : '端点重合(舍)';
+        card.classList.toggle('hit-glow', isHit);
+        status.className = `status-tag ${isHit ? 'status-matched' : 'status-searching'}`;
+        status.textContent = isHit ? '★ sin θ = √14/14 (λ=1/3, SE/EC=1/2)！' : '目标正弦值：√14/14 ≈ 0.267';
+        grid.innerHTML = renderFormulaText(`
+          <div class="metric-row"><span class="metric-label">动点 E(λ, λ, 1-λ)：</span><span class="metric-val">(${lam.toFixed(2)}, ${lam.toFixed(2)}, ${(1 - lam).toFixed(2)})</span></div>
+          <div class="metric-row"><span class="metric-label">当前线面角正弦 sin θ：</span><span class="metric-val" style="color:${isHit ? '#34d399' : '#fbbf24'}">${sinVal.toFixed(3)} ${isHit ? '(= √14/14)' : ''}</span></div>
+          <div class="metric-row"><span class="metric-label">所求线段比 [[frac:SE|EC]]：</span><span class="metric-val" style="color:${isHit ? '#34d399' : '#fff'}">${isHit ? '1/2 (0.50)' : ratio}</span></div>
+        `);
+      } else if (curExIdx === 2) {
+        const cosVal = (2 * lam) / Math.sqrt(6 * lam * lam - 4 * lam + 2);
+        const isHit = Math.abs(lam - 1 / 3) < 0.02;
+        const ratio = lam < 0.99 ? (lam / (1 - lam)).toFixed(2) : '∞';
+        card.classList.toggle('hit-glow', isHit);
+        status.className = `status-tag ${isHit ? 'status-matched' : 'status-searching'}`;
+        status.textContent = isHit ? '★ cos θ = √3/3 (λ=1/3, CE/EM=1/2)！' : '目标余弦值：√3/3 ≈ 0.577';
+        grid.innerHTML = renderFormulaText(`
+          <div class="metric-row"><span class="metric-label">动点 E(0, 4λ, 2-2λ)：</span><span class="metric-val">(0, ${(4 * lam).toFixed(2)}, ${(2 - 2 * lam).toFixed(2)})</span></div>
+          <div class="metric-row"><span class="metric-label">当前二面角余弦 cos θ：</span><span class="metric-val" style="color:${isHit ? '#34d399' : '#fbbf24'}">${cosVal.toFixed(3)} ${isHit ? '(= √3/3)' : ''}</span></div>
+          <div class="metric-row"><span class="metric-label">所求线段比 [[frac:CE|EM]]：</span><span class="metric-val" style="color:${isHit ? '#34d399' : '#fff'}">${isHit ? '1/2 (0.50)' : ratio}</span></div>
+        `);
+      }
+    }
+
+    function snapToTarget() {
+      const ex = EXERCISES[curExIdx];
+      document.getElementById('param-slider').value = ex.targetVal;
+      onSliderInput();
+    }
+
+    function switchExercise(idx) {
+      curExIdx = idx;
+      curSubMode = 'guided';
+
+      for (let i = 0; i < 3; i++) {
+        document.getElementById(`tab-${i}`).classList.toggle('active', i === idx);
+      }
+
+      const ex = EXERCISES[idx];
+      document.getElementById('prob-badge').textContent = ex.badge;
+      document.getElementById('prob-text').innerHTML = renderFormulaText(ex.problem);
+      document.getElementById('slider-label').innerHTML = renderFormulaText(ex.sliderLabel);
+
+      const slider = document.getElementById('param-slider');
+      slider.value = ex.defaultVal;
+      onSliderInput();
+      updateSubTabsUI();
+    }
+
+    function switchSubMode(mode) {
+      curSubMode = mode;
+      updateSubTabsUI();
+    }
+
+    function updateSubTabsUI() {
+      const gBtn = document.getElementById('subtab-guided');
+      const vBtn = document.getElementById('subtab-variant');
+      gBtn.className = `subtab ${curSubMode === 'guided' ? 'active-guided' : ''}`;
+      vBtn.className = `subtab ${curSubMode === 'variant' ? 'active-variant' : ''}`;
+      renderSteps();
+    }
+
+    function renderSteps() {
+      const ex = EXERCISES[curExIdx];
+      const steps = curSubMode === 'guided' ? ex.guidedSteps : ex.variantSteps;
+      const unlockedMax = progressState.unlocked[curExIdx][curSubMode];
+      const doneArr = progressState.done[curExIdx][curSubMode];
+
+      // 顶部关卡胶囊
+      const pillsBar = document.getElementById('pills-bar');
+      pillsBar.innerHTML = steps.map((_, idx) => {
+        const isDone = doneArr[idx];
+        const isUnlocked = idx <= unlockedMax;
+        const cls = isDone ? 'done' : (isUnlocked ? 'unlocked' : '');
+        const mark = isDone ? '✓ ' : (isUnlocked ? '● ' : '🔒 ');
+        return `<div class="step-pill ${cls}">${mark}第 ${idx + 1} 关</div>`;
+      }).join('');
+
+      // 题目卡片列表
+      const container = document.getElementById('steps-container');
+      container.innerHTML = steps.map((st, sIdx) => {
+        const isDone = doneArr[sIdx];
+        const isUnlocked = sIdx <= unlockedMax;
+
+        if (!isUnlocked) {
+          return `
+            <div class="step-card locked">
+              <span style="font-weight:700;font-size:14px;">🔒 ${renderFormulaText(st.title)}</span>
+              <span style="font-size:12px;">完成上一关后解锁</span>
+            </div>
+          `;
+        }
+
+        const optsHtml = st.options.map((opt, oIdx) => {
+          const isCorrectDone = isDone && opt.correct;
+          return `
+            <button class="opt-btn ${isCorrectDone ? 'correct-selected' : ''}" onclick="chooseOption(${sIdx}, ${oIdx})">
+              <span class="opt-letter">${isCorrectDone ? '✓' : (oIdx === 0 ? 'A' : 'B')}</span>
+              <span>${renderFormulaText(opt.text)}</span>
+            </button>
+          `;
+        }).join('');
+
+        const correctOpt = st.options.find(o => o.correct);
+
+        return `
+          <div class="step-card ${isDone ? 'done' : ''}" id="scard-${sIdx}">
+            <div class="step-top">
+              <div class="step-title">${renderFormulaText(st.title)}</div>
+              <span class="step-status">${isDone ? '已通关' : '请作答'}</span>
+            </div>
+            <div class="step-question">${renderFormulaText(st.question)}</div>
+            <div class="options-list">${optsHtml}</div>
+            <div id="fb-${sIdx}" class="feedback-box ${isDone ? 'feedback-ok' : ''}" style="display:${isDone ? 'block' : 'none'};">
+              ${isDone ? renderFormulaText('<strong>解析点评：</strong>' + correctOpt.feedback) : ''}
+            </div>
+            <div id="exp-${sIdx}" class="explanation-box" style="display:${isDone ? 'block' : 'none'};">
+              ${renderFormulaText(st.explanation)}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      updateGlobalProgress();
+    }
+
+    function chooseOption(sIdx, oIdx) {
+      const ex = EXERCISES[curExIdx];
+      const steps = curSubMode === 'guided' ? ex.guidedSteps : ex.variantSteps;
+      const step = steps[sIdx];
+      const chosen = step.options[oIdx];
+
+      if (chosen.correct) {
+        progressState.done[curExIdx][curSubMode][sIdx] = true;
+        if (progressState.unlocked[curExIdx][curSubMode] <= sIdx && sIdx + 1 < steps.length) {
+          progressState.unlocked[curExIdx][curSubMode] = sIdx + 1;
+        }
+        if (curSubMode === 'guided' && sIdx >= steps.length - 2) {
+          snapToTarget();
+        }
+        renderSteps();
+        setTimeout(() => {
+          const nextEl = document.getElementById(`scard-${sIdx + 1}`);
+          if (nextEl) nextEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 120);
+      } else {
+        const fb = document.getElementById(`fb-${sIdx}`);
+        fb.style.display = 'block';
+        fb.className = 'feedback-box feedback-err';
+        fb.innerHTML = renderFormulaText('<strong>启发提示：</strong>' + chosen.feedback);
+      }
+    }
+
+    function unlockCurrentAll() {
+      const ex = EXERCISES[curExIdx];
+      const steps = curSubMode === 'guided' ? ex.guidedSteps : ex.variantSteps;
+      progressState.unlocked[curExIdx][curSubMode] = steps.length - 1;
+      progressState.done[curExIdx][curSubMode] = steps.map(() => true);
+      snapToTarget();
+      renderSteps();
+    }
+
+    function updateGlobalProgress() {
+      let total = 0;
+      let done = 0;
+      progressState.done.forEach(item => {
+        item.guided.forEach(v => { total++; if (v) done++; });
+        item.variant.forEach(v => { total++; if (v) done++; });
+      });
+      document.getElementById('progress-text').textContent = `${done} / ${total}`;
+      document.getElementById('progress-fill').style.width = `${Math.round((done / total) * 100)}%`;
+    }
+
+    function toggleCheatModal() {
+      const modal = document.getElementById('cheat-modal');
+      modal.classList.toggle('open');
+    }
+
+    // 页面初始化与零反斜杠自检
+    window.onload = function () {
+      const cheatBody = document.getElementById('cheat-modal-body');
+      cheatBody.innerHTML = renderFormulaText(cheatBody.innerHTML);
+
+      switchExercise(0);
+      animLoop();
+
+      // 自我校验：确保页面渲染文本中无任何未解析反斜杠残留
+      if (document.body.innerText.includes('\\')) {
+        console.warn('检测到潜在未解析反斜杠符号，请核查公式标记。');
+      }
+    };
+  </script>
+</body>
+</html>
