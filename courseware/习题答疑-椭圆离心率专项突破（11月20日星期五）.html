@@ -1,0 +1,1840 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0, user-scalable=yes">
+  <title>椭圆离心率专项突破 · 互动自学实验室</title>
+  <style>
+    :root {
+      --bg-base: #070d19;
+      --bg-card: #0f172a;
+      --bg-panel: #162035;
+      --bg-inset: #0a101d;
+      --border-subtle: #1e293b;
+      --border-active: #3b82f6;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --accent-blue: #2563eb;
+      --accent-amber: #f59e0b;
+      --accent-emerald: #10b981;
+      --accent-rose: #f43f5e;
+      --math-font: "Times New Roman", "STIXGeneral", "Cambria Math", Georgia, serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+      background-color: var(--bg-base);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.65;
+      overflow-x: hidden;
+    }
+
+    /* ================= 出版级纯离线数学公式排版样式 ================= */
+    .m-var {
+      font-family: var(--math-font);
+      font-style: italic;
+      padding: 0 1px;
+    }
+    .m-frac {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      vertical-align: middle;
+      margin: 0 3px;
+      font-family: var(--math-font);
+      font-size: 0.92em;
+      line-height: 1.15;
+    }
+    .m-frac-num {
+      padding: 0 3px 1px 3px;
+      border-bottom: 1.2px solid currentColor;
+      text-align: center;
+      white-space: nowrap;
+    }
+    .m-frac-den {
+      padding: 2px 3px 0 3px;
+      text-align: center;
+      white-space: nowrap;
+    }
+    .m-sqrt {
+      display: inline-flex;
+      align-items: stretch;
+      vertical-align: middle;
+      margin: 0 2px;
+      font-family: var(--math-font);
+    }
+    .m-sqrt-sym {
+      font-size: 1.15em;
+      line-height: 1;
+      padding-right: 1px;
+      display: inline-flex;
+      align-items: center;
+    }
+    .m-sqrt-body {
+      border-top: 1.2px solid currentColor;
+      padding: 1px 2px 0 2px;
+      line-height: 1.2;
+    }
+    sup.m-sup, sub.m-sub {
+      font-family: var(--math-font);
+      font-size: 0.76em;
+      line-height: 0;
+    }
+    .fill-blank {
+      display: inline-block;
+      min-width: 72px;
+      border-bottom: 2px solid #fbbf24;
+      color: #fbbf24;
+      text-align: center;
+      font-weight: 800;
+      padding: 0 8px;
+      margin: 0 4px;
+    }
+
+    /* ================= 顶部导航栏 ================= */
+    header {
+      background: rgba(15, 23, 42, 0.96);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 12px 18px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 40;
+    }
+
+    .brand-box {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #2563eb, #0d9488);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--math-font);
+      font-style: italic;
+      font-weight: 900;
+      font-size: 20px;
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+      flex-shrink: 0;
+    }
+    .brand-title {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+      color: #fff;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .progress-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-panel);
+      border: 1px solid var(--border-subtle);
+      padding: 6px 12px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .progress-track {
+      width: 64px;
+      height: 6px;
+      background: #1e293b;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--accent-emerald);
+      width: 0%;
+      transition: width 0.3s;
+    }
+    .btn-review {
+      background: rgba(245, 158, 11, 0.16);
+      border: 1px solid rgba(245, 158, 11, 0.45);
+      color: #fbbf24;
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 13.5px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+    .btn-review:hover {
+      background: rgba(245, 158, 11, 0.28);
+    }
+
+    /* ================= 主体响应式双栏布局 ================= */
+    main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1.15fr 1fr;
+      gap: 16px;
+      padding: 16px;
+      max-width: 1680px;
+      width: 100%;
+      margin: 0 auto;
+    }
+    @media (max-width: 1024px) {
+      main {
+        grid-template-columns: 1fr;
+        padding: 12px;
+      }
+    }
+
+    .col-left, .col-right {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+    }
+
+    /* 题干区 */
+    .prob-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .prob-badge {
+      font-size: 12px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 6px;
+      background: rgba(37, 99, 235, 0.2);
+      color: #93c5fd;
+      border: 1px solid rgba(59, 130, 246, 0.35);
+    }
+    .prob-hint {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .prob-body {
+      font-size: 16.5px;
+      color: #f8fafc;
+      line-height: 1.9;
+    }
+    @media (min-width: 1400px) {
+      .prob-body { font-size: 17.5px; }
+    }
+
+    /* 交互几何画板卡片 */
+    .canvas-card {
+      padding: 0;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .canvas-toolbar {
+      background: var(--bg-inset);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 10px 14px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .tool-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .tool-btn {
+      background: var(--bg-panel);
+      border: 1px solid #334155;
+      color: #e2e8f0;
+      padding: 6px 11px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      user-select: none;
+    }
+    .tool-btn:hover {
+      background: #1e293b;
+      border-color: #475569;
+    }
+    .tool-btn.active-blue {
+      background: rgba(37, 99, 235, 0.28);
+      border-color: #3b82f6;
+      color: #93c5fd;
+    }
+    .tool-btn.active-emerald {
+      background: rgba(16, 185, 129, 0.25);
+      border-color: #10b981;
+      color: #6ee7b7;
+    }
+    .tool-btn.active-amber {
+      background: rgba(245, 158, 11, 0.25);
+      border-color: #f59e0b;
+      color: #fde68a;
+    }
+
+    .legend-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .canvas-viewport {
+      width: 100%;
+      height: 390px;
+      position: relative;
+      background: radial-gradient(circle at center, #0f172a 0%, #060a12 100%);
+      touch-action: none;
+      cursor: grab;
+    }
+    .canvas-viewport:active {
+      cursor: grabbing;
+    }
+    @media (max-width: 768px) {
+      .canvas-viewport { height: 320px; }
+    }
+    canvas#geo-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .canvas-footer {
+      background: var(--bg-inset);
+      border-top: 1px solid var(--border-subtle);
+      padding: 7px 14px;
+      font-size: 12px;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    /* 参数滑块与实时监控仪 */
+    .telemetry-card {
+      transition: box-shadow 0.3s, border-color 0.3s;
+    }
+    .telemetry-card.hit-glow {
+      border-color: var(--accent-emerald);
+      box-shadow: 0 0 22px rgba(16, 185, 129, 0.28);
+    }
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .slider-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #fbbf24;
+    }
+    .slider-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .param-badge {
+      background: var(--bg-inset);
+      border: 1px solid #334155;
+      color: #fbbf24;
+      padding: 3px 10px;
+      border-radius: 6px;
+      font-family: var(--math-font);
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .btn-snap {
+      background: rgba(16, 185, 129, 0.2);
+      border: 1px solid rgba(16, 185, 129, 0.45);
+      color: #34d399;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn-snap:hover {
+      background: rgba(16, 185, 129, 0.35);
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 10px;
+      border-radius: 5px;
+      background: linear-gradient(90deg, #1d4ed8, #3b82f6, #10b981);
+      outline: none;
+      margin: 6px 0 14px 0;
+      cursor: pointer;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #fbbf24;
+      border: 3px solid #ffffff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+      cursor: pointer;
+    }
+
+    .radar-box {
+      background: var(--bg-inset);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 12px 14px;
+    }
+    .radar-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 8px;
+      margin-bottom: 8px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .status-tag {
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 12px;
+    }
+    .status-searching {
+      background: rgba(245, 158, 11, 0.18);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.35);
+    }
+    .status-matched {
+      background: rgba(16, 185, 129, 0.22);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.45);
+    }
+    .radar-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 8px;
+      font-size: 13px;
+    }
+    .metric-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255,255,255,0.02);
+      padding: 6px 10px;
+      border-radius: 8px;
+    }
+    .metric-label { color: var(--text-muted); }
+    .metric-val { font-weight: 700; color: #fff; }
+
+    /* ================= 右侧闯关互动区 ================= */
+    .right-card {
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      flex: 1;
+    }
+    .subtabs-bar {
+      background: var(--bg-inset);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 10px 14px 0 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .subtabs-group {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .subtab {
+      border: 1px solid transparent;
+      border-bottom: none;
+      background: transparent;
+      color: var(--text-muted);
+      padding: 9px 14px;
+      border-radius: 10px 10px 0 0;
+      font-size: 13.5px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .subtab.active-guided {
+      background: var(--bg-card);
+      border-color: var(--border-subtle);
+      color: #60a5fa;
+    }
+    .subtab.active-algebra {
+      background: var(--bg-card);
+      border-color: var(--border-subtle);
+      color: #34d399;
+    }
+    .subtab.active-variant {
+      background: var(--bg-card);
+      border-color: var(--border-subtle);
+      color: #fbbf24;
+    }
+
+    .pills-bar {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      background: rgba(15, 23, 42, 0.8);
+    }
+    .step-pill {
+      flex: 1;
+      min-width: 68px;
+      text-align: center;
+      padding: 5px 8px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-inset);
+      color: #64748b;
+    }
+    .step-pill.unlocked {
+      border-color: #3b82f6;
+      background: rgba(37, 99, 235, 0.2);
+      color: #93c5fd;
+    }
+    .step-pill.done {
+      border-color: #10b981;
+      background: rgba(16, 185, 129, 0.2);
+      color: #34d399;
+    }
+
+    .steps-scroll {
+      padding: 16px;
+      overflow-y: auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      max-height: 680px;
+    }
+
+    .step-card {
+      background: var(--bg-panel);
+      border: 1px solid #28354f;
+      border-radius: 14px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .step-card.done {
+      border-color: rgba(16, 185, 129, 0.45);
+    }
+    .step-card.locked {
+      background: var(--bg-inset);
+      border-color: var(--border-subtle);
+      opacity: 0.62;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      padding: 13px 16px;
+    }
+    .step-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+    .step-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: #93c5fd;
+    }
+    .step-card.done .step-title {
+      color: #34d399;
+    }
+    .step-status {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-weight: 700;
+      background: rgba(245, 158, 11, 0.18);
+      color: #fbbf24;
+    }
+    .step-card.done .step-status {
+      background: rgba(16, 185, 129, 0.2);
+      color: #34d399;
+    }
+
+    .step-question {
+      font-size: 15px;
+      color: #f1f5f9;
+      line-height: 1.85;
+    }
+
+    /* 知识点复习微卡片 */
+    .kp-tag-box {
+      background: rgba(37, 99, 235, 0.12);
+      border: 1px dashed rgba(96, 165, 250, 0.4);
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 13px;
+      color: #bae6fd;
+    }
+
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .opt-btn {
+      width: 100%;
+      text-align: left;
+      background: #0f172a;
+      border: 1px solid #334155;
+      color: #e2e8f0;
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-size: 14px;
+      line-height: 1.75;
+      cursor: pointer;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      transition: all 0.15s;
+    }
+    .opt-btn:hover {
+      background: #1e293b;
+      border-color: #60a5fa;
+    }
+    .opt-btn.correct-selected {
+      background: rgba(6, 78, 59, 0.55);
+      border-color: #10b981;
+      color: #d1fae5;
+      font-weight: 600;
+    }
+    .opt-letter {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #1e293b;
+      color: #cbd5e1;
+      font-size: 12px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .opt-btn.correct-selected .opt-letter {
+      background: #10b981;
+      color: #064e3b;
+    }
+
+    .feedback-box {
+      padding: 11px 14px;
+      border-radius: 10px;
+      font-size: 13.5px;
+      line-height: 1.75;
+    }
+    .feedback-ok {
+      background: rgba(6, 78, 59, 0.45);
+      border: 1px solid rgba(16, 185, 129, 0.45);
+      color: #a7f3d0;
+    }
+    .feedback-err {
+      background: rgba(136, 19, 55, 0.45);
+      border: 1px solid rgba(244, 63, 94, 0.5);
+      color: #fecdd3;
+    }
+
+    .explanation-box {
+      background: var(--bg-inset);
+      border: 1px solid #1e293b;
+      border-left: 3px solid #3b82f6;
+      border-radius: 10px;
+      padding: 13px 15px;
+      font-size: 14px;
+      color: #e2e8f0;
+      line-height: 1.85;
+    }
+
+    .right-footer {
+      background: var(--bg-inset);
+      border-top: 1px solid var(--border-subtle);
+      padding: 10px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .btn-teacher {
+      background: rgba(37, 99, 235, 0.18);
+      border: 1px solid rgba(59, 130, 246, 0.45);
+      color: #93c5fd;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn-teacher:hover {
+      background: rgba(37, 99, 235, 0.32);
+      color: #fff;
+    }
+
+    /* ================= 知识点复习抽屉弹窗 ================= */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 6, 23, 0.85);
+      z-index: 60;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-backdrop.open {
+      display: flex;
+    }
+    .modal-box {
+      background: var(--bg-card);
+      border: 1px solid #334155;
+      border-radius: 18px;
+      max-width: 940px;
+      width: 100%;
+      max-height: 88vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.65);
+    }
+    .modal-head {
+      background: var(--bg-inset);
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-head h2 {
+      font-size: 17px;
+      font-weight: 800;
+      color: #fbbf24;
+    }
+    .btn-close {
+      background: var(--bg-panel);
+      border: 1px solid #334155;
+      color: #cbd5e1;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .modal-body {
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      font-size: 14.5px;
+      line-height: 1.85;
+    }
+    .review-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+      gap: 12px;
+    }
+    .review-item {
+      background: var(--bg-panel);
+      border: 1px solid #28354f;
+      border-radius: 12px;
+      padding: 14px;
+    }
+    .review-item h4 {
+      color: #60a5fa;
+      margin-bottom: 6px;
+      font-size: 15px;
+    }
+    .review-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+    }
+    .review-table th, .review-table td {
+      border: 1px solid #28354f;
+      padding: 10px 12px;
+      text-align: left;
+    }
+    .review-table th {
+      background: var(--bg-inset);
+      color: #93c5fd;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 顶部导航栏 -->
+  <header>
+    <div class="brand-box">
+      <div class="brand-icon">e</div>
+      <div>
+        <div class="brand-title">
+          椭圆离心率专项突破 · 几何性质与斜率联立双轨探究
+        </div>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <div class="progress-pill">
+        <span>闯关进度</span>
+        <span id="progress-text" style="color:#34d399;">0 / 9</span>
+        <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+      </div>
+      <button class="btn-review" onclick="toggleReviewModal()">核心知识点复习卡片</button>
+    </div>
+  </header>
+
+  <!-- 主工作区 -->
+  <main>
+    <!-- 左侧：填空题题干 + 动态几何画板 + 离心率滑块监控 -->
+    <div class="col-left">
+      <div class="card">
+        <div class="prob-header">
+          <span class="prob-badge">典型例题（填空题模式 · 一题双解）</span>
+          <span class="prob-hint">拖动下方滑块动态观察 △PF₁F₂ 形状变化，再完成右侧闯关</span>
+        </div>
+        <div class="prob-body" id="prob-text"></div>
+      </div>
+
+      <div class="card canvas-card">
+        <div class="canvas-toolbar">
+          <div class="tool-group">
+            <button class="tool-btn" onclick="zoomCanvas(1.15)">+ 放大</button>
+            <button class="tool-btn" onclick="zoomCanvas(0.87)">- 缩小</button>
+            <button class="tool-btn" onclick="resetCanvas()">重置视图</button>
+            <button class="tool-btn active-blue" id="btn-ellipse" onclick="toggleEllipse()">椭圆轮廓：开</button>
+            <button class="tool-btn active-emerald" id="btn-angles" onclick="toggleAngles()">角度与等腰标注：开</button>
+            <button class="tool-btn active-amber" id="btn-coords" onclick="toggleCoords()">坐标与方程提示：开</button>
+          </div>
+          <div class="legend-bar">
+            <span class="legend-item"><span class="dot" style="background:#fbbf24;"></span>动点 P 与直线</span>
+            <span class="legend-item"><span class="dot" style="background:#10b981;"></span>等腰成立 (e=1/2)</span>
+          </div>
+        </div>
+
+        <div class="canvas-viewport" id="canvas-wrap">
+          <canvas id="geo-canvas"></canvas>
+        </div>
+
+        <div class="canvas-footer">
+          <span>单指 / 左键拖拽：平移坐标系视图</span>
+          <span>双指捏合 / 滚轮：无级缩放</span>
+          <span>红色线段：F₁F₂ 与 F₂P（目标：使二者相等）</span>
+        </div>
+      </div>
+
+      <div class="card telemetry-card" id="telemetry-card">
+        <div class="slider-header">
+          <div class="slider-title" id="slider-label">拖动滑块改变椭圆离心率 e（固定 a = 4）：</div>
+          <div class="slider-controls">
+            <span class="param-badge" id="param-badge">e = 0.65</span>
+            <button class="btn-snap" onclick="snapToTarget()">一键定标 (e = 1/2)</button>
+          </div>
+        </div>
+        <input type="range" id="param-slider" min="0.20" max="0.88" step="0.01" value="0.65" oninput="onSliderInput()">
+
+        <div class="radar-box">
+          <div class="radar-top">
+            <span>实时几何与代数关系监控仪</span>
+            <span class="status-tag status-searching" id="radar-status">调整 e 使 |PF₂| = |F₁F₂|</span>
+          </div>
+          <div class="radar-grid" id="radar-grid"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 右侧：方法一（几何秒杀） + 方法二（坐标方程） + 同源变式 -->
+    <div class="col-right">
+      <div class="card right-card">
+        <div class="subtabs-bar">
+          <div class="subtabs-group">
+            <button class="subtab active-guided" id="subtab-geom" onclick="switchSubMode('geom')">解法一：几何性质秒杀（首选）</button>
+            <button class="subtab" id="subtab-alg" onclick="switchSubMode('alg')">解法二：坐标联立通法（保底）</button>
+            <button class="subtab" id="subtab-var" onclick="switchSubMode('var')">同源变式拔高训练</button>
+          </div>
+        </div>
+
+        <div class="pills-bar" id="pills-bar"></div>
+        <div class="steps-scroll" id="steps-container"></div>
+
+        <div class="right-footer">
+          <span>提示：每关均附带“关联知识点复习”，选错可看启发提示</span>
+          <button class="btn-teacher" onclick="unlockCurrentAll()">教师演示：一键展开本栏全部解析</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- 核心知识点复习抽屉弹窗 -->
+  <div class="modal-backdrop" id="review-modal" onclick="if(event.target===this) toggleReviewModal()">
+    <div class="modal-box">
+      <div class="modal-head">
+        <h2>高中数学 · 椭圆离心率与焦点三角形核心知识点复习卡片</h2>
+        <button class="btn-close" onclick="toggleReviewModal()">×</button>
+      </div>
+      <div class="modal-body" id="review-modal-body">
+        <div class="review-grid">
+          <div class="review-item">
+            <h4>1. 椭圆的基本几何量与离心率</h4>
+            <p>• 标准方程（焦点在 x 轴）：[[frac:x[[sup:2]]|a[[sup:2]]]] + [[frac:y[[sup:2]]|b[[sup:2]]]] = 1 (a > b > 0)<br>
+               • 核心关系：a[[sup:2]] = b[[sup:2]] + c[[sup:2]]，焦距 |F[[sub:1]]F[[sub:2]]| = 2c<br>
+               • 顶点与焦点：左顶点 A(-a, 0)，右顶点 (a, 0)，左焦点 F[[sub:1]](-c, 0)，右焦点 F[[sub:2]](c, 0)<br>
+               • <strong>关键距离：|AF[[sub:2]]| = a + c</strong>，|AF[[sub:1]]| = a - c<br>
+               • 离心率定义：e = [[frac:c|a]] ∈ (0, 1)，且 e[[sup:2]] = 1 - [[frac:b[[sup:2]]|a[[sup:2]]]]</p>
+          </div>
+          <div class="review-item">
+            <h4>2. 赋值法求离心率（学生最易拿分技巧）</h4>
+            <p>• <strong>原理：</strong>椭圆离心率 e = [[frac:c|a]] 只与图形形状有关，与大小无关！<br>
+               • <strong>操作口诀：</strong>已知焦距关系时，直接令 <strong>|F[[sub:1]]F[[sub:2]]| = 2</strong>（即 2c = 2 ⇒ <strong>c = 1</strong>），所有字母瞬间变成具体数字！<br>
+               • <strong>配合直角三角形：</strong>遇到 120°、60°、45°、30° 特殊角，过动点 P 向 x 轴作垂线 PH，用特殊直角三角形边长比（1 : [[sqrt:3]] : 2）秒出线段长，最后由 |AF[[sub:2]]| = a + c 求出 a。</p>
+          </div>
+          <div class="review-item">
+            <h4>3. 等腰三角形分类讨论与边角锁定</h4>
+            <p>已知 △PF[[sub:1]]F[[sub:2]] 为等腰三角形，且 <strong>∠F[[sub:1]]F[[sub:2]]P = 120°</strong>（钝角！）：<br>
+               • <strong>三角形内角和定理：</strong>一个三角形中最多只能有一个钝角，且<strong>大角对大边</strong>！<br>
+               • 因为 ∠F[[sub:1]]F[[sub:2]]P = 120° > 90°，它所对的边 PF[[sub:1]] 必为最大边，所以另外两个内角只能是锐角（各为 30°），<strong>唯一可能相等的两边是 |PF[[sub:2]]| = |F[[sub:1]]F[[sub:2]]|</strong>！</p>
+          </div>
+          <div class="review-item">
+            <h4>4. 直线斜率与直角三角形正切定义</h4>
+            <p>• 斜率定义：k = tan α（α ∈ [0°, 180°) 且 α ≠ 90°）<br>
+               • 在 Rt△PAH 中（H 为 P 在 x 轴上的射影）：<br>
+               &nbsp;&nbsp;<strong>tan ∠PAH = [[frac:对边|邻边]] = [[frac:|PH|| |AH|]] = k</strong><br>
+               • 本题直线的斜率 k = [[frac:[[sqrt:3]]|4]]，已知高 |PH| = [[sqrt:3]] 时，一眼就能看出底边 <strong>|AH| = 4</strong>！</p>
+          </div>
+        </div>
+
+        <table class="review-table">
+          <thead>
+            <tr>
+              <th>易错提醒点</th>
+              <th>错误做法</th>
+              <th>正确思维</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>误把点 P 当成在椭圆上</td>
+              <td>直接套用椭圆定义 |PF[[sub:1]]| + |PF[[sub:2]]| = 2a</td>
+              <td>审清题干！“点 P 在过 A 且斜率为 [[frac:[[sqrt:3]]|4]] 的直线上”，点 P <strong>不一定</strong>在椭圆上！</td>
+            </tr>
+            <tr>
+              <td>漏看外角关系或盲目分类讨论</td>
+              <td>对三边两两相等分三种情况繁琐讨论</td>
+              <td>利用钝角 120° 唯一性，直接锁定顶角为 ∠F[[sub:1]]F[[sub:2]]P = 120°，两腰必为 PF[[sub:2]] 与 F[[sub:1]]F[[sub:2]]！</td>
+            </tr>
+            <tr>
+              <td>混淆 |AF[[sub:2]]| 的长度</td>
+              <td>误写成 |AF[[sub:2]]| = a - c 或 2c</td>
+              <td>A(-a, 0) 是左顶点，F[[sub:2]](c, 0) 是右焦点，二者在原点两侧，距离为 <strong>a + c</strong>！</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /************************************************************************
+     * 1. 单遍扫描词法公式渲染器 (Single-Pass Tokenizer)
+     ************************************************************************/
+    function parseBracketContent(str, startIdx) {
+      let depth = 1;
+      let i = startIdx;
+      while (i < str.length && depth > 0) {
+        if (str[i] === '[' && str[i + 1] === '[') {
+          depth++;
+          i += 2;
+        } else if (str[i] === ']' && str[i + 1] === ']') {
+          depth--;
+          if (depth === 0) {
+            return { content: str.slice(startIdx, i), nextIdx: i + 2 };
+          }
+          i += 2;
+        } else {
+          i++;
+        }
+      }
+      return { content: str.slice(startIdx), nextIdx: str.length };
+    }
+
+    function splitTopLevelPipe(content) {
+      const parts = [];
+      let depth = 0;
+      let last = 0;
+      for (let i = 0; i < content.length; i++) {
+        if (content[i] === '[' && content[i + 1] === '[') {
+          depth++;
+          i++;
+        } else if (content[i] === ']' && content[i + 1] === ']') {
+          depth--;
+          i++;
+        } else if (content[i] === '|' && depth === 0) {
+          parts.push(content.slice(last, i));
+          last = i + 1;
+        }
+      }
+      parts.push(content.slice(last));
+      return parts;
+    }
+
+    function renderFormulaText(input) {
+      if (!input) return "";
+      let out = "";
+      let i = 0;
+      while (i < input.length) {
+        if (input[i] === '[' && input[i + 1] === '[') {
+          const parsed = parseBracketContent(input, i + 2);
+          const colonPos = parsed.content.indexOf(':');
+          if (colonPos !== -1) {
+            const tag = parsed.content.slice(0, colonPos);
+            const body = parsed.content.slice(colonPos + 1);
+            if (tag === 'frac') {
+              const [num, den] = splitTopLevelPipe(body);
+              out += `<span class="m-frac"><span class="m-frac-num">${renderFormulaText(num)}</span><span class="m-frac-den">${renderFormulaText(den || '')}</span></span>`;
+            } else if (tag === 'sqrt') {
+              out += `<span class="m-sqrt"><span class="m-sqrt-sym">√</span><span class="m-sqrt-body">${renderFormulaText(body)}</span></span>`;
+            } else if (tag === 'sup') {
+              out += `<sup class="m-sup">${renderFormulaText(body)}</sup>`;
+            } else if (tag === 'sub') {
+              out += `<sub class="m-sub">${renderFormulaText(body)}</sub>`;
+            } else if (tag === 'blank') {
+              out += `<span class="fill-blank" id="main-blank">${renderFormulaText(body)}</span>`;
+            } else {
+              out += renderFormulaText(body);
+            }
+          } else {
+            out += parsed.content;
+          }
+          i = parsed.nextIdx;
+          continue;
+        }
+
+        // 2. 跳过已有 HTML 标签（如 <strong>, <br>）
+        if (input[i] === '<') {
+          const closeTag = input.indexOf('>', i);
+          if (closeTag !== -1) {
+            out += input.slice(i, closeTag + 1);
+            i = closeTag + 1;
+            continue;
+          }
+        }
+
+        // 3. 跳过 HTML 实体字符（如 &nbsp;）防止内部字母被斜体化导致乱码
+        if (input[i] === '&') {
+          const semi = input.indexOf(';', i);
+          if (semi !== -1 && semi - i <= 8) {
+            out += input.slice(i, semi + 1);
+            i = semi + 1;
+            continue;
+          }
+        }
+
+        const ch = input[i];
+        if (/[A-Za-z]/.test(ch)) {
+          out += `<span class="m-var">${ch}</span>`;
+          i++;
+          continue;
+        }
+
+        out += ch;
+        i++;
+      }
+      return out;
+    }
+
+    /************************************************************************
+     * 2. 题库与双轨闯关数据（当填空题看，每步嵌入知识点复习）
+     ************************************************************************/
+    const PROBLEM_TEXT = `已知 F[[sub:1]]，F[[sub:2]] 是椭圆 C：[[frac:x[[sup:2]]|a[[sup:2]]]] + [[frac:y[[sup:2]]|b[[sup:2]]]] = 1 (a > b > 0) 的左、右焦点，A 是 C 的左顶点，点 P 在过 A 且斜率为 [[frac:[[sqrt:3]]|4]] 的直线上，△PF[[sub:1]]F[[sub:2]] 为等腰三角形，∠F[[sub:1]]F[[sub:2]]P = 120°，则 C 的离心率为 [[blank: ? ]] 。`;
+
+    const MODES_DATA = {
+      // ==================== 解法一：赋值法 + 作高构造直角三角形（首选） ====================
+      geom: [
+        {
+          title: "第 1 关：【巧妙赋值】令 |F[[sub:1]]F[[sub:2]]| = 2，把字母变成具体数字！",
+          kp: "复习知识点：① 离心率 e = [[frac:c|a]] 只与椭圆形状有关，与大小无关，选填题可直接赋值；② 钝角 120° 只能作等腰三角形的顶角。",
+          question: "因为求的是离心率比值，我们直接采用<strong>赋值法</strong>：令焦距 |F[[sub:1]]F[[sub:2]]| = 2（即 2c = 2，所以 <strong>c = 1</strong>）。已知 △PF[[sub:1]]F[[sub:2]] 为等腰三角形且 ∠F[[sub:1]]F[[sub:2]]P = 120°（钝角只能作顶角），则侧边 |PF[[sub:2]]| 的长度为？",
+          options: [
+            {
+              text: "|PF[[sub:2]]| = |F[[sub:1]]F[[sub:2]]| = 2（且此时 c = 1）",
+              correct: true,
+              feedback: "太棒了！赋值 |F[[sub:1]]F[[sub:2]]| = 2 后，不仅立刻知道 c = 1，还因为 120° 是钝角只能作顶角，直接得出两腰相等 |PF[[sub:2]]| = 2，彻底告别满纸字母！"
+            },
+            {
+              text: "|PF[[sub:1]]| = |PF[[sub:2]]| = 2，且 |PF[[sub:1]]| + |PF[[sub:2]]| = 2a",
+              correct: false,
+              feedback: "注意两点：① 120° 是钝角，对边 PF[[sub:1]] 最长，只能是两腰 |PF[[sub:2]]| = |F[[sub:1]]F[[sub:2]]| = 2；② 点 P 在直线上，不在椭圆上，不能用 |PF[[sub:1]]| + |PF[[sub:2]]| = 2a 哦！"
+            }
+          ],
+          explanation: `<strong>【赋值法第一步】</strong><br>
+            不妨设焦距 |F[[sub:1]]F[[sub:2]]| = 2，即 2c = 2 ⇒ <strong>c = 1</strong>。<br>
+            在 △PF[[sub:1]]F[[sub:2]] 中，∠F[[sub:1]]F[[sub:2]]P = 120° 为钝角，只能作等腰三角形的顶角，故两腰相等：<strong>|PF[[sub:2]]| = |F[[sub:1]]F[[sub:2]]| = 2</strong>。`
+        },
+        {
+          title: "第 2 关：【作高构造直角三角形】在 Rt△PF[[sub:2]]H 中秒算高 |PH| 与 |F[[sub:2]]H|",
+          kp: "复习知识点：① 邻补角性质：∠PF[[sub:2]]H = 180° - 120° = 60°；② 含 30°、60° 角的直角三角形三边比：短直角边 : 长直角边 : 斜边 = 1 : [[sqrt:3]] : 2。",
+          question: "如左侧画板所示，过点 P 作 PH ⊥ x 轴于点 H。在 Rt△PF[[sub:2]]H 中，斜边 |PF[[sub:2]]| = 2，∠PF[[sub:2]]H = 180° - 120° = 60°，则直角边 |F[[sub:2]]H| 和 |PH| 的长度分别为？",
+          options: [
+            {
+              text: "|F[[sub:2]]H| = 1，|PH| = [[sqrt:3]]",
+              correct: true,
+              feedback: "心算秒杀！30° 角所对的直角边 |F[[sub:2]]H| 等于斜边 2 的一半，即 1；60° 角所对的高 |PH| = [[sqrt:3]]！"
+            },
+            {
+              text: "|F[[sub:2]]H| = [[sqrt:3]]，|PH| = 1",
+              correct: false,
+              feedback: "看清 60° 角的位置：∠PF[[sub:2]]H = 60°，所以它的邻边 |F[[sub:2]]H| = 2 cos 60° = 1，对边高 |PH| = 2 sin 60° = [[sqrt:3]]。"
+            }
+          ],
+          explanation: `<strong>【构造直角三角形算线段】</strong><br>
+            过 P 作 PH ⊥ x 轴于点 H。在 Rt△PF[[sub:2]]H 中，|PF[[sub:2]]| = 2，∠PF[[sub:2]]H = 60°，<br>
+            由含 60° 角的直角三角形三边比 1 : [[sqrt:3]] : 2，直接得出：<br>
+            <strong>|F[[sub:2]]H| = 1</strong>，<strong>|PH| = [[sqrt:3]]</strong>。`
+        },
+        {
+          title: "第 3 关：【斜率破局】在 Rt△PAH 中由高 |PH| 推出 |AH| 与 a，算出离心率！",
+          kp: "复习知识点：① 直角三角形正切公式 tan ∠PAH = [[frac:|PH|| |AH|]] = 直线斜率 k；② 左顶点 A(-a, 0) 到右焦点 F[[sub:2]](c, 0) 的距离 |AF[[sub:2]]| = a + c。",
+          question: "已知直线 AP 的斜率为 [[frac:[[sqrt:3]]|4]]，即在 Rt△PAH 中 tan ∠PAH = [[frac:|PH|| |AH|]] = [[frac:[[sqrt:3]]|4]]。刚刚已算出 |PH| = [[sqrt:3]]，由此推出底边 |AH| = 4。又因为 |AH| = |AF[[sub:2]]| + |F[[sub:2]]H| = (a + c) + 1 = 4（其中 c = 1），则 a 与离心率 e 分别为？",
+          options: [
+            {
+              text: "a + 1 + 1 = 4 ⇒ a = 2，又 c = 1，故离心率 e = [[frac:c|a]] = [[frac:1|2]]",
+              correct: true,
+              feedback: "太清晰、太顺畅了！全程没有任何复杂三角公式，全靠初中直角三角形和具体数字心算，30 秒稳拿满分！"
+            },
+            {
+              text: "a + 1 = 4 ⇒ a = 3，又 c = 1，故离心率 e = [[frac:c|a]] = [[frac:1|3]]",
+              correct: false,
+              feedback: "别漏掉 |F[[sub:2]]H| = 1 这一段哦！从左顶点 A 到垂足 H 的总长 |AH| = |AF[[sub:2]]| + |F[[sub:2]]H| = (a + c) + 1 = a + 2 = 4，所以 a = 2！"
+            }
+          ],
+          explanation: `<strong>【完整赋值法板书（推荐学生直接模仿）】</strong><br>
+            1. 令 |F[[sub:1]]F[[sub:2]]| = 2，则 2c = 2 ⇒ <strong>c = 1</strong>；<br>
+            2. 因 ∠F[[sub:1]]F[[sub:2]]P = 120° 为钝角且 △PF[[sub:1]]F[[sub:2]] 为等腰三角形，故 <strong>|PF[[sub:2]]| = |F[[sub:1]]F[[sub:2]]| = 2</strong>；<br>
+            3. 过 P 作 PH ⊥ x 轴于 H，在 Rt△PF[[sub:2]]H 中，∠PF[[sub:2]]H = 60°，得 <strong>|F[[sub:2]]H| = 1</strong>，<strong>|PH| = [[sqrt:3]]</strong>；<br>
+            4. 在 Rt△PAH 中，斜率 k = [[frac:|PH|| |AH|]] = [[frac:[[sqrt:3]]| |AH|]] = [[frac:[[sqrt:3]]|4]] ⇒ <strong>|AH| = 4</strong>；<br>
+            5. 又 |AH| = |AF[[sub:2]]| + |F[[sub:2]]H| = (a + c) + 1 = a + 2 = 4 ⇒ <strong>a = 2</strong>；<br>
+            6. 故椭圆离心率 <strong>e = [[frac:c|a]] = [[frac:1|2]]</strong>。`
+        }
+      ],
+
+      // ==================== 解法二：坐标联立通法（保底） ====================
+      alg: [
+        {
+          title: "第 1 关：写出直线 AP 与直线 F[[sub:2]]P 的点斜式方程",
+          kp: "复习知识点：① 直线点斜式方程 y - y[[sub:0]] = k(x - x[[sub:0]])；② 倾斜角 60° 的直线斜率为 tan 60° = [[sqrt:3]]。",
+          question: "以椭圆中心为原点建立平面直角坐标系，已知左顶点 A(-a, 0)，右焦点 F[[sub:2]](c, 0)。直线 AP 过点 A 且斜率为 [[frac:[[sqrt:3]]|4]]；直线 F[[sub:2]]P 过点 F[[sub:2]] 且倾斜角为 60°（由 ∠F[[sub:1]]F[[sub:2]]P = 120° 得其补角为 60°）。则两条直线的方程分别为？",
+          options: [
+            {
+              text: "直线 AP：y = [[frac:[[sqrt:3]]|4]](x + a)；直线 F[[sub:2]]P：y = [[sqrt:3]](x - c)",
+              correct: true,
+              feedback: "非常标准！过 (-a, 0) 斜率为 [[frac:[[sqrt:3]]|4]] 得 y = [[frac:[[sqrt:3]]|4]](x + a)；倾斜角 60° 斜率为 [[sqrt:3]]，过 (c, 0) 得 y = [[sqrt:3]](x - c)。"
+            },
+            {
+              text: "直线 AP：y = [[frac:[[sqrt:3]]|4]](x - a)；直线 F[[sub:2]]P：y = -[[sqrt:3]](x - c)",
+              correct: false,
+              feedback: "注意两点：① 左顶点 A 的横坐标是 -a，点斜式应为 x - (-a) = x + a；② 点 P 在第一象限，F[[sub:2]]P 向右上方倾斜，倾斜角为 60°，斜率为正 [[sqrt:3]]。"
+            }
+          ],
+          explanation: `<strong>【联立方程准备】</strong><br>
+            • 直线 AP：y = [[frac:[[sqrt:3]]|4]](x + a)<br>
+            • 直线 F[[sub:2]]P：因 ∠F[[sub:1]]F[[sub:2]]P = 120°，其邻补角为 60°，故斜率 k = tan 60° = [[sqrt:3]]，方程为 y = [[sqrt:3]](x - c)。`
+        },
+        {
+          title: "第 2 关：联立两直线方程求出交点 P 的坐标",
+          kp: "复习知识点：解二元一次方程组求两直线交点坐标（用参数 a, c 表示）。",
+          question: "联立 [[frac:[[sqrt:3]]|4]](x + a) = [[sqrt:3]](x - c)，两边同时约去 [[sqrt:3]] 得 x + a = 4(x - c)，解得交点 P 的坐标为？",
+          options: [
+            {
+              text: "P([[frac:a + 4c|3]], [[frac:[[sqrt:3]](a + c)|3]])",
+              correct: true,
+              feedback: "计算零失误！3x = a + 4c ⇒ x[[sub:P]] = [[frac:a + 4c|3]]；代入 y = [[sqrt:3]](x - c) 得 y[[sub:P]] = [[sqrt:3]] · [[frac:a + c|3]]。"
+            },
+            {
+              text: "P([[frac:a - 4c|3]], [[frac:[[sqrt:3]](a - c)|3]])",
+              correct: false,
+              feedback: "移项符号出错啦：x + a = 4x - 4c ⇒ 3x = a + 4c，右边是 +4c 不是 -4c！"
+            }
+          ],
+          explanation: `<strong>【交点 P 坐标推导】</strong><br>
+            由 x + a = 4x - 4c ⇒ 3x = a + 4c ⇒ x[[sub:P]] = [[frac:a + 4c|3]]。<br>
+            代入 y[[sub:P]] = [[sqrt:3]](x[[sub:P]] - c) = [[sqrt:3]]([[frac:a + 4c|3]] - c) = [[frac:[[sqrt:3]](a + c)|3]]。<br>
+            故 P([[frac:a + 4c|3]], [[frac:[[sqrt:3]](a + c)|3]])。`
+        },
+        {
+          title: "第 3 关：利用 |PF[[sub:2]]| = |F[[sub:1]]F[[sub:2]]| = 2c 列方程求离心率 e",
+          kp: "复习知识点：① 两点间距离公式 |PF[[sub:2]]| = [[sqrt:(x[[sub:P]] - c)[[sup:2]] + y[[sub:P]][[sup:2]]]]；② 齐次化求离心率：将 a, c 的等式转化为关于 e = [[frac:c|a]] 的方程。",
+          question: "由 |PF[[sub:2]]| = 2c，代入 P([[frac:a + 4c|3]], [[frac:[[sqrt:3]](a + c)|3]]) 与 F[[sub:2]](c, 0)，注意到 x[[sub:P]] - c = [[frac:a + c|3]]，则 |PF[[sub:2]]| = [[sqrt:([[frac:a + c|3]])[[sup:2]] + 3([[frac:a + c|3]])[[sup:2]]]] = [[frac:2(a + c)|3]] = 2c。化简即得离心率 e 为？",
+          options: [
+            {
+              text: "a + c = 3c ⇒ a = 2c ⇒ e = [[frac:c|a]] = [[frac:1|2]]",
+              correct: true,
+              feedback: "坐标通法也顺利会师！[[frac:2(a + c)|3]] = 2c ⇒ a + c = 3c ⇒ a = 2c ⇒ e = [[frac:1|2]]，两种方法相互验证，考场百分之百拿满分！"
+            },
+            {
+              text: "a + c = 3c ⇒ a = 3c ⇒ e = [[frac:1|3]]",
+              correct: false,
+              feedback: "移项减法别算错：a + c = 3c ⇒ a = 3c - c = 2c，所以 e = [[frac:c|a]] = [[frac:1|2]]！"
+            }
+          ],
+          explanation: `<strong>【坐标法收官】</strong><br>
+            |PF[[sub:2]]| = [[sqrt:([[frac:a + c|3]])[[sup:2]] + ([[frac:[[sqrt:3]](a + c)|3]])[[sup:2]]]] = [[frac:2(a + c)|3]]。<br>
+            由 |PF[[sub:2]]| = |F[[sub:1]]F[[sub:2]]| = 2c，得 [[frac:2(a + c)|3]] = 2c ⇒ a + c = 3c ⇒ a = 2c ⇒ <strong>e = [[frac:1|2]]</strong>。`
+        }
+      ],
+
+      // ==================== 同源变式拔高训练 ====================
+      var: [
+        {
+          title: "同源变式 1（赋值法迁移训练）：改变倾角与斜率，巩固“赋值 + 作高”",
+          kp: "复习知识点：① 同样令 |F[[sub:1]]F[[sub:2]]| = 2（即 c = 1）；② 含 45° 角的等腰直角三角形三边比为 1 : 1 : [[sqrt:2]]；③ 注意区分垂足 H 在 F[[sub:2]] 左侧还是右侧。",
+          question: "【变式 1（请用刚学的赋值法秒杀）】已知 F[[sub:1]]，F[[sub:2]] 是椭圆 C：[[frac:x[[sup:2]]|a[[sup:2]]]] + [[frac:y[[sup:2]]|b[[sup:2]]]] = 1 (a > b > 0) 的左、右焦点，A 是 C 的左顶点，点 P 在过 A 且斜率为 [[frac:1|5]] 的直线上，△PF[[sub:1]]F[[sub:2]] 为等腰三角形，且 <strong>∠F[[sub:1]]F[[sub:2]]P = 135°</strong>，则椭圆 C 的离心率为？",
+          options: [
+            {
+              text: "令 |F[[sub:1]]F[[sub:2]]| = 2（c = 1），得 |PF[[sub:2]]| = 2 ⇒ |PH| = |F[[sub:2]]H| = [[sqrt:2]] ⇒ |AH| = 5[[sqrt:2]] ⇒ a + 1 + [[sqrt:2]] = 5[[sqrt:2]] ⇒ a = 4[[sqrt:2]] - 1 ⇒ e = [[frac:1|4[[sqrt:2]] - 1]] = [[frac:4[[sqrt:2]] + 1|31]]",
+              correct: true,
+              feedback: "完全掌握精髓了！哪怕数字带根号，只要令 |F[[sub:1]]F[[sub:2]]| = 2（c = 1），过 P 作高 PH 就能一步步把线段算出来，毫无思维障碍！"
+            },
+            {
+              text: "令 |F[[sub:1]]F[[sub:2]]| = 2（c = 1），得 |PH| = |F[[sub:2]]H| = 1 ⇒ |AH| = 5 ⇒ a + 2 = 5 ⇒ e = [[frac:1|3]]",
+              correct: false,
+              feedback: "小心斜边长！∠PF[[sub:2]]H = 180° - 135° = 45°，斜边 |PF[[sub:2]]| = 2，所以直角边 |PH| = |F[[sub:2]]H| = 2 × [[frac:[[sqrt:2]]|2]] = [[sqrt:2]]（不是 1 哦）！"
+            }
+          ],
+          explanation: `<strong>【赋值法迁移完整步骤】</strong><br>
+            1. 令 |F[[sub:1]]F[[sub:2]]| = 2（即 <strong>c = 1</strong>）；因 ∠F[[sub:1]]F[[sub:2]]P = 135° 为钝角，故 <strong>|PF[[sub:2]]| = |F[[sub:1]]F[[sub:2]]| = 2</strong>；<br>
+            2. 过 P 作 PH ⊥ x 轴于 H，在等腰 Rt△PF[[sub:2]]H 中，∠PF[[sub:2]]H = 45°，斜边为 2，故 <strong>|PH| = |F[[sub:2]]H| = [[sqrt:2]]</strong>；<br>
+            3. 在 Rt△PAH 中，斜率 k = [[frac:|PH|| |AH|]] = [[frac:[[sqrt:2]]| |AH|]] = [[frac:1|5]] ⇒ <strong>|AH| = 5[[sqrt:2]]</strong>；<br>
+            4. 由 |AH| = |AF[[sub:2]]| + |F[[sub:2]]H| = (a + 1) + [[sqrt:2]] = 5[[sqrt:2]] ⇒ <strong>a = 4[[sqrt:2]] - 1</strong>；<br>
+            5. 故离心率 <strong>e = [[frac:c|a]] = [[frac:1|4[[sqrt:2]] - 1]] = [[frac:4[[sqrt:2]] + 1|31]]</strong>。`
+        },
+        {
+          title: "同源变式 2：若点 P 明确在椭圆上（焦点三角形 + 赋值法）",
+          kp: "复习知识点：① 椭圆第一定义：|PF[[sub:1]]| + |PF[[sub:2]]| = 2a；② 顶角 120°、腰长为 2 的等腰三角形底边长为 2[[sqrt:3]]。",
+          question: "【变式 2（高考真题原型）】已知 F[[sub:1]], F[[sub:2]] 是椭圆 C：[[frac:x[[sup:2]]|a[[sup:2]]]] + [[frac:y[[sup:2]]|b[[sup:2]]]] = 1 (a > b > 0) 的左、右焦点，<strong>点 P 在椭圆 C 上</strong>，△PF[[sub:1]]F[[sub:2]] 为等腰三角形，且 ∠F[[sub:1]]F[[sub:2]]P = 120°，同样令 |F[[sub:1]]F[[sub:2]]| = 2（c = 1），则椭圆 C 的离心率为？",
+          options: [
+            {
+              text: "由 |PF[[sub:2]]| = 2，∠F[[sub:1]]F[[sub:2]]P = 120° 得底边 |PF[[sub:1]]| = 2[[sqrt:3]]，再由椭圆定义 2a = 2[[sqrt:3]] + 2 ⇒ a = [[sqrt:3]] + 1 ⇒ e = [[frac:1|[[sqrt:3]] + 1]] = [[frac:[[sqrt:3]] - 1|2]]",
+              correct: true,
+              feedback: "满分通关！赋值 |F[[sub:1]]F[[sub:2]]| = 2 后，腰长为 2，底边为 2[[sqrt:3]]，直接代入 |PF[[sub:1]]| + |PF[[sub:2]]| = 2a 求出 a = [[sqrt:3]] + 1！"
+            },
+            {
+              text: "e = [[frac:1|2]]",
+              correct: false,
+              feedback: "注意这次的条件变成了“点 P 在椭圆 C 上”，不再是过左顶点的直线啦！要用椭圆定义 |PF[[sub:1]]| + |PF[[sub:2]]| = 2a 求解。"
+            }
+          ],
+          explanation: `<strong>【椭圆定义 + 赋值法】</strong><br>
+            1. 令 |F[[sub:1]]F[[sub:2]]| = 2（c = 1），因 ∠F[[sub:1]]F[[sub:2]]P = 120° 为钝角，故 |PF[[sub:2]]| = 2；<br>
+            2. 在等腰 △PF[[sub:1]]F[[sub:2]] 中，底边 |PF[[sub:1]]| = 2 × (2 × cos 30°) = 2[[sqrt:3]]；<br>
+            3. 由椭圆定义：2a = |PF[[sub:1]]| + |PF[[sub:2]]| = 2[[sqrt:3]] + 2 ⇒ a = [[sqrt:3]] + 1 ⇒ <strong>e = [[frac:c|a]] = [[frac:1|[[sqrt:3]] + 1]] = [[frac:[[sqrt:3]] - 1|2]]</strong>。`
+        },
+        {
+          title: "同源变式 3：利用离心率求椭圆方程（逆向综合应用）",
+          kp: "复习知识点：已知离心率 e = [[frac:c|a]] 与线段真实长度时，需还原比例系数（不能再把 c 当成 1），联立 a[[sup:2]] = b[[sup:2]] + c[[sup:2]] 求标准方程。",
+          question: "【变式 3】承接原题条件，已求得椭圆 C 的离心率 e = [[frac:1|2]]。若已知点 P 到 x 轴的<strong>真实距离</strong>为 [[sqrt:3]]（即 |PH| = [[sqrt:3]]），则椭圆 C 的标准方程为？",
+          options: [
+            {
+              text: "由 |PH| = [[sqrt:3]]c = [[sqrt:3]] 得真实 c = 1，a = 2，b[[sup:2]] = a[[sup:2]] - c[[sup:2]] = 3，故方程为 [[frac:x[[sup:2]]|4]] + [[frac:y[[sup:2]]|3]] = 1",
+              correct: true,
+              feedback: "融会贯通！求比值（离心率）时可以赋值，求具体方程时还原真实长度 |PH| = [[sqrt:3]]c = [[sqrt:3]] ⇒ c = 1，秒出标准方程！"
+            },
+            {
+              text: "[[frac:x[[sup:2]]|16]] + [[frac:y[[sup:2]]|12]] = 1",
+              correct: false,
+              feedback: "注意高 |PH| = [[sqrt:3]]c = [[sqrt:3]] 解得的是 c = 1（不是 c = 2），所以 a = 2，a[[sup:2]] = 4。"
+            }
+          ],
+          explanation: `<strong>【方程求解】</strong><br>
+            由前知点 P 到 x 轴距离 |PH| = [[sqrt:3]]c = [[sqrt:3]] ⇒ c = 1；<br>
+            又 e = [[frac:c|a]] = [[frac:1|2]] ⇒ a = 2 ⇒ b[[sup:2]] = a[[sup:2]] - c[[sup:2]] = 4 - 1 = 3；<br>
+            故椭圆 C 的标准方程为 <strong>[[frac:x[[sup:2]]|4]] + [[frac:y[[sup:2]]|3]] = 1</strong>。`
+        }
+      ]
+    };
+
+    /************************************************************************
+     * 3. 交互状态与 2D 解析几何动态画板引擎
+     ************************************************************************/
+    let curSubMode = 'geom';
+    let showEllipse = true;
+    let showAngles = true;
+    let showCoords = true;
+
+    const progressState = {
+      unlocked: { geom: 0, alg: 0, var: 0 },
+      done: {
+        geom: [false, false, false],
+        alg: [false, false, false],
+        var: [false, false, false]
+      }
+    };
+
+    const view = {
+      zoom: 1.0,
+      panX: 0,
+      panY: 0
+    };
+
+    const canvas = document.getElementById('geo-canvas');
+    const ctx = canvas.getContext('2d');
+    const wrap = document.getElementById('canvas-wrap');
+
+    function toCanvas(mx, my, cx, cy, scale) {
+      return {
+        x: cx + mx * scale,
+        y: cy - my * scale
+      };
+    }
+
+    function drawArrow(x1, y1, x2, y2, color, label = "") {
+      ctx.save();
+      ctx.beginPath();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1.6;
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
+
+      const ang = Math.atan2(y2 - y1, x2 - x1);
+      const len = 8;
+      ctx.beginPath();
+      ctx.fillStyle = color;
+      ctx.moveTo(x2, y2);
+      ctx.lineTo(x2 - len * Math.cos(ang - Math.PI / 6), y2 - len * Math.sin(ang - Math.PI / 6));
+      ctx.lineTo(x2 - len * Math.cos(ang + Math.PI / 6), y2 - len * Math.sin(ang + Math.PI / 6));
+      ctx.closePath();
+      ctx.fill();
+
+      if (label) {
+        ctx.font = 'italic bold 15px "Times New Roman", serif';
+        ctx.fillStyle = color;
+        ctx.fillText(label, x2 + 6, y2 + 5);
+      }
+      ctx.restore();
+    }
+
+    function drawPoint(pt, color, r = 4.5, label = "", offset = { x: 6, y: -8 }) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(pt.x, pt.y, r, 0, Math.PI * 2);
+      ctx.fillStyle = color;
+      ctx.fill();
+      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = '#070d19';
+      ctx.stroke();
+
+      if (label) {
+        ctx.font = 'bold 13px "Times New Roman", "PingFang SC", sans-serif';
+        const tw = ctx.measureText(label).width;
+        ctx.fillStyle = 'rgba(10, 16, 29, 0.85)';
+        ctx.fillRect(pt.x + offset.x - 3, pt.y + offset.y - 11, tw + 6, 16);
+        ctx.fillStyle = color;
+        ctx.fillText(label, pt.x + offset.x, pt.y + offset.y + 1);
+      }
+      ctx.restore();
+    }
+
+    function renderGeometry() {
+      const rect = wrap.getBoundingClientRect();
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const w = rect.width;
+      const h = rect.height;
+      if (canvas.width !== Math.round(w * dpr) || canvas.height !== Math.round(h * dpr)) {
+        canvas.width = Math.round(w * dpr);
+        canvas.height = Math.round(h * dpr);
+      }
+
+      ctx.save();
+      ctx.scale(dpr, dpr);
+      ctx.clearRect(0, 0, w, h);
+
+      const e = parseFloat(document.getElementById('param-slider').value);
+      const a = 4.0;
+      const c = a * e;
+      const b = Math.sqrt(Math.max(0.01, a * a - c * c));
+
+      // 计算交点 P: 直线 AP: y = (√3/4)(x+a) 与 F2P: y = √3(x-c)
+      const px = (a + 4 * c) / 3;
+      const py = (Math.sqrt(3) * (a + c)) / 3;
+
+      const scale = (Math.min(w, h) / 11.2) * view.zoom;
+      const cx = w * 0.44 + view.panX;
+      const cy = h * 0.66 + view.panY;
+
+      // 1. 网格背景
+      ctx.strokeStyle = 'rgba(30, 41, 59, 0.45)';
+      ctx.lineWidth = 1;
+      for (let gx = -8; gx <= 10; gx++) {
+        const p = toCanvas(gx, 0, cx, cy, scale);
+        ctx.beginPath(); ctx.moveTo(p.x, 0); ctx.lineTo(p.x, h); ctx.stroke();
+      }
+      for (let gy = -5; gy <= 8; gy++) {
+        const p = toCanvas(0, gy, cx, cy, scale);
+        ctx.beginPath(); ctx.moveTo(0, p.y); ctx.lineTo(w, p.y); ctx.stroke();
+      }
+
+      // 2. 坐标轴
+      const leftAxis = toCanvas(-6.2, 0, cx, cy, scale);
+      const rightAxis = toCanvas(7.5, 0, cx, cy, scale);
+      const botAxis = toCanvas(0, -4.3, cx, cy, scale);
+      const topAxis = toCanvas(0, 5.8, cx, cy, scale);
+      drawArrow(leftAxis.x, leftAxis.y, rightAxis.x, rightAxis.y, '#64748b', 'x');
+      drawArrow(botAxis.x, botAxis.y, topAxis.x, topAxis.y, '#64748b', 'y');
+
+      // 3. 椭圆轮廓
+      if (showEllipse) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.ellipse(cx, cy, a * scale, b * scale, 0, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(37, 99, 235, 0.08)';
+        ctx.fill();
+        ctx.strokeStyle = '#3b82f6';
+        ctx.lineWidth = 2.2;
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      const ptA = toCanvas(-a, 0, cx, cy, scale);
+      const ptF1 = toCanvas(-c, 0, cx, cy, scale);
+      const ptF2 = toCanvas(c, 0, cx, cy, scale);
+      const ptP = toCanvas(px, py, cx, cy, scale);
+      const ptH = toCanvas(px, 0, cx, cy, scale);
+
+      const isHit = Math.abs(e - 0.5) < 0.015;
+      const activeCol = isHit ? '#10b981' : '#fbbf24';
+
+      // 4. 直线 AP（延长线）
+      const lineStart = toCanvas(-a - 1.2, (Math.sqrt(3) / 4) * (-1.2), cx, cy, scale);
+      const lineEnd = toCanvas(px + 1.5, (Math.sqrt(3) / 4) * (px + 1.5 + a), cx, cy, scale);
+      ctx.save();
+      ctx.beginPath();
+      ctx.strokeStyle = 'rgba(251, 191, 36, 0.7)';
+      ctx.lineWidth = 2;
+      ctx.moveTo(lineStart.x, lineStart.y);
+      ctx.lineTo(lineEnd.x, lineEnd.y);
+      ctx.stroke();
+      ctx.restore();
+
+      // 5. △PF1F2 填充与边
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(ptF1.x, ptF1.y);
+      ctx.lineTo(ptF2.x, ptF2.y);
+      ctx.lineTo(ptP.x, ptP.y);
+      ctx.closePath();
+      ctx.fillStyle = isHit ? 'rgba(16, 185, 129, 0.22)' : 'rgba(245, 158, 11, 0.14)';
+      ctx.fill();
+
+      // 边 PF1
+      ctx.beginPath();
+      ctx.strokeStyle = '#94a3b8';
+      ctx.lineWidth = 1.8;
+      ctx.moveTo(ptF1.x, ptF1.y);
+      ctx.lineTo(ptP.x, ptP.y);
+      ctx.stroke();
+
+      // 两腰高亮：F1F2 与 F2P
+      const waistCol = isHit ? '#10b981' : '#f43f5e';
+      ctx.beginPath();
+      ctx.strokeStyle = waistCol;
+      ctx.lineWidth = 3.2;
+      ctx.moveTo(ptF1.x, ptF1.y);
+      ctx.lineTo(ptF2.x, ptF2.y);
+      ctx.lineTo(ptP.x, ptP.y);
+      ctx.stroke();
+      ctx.restore();
+
+      // 6. 辅助高线 PH 与角度标注
+      if (showAngles) {
+        // 过 P 作 x 轴垂线 PH
+        ctx.save();
+        ctx.beginPath();
+        ctx.setLineDash([5, 4]);
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 1.6;
+        ctx.moveTo(ptP.x, ptP.y);
+        ctx.lineTo(ptH.x, ptH.y);
+        ctx.stroke();
+        ctx.restore();
+
+        // 直角标记
+        ctx.save();
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 1.3;
+        ctx.strokeRect(ptH.x - 8, ptH.y - 8, 8, 8);
+        ctx.restore();
+
+        // 120° 弧线标记（在 F2 处，从 F2P 方向 (-60°) 到 F2F1 方向 (-180°)）
+        ctx.save();
+        ctx.beginPath();
+        ctx.strokeStyle = '#fbbf24';
+        ctx.lineWidth = 2;
+        ctx.arc(ptF2.x, ptF2.y, 20, -Math.PI, -Math.PI / 3);
+        ctx.stroke();
+        ctx.font = 'bold 12px "Times New Roman", sans-serif';
+        ctx.fillStyle = '#fbbf24';
+        ctx.fillText('120°', ptF2.x - 32, ptF2.y - 16);
+        ctx.restore();
+
+        // 等腰成立时的双杠标记
+        if (isHit) {
+          ctx.save();
+          ctx.font = 'bold 12px "PingFang SC", sans-serif';
+          ctx.fillStyle = '#34d399';
+          ctx.fillText('腰 = 2c', (ptF1.x + ptF2.x) / 2 - 20, ptF1.y + 18);
+          ctx.fillText('腰 = 2c', (ptF2.x + ptP.x) / 2 + 8, (ptF2.y + ptP.y) / 2);
+          ctx.restore();
+        }
+      }
+
+      // 7. 顶点标注
+      drawPoint(ptA, '#60a5fa', 4.5, showCoords ? 'A(-a,0)' : 'A', { x: -46, y: 15 });
+      drawPoint(ptF1, '#f87171', 4.5, showCoords ? 'F₁(-c,0)' : 'F₁', { x: -28, y: 16 });
+      drawPoint(ptF2, '#f87171', 4.5, showCoords ? 'F₂(c,0)' : 'F₂', { x: 6, y: 16 });
+      drawPoint(ptH, '#38bdf8', 3.5, showAngles ? 'H' : '', { x: 5, y: 14 });
+      drawPoint(ptP, activeCol, 6, `P (e=${e.toFixed(2)})`, { x: 8, y: -8 });
+
+      ctx.restore();
+    }
+
+    // 2D 画板平移与缩放事件（兼容触屏与鼠标）
+    let isDragging = false;
+    let lastPt = { x: 0, y: 0 };
+    let lastDist = 0;
+
+    wrap.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      lastPt = { x: e.clientX, y: e.clientY };
+    });
+    window.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      view.panX += e.clientX - lastPt.x;
+      view.panY += e.clientY - lastPt.y;
+      lastPt = { x: e.clientX, y: e.clientY };
+      renderGeometry();
+    });
+    window.addEventListener('mouseup', () => { isDragging = false; });
+
+    wrap.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const f = e.deltaY < 0 ? 1.08 : 0.92;
+      view.zoom = Math.max(0.5, Math.min(3.0, view.zoom * f));
+      renderGeometry();
+    }, { passive: false });
+
+    wrap.addEventListener('touchstart', (e) => {
+      if (e.touches.length === 1) {
+        isDragging = true;
+        lastPt = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      } else if (e.touches.length === 2) {
+        isDragging = false;
+        lastDist = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        );
+      }
+    }, { passive: false });
+
+    wrap.addEventListener('touchmove', (e) => {
+      e.preventDefault();
+      if (isDragging && e.touches.length === 1) {
+        view.panX += e.touches[0].clientX - lastPt.x;
+        view.panY += e.touches[0].clientY - lastPt.y;
+        lastPt = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        renderGeometry();
+      } else if (e.touches.length === 2) {
+        const dist = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        );
+        if (lastDist > 0) {
+          view.zoom = Math.max(0.5, Math.min(3.0, view.zoom * (dist / lastDist)));
+        }
+        lastDist = dist;
+        renderGeometry();
+      }
+    }, { passive: false });
+    wrap.addEventListener('touchend', () => { isDragging = false; });
+
+    const ro = new ResizeObserver(() => renderGeometry());
+    ro.observe(wrap);
+
+    function zoomCanvas(f) {
+      view.zoom = Math.max(0.5, Math.min(3.0, view.zoom * f));
+      renderGeometry();
+    }
+    function resetCanvas() {
+      view.zoom = 1.0;
+      view.panX = 0;
+      view.panY = 0;
+      renderGeometry();
+    }
+    function toggleEllipse() {
+      showEllipse = !showEllipse;
+      const btn = document.getElementById('btn-ellipse');
+      btn.textContent = showEllipse ? '椭圆轮廓：开' : '椭圆轮廓：关';
+      btn.classList.toggle('active-blue', showEllipse);
+      renderGeometry();
+    }
+    function toggleAngles() {
+      showAngles = !showAngles;
+      const btn = document.getElementById('btn-angles');
+      btn.textContent = showAngles ? '角度与等腰标注：开' : '角度与等腰标注：关';
+      btn.classList.toggle('active-emerald', showAngles);
+      renderGeometry();
+    }
+    function toggleCoords() {
+      showCoords = !showCoords;
+      const btn = document.getElementById('btn-coords');
+      btn.textContent = showCoords ? '坐标与方程提示：开' : '坐标与方程提示：关';
+      btn.classList.toggle('active-amber', showCoords);
+      renderGeometry();
+    }
+
+    /************************************************************************
+     * 4. 滑块监控与闯关引导逻辑
+     ************************************************************************/
+    function onSliderInput() {
+      const e = parseFloat(document.getElementById('param-slider').value);
+      document.getElementById('param-badge').textContent = `e = ${e.toFixed(2)}`;
+
+      const a = 4.0;
+      const c = a * e;
+      const f1f2 = 2 * c;
+      const pf2 = (2 * (a + c)) / 3;
+      const diff = Math.abs(pf2 - f1f2);
+      const isHit = Math.abs(e - 0.5) < 0.015;
+
+      const card = document.getElementById('telemetry-card');
+      const status = document.getElementById('radar-status');
+      const grid = document.getElementById('radar-grid');
+
+      card.classList.toggle('hit-glow', isHit);
+      status.className = `status-tag ${isHit ? 'status-matched' : 'status-searching'}`;
+      status.textContent = isHit ? '★ |PF₂| = |F₁F₂|，等腰成立 (e = 1/2)！' : '调整 e 寻找 |PF₂| = |F₁F₂|';
+
+      grid.innerHTML = renderFormulaText(`
+        <div class="metric-row"><span class="metric-label">底边 |F[[sub:1]]F[[sub:2]]| = 2c：</span><span class="metric-val">${f1f2.toFixed(2)}</span></div>
+        <div class="metric-row"><span class="metric-label">侧边 |PF[[sub:2]]| = [[frac:2(a+c)|3]]：</span><span class="metric-val">${pf2.toFixed(2)}</span></div>
+        <div class="metric-row"><span class="metric-label">两腰差值 ||PF[[sub:2]]| - |F[[sub:1]]F[[sub:2]]||：</span><span class="metric-val" style="color:${isHit ? '#34d399' : '#fbbf24'}">${isHit ? '0.00 (相等!)' : diff.toFixed(2)}</span></div>
+      `);
+
+      renderGeometry();
+    }
+
+    function snapToTarget() {
+      document.getElementById('param-slider').value = 0.50;
+      onSliderInput();
+    }
+
+    function switchSubMode(mode) {
+      curSubMode = mode;
+      document.getElementById('subtab-geom').className = `subtab ${mode === 'geom' ? 'active-guided' : ''}`;
+      document.getElementById('subtab-alg').className = `subtab ${mode === 'alg' ? 'active-algebra' : ''}`;
+      document.getElementById('subtab-var').className = `subtab ${mode === 'var' ? 'active-variant' : ''}`;
+      renderSteps();
+    }
+
+    function renderSteps() {
+      const steps = MODES_DATA[curSubMode];
+      const unlockedMax = progressState.unlocked[curSubMode];
+      const doneArr = progressState.done[curSubMode];
+
+      const pillsBar = document.getElementById('pills-bar');
+      pillsBar.innerHTML = steps.map((_, idx) => {
+        const isDone = doneArr[idx];
+        const isUnlocked = idx <= unlockedMax;
+        const cls = isDone ? 'done' : (isUnlocked ? 'unlocked' : '');
+        const mark = isDone ? '✓ ' : (isUnlocked ? '● ' : '🔒 ');
+        return `<div class="step-pill ${cls}">${mark}第 ${idx + 1} 关</div>`;
+      }).join('');
+
+      const container = document.getElementById('steps-container');
+      container.innerHTML = steps.map((st, sIdx) => {
+        const isDone = doneArr[sIdx];
+        const isUnlocked = sIdx <= unlockedMax;
+
+        if (!isUnlocked) {
+          return `
+            <div class="step-card locked">
+              <span style="font-weight:700;font-size:14px;">🔒 ${renderFormulaText(st.title)}</span>
+              <span style="font-size:12px;">完成上一关后解锁</span>
+            </div>
+          `;
+        }
+
+        const optsHtml = st.options.map((opt, oIdx) => {
+          const isCorrectDone = isDone && opt.correct;
+          return `
+            <button class="opt-btn ${isCorrectDone ? 'correct-selected' : ''}" onclick="chooseOption(${sIdx}, ${oIdx})">
+              <span class="opt-letter">${isCorrectDone ? '✓' : (oIdx === 0 ? 'A' : 'B')}</span>
+              <span>${renderFormulaText(opt.text)}</span>
+            </button>
+          `;
+        }).join('');
+
+        const correctOpt = st.options.find(o => o.correct);
+
+        return `
+          <div class="step-card ${isDone ? 'done' : ''}" id="scard-${sIdx}">
+            <div class="step-top">
+              <div class="step-title">${renderFormulaText(st.title)}</div>
+              <span class="step-status">${isDone ? '已通关' : '请作答'}</span>
+            </div>
+            <div class="kp-tag-box">${renderFormulaText('<strong>关联知识点复习：</strong>' + st.kp)}</div>
+            <div class="step-question">${renderFormulaText(st.question)}</div>
+            <div class="options-list">${optsHtml}</div>
+            <div id="fb-${sIdx}" class="feedback-box ${isDone ? 'feedback-ok' : ''}" style="display:${isDone ? 'block' : 'none'};">
+              ${isDone ? renderFormulaText('<strong>解析点评：</strong>' + correctOpt.feedback) : ''}
+            </div>
+            <div id="exp-${sIdx}" class="explanation-box" style="display:${isDone ? 'block' : 'none'};">
+              ${renderFormulaText(st.explanation)}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      updateGlobalProgress();
+    }
+
+    function chooseOption(sIdx, oIdx) {
+      const steps = MODES_DATA[curSubMode];
+      const step = steps[sIdx];
+      const chosen = step.options[oIdx];
+
+      if (chosen.correct) {
+        progressState.done[curSubMode][sIdx] = true;
+        if (progressState.unlocked[curSubMode] <= sIdx && sIdx + 1 < steps.length) {
+          progressState.unlocked[curSubMode] = sIdx + 1;
+        }
+        // 如果原题任意一种解法通关，自动把填空题横线填上正确答案 1/2
+        if ((curSubMode === 'geom' || curSubMode === 'alg') && sIdx === steps.length - 1) {
+          snapToTarget();
+          const blankEl = document.getElementById('main-blank');
+          if (blankEl) {
+            blankEl.innerHTML = renderFormulaText('[[frac:1|2]]');
+            blankEl.style.color = '#34d399';
+            blankEl.style.borderBottomColor = '#34d399';
+          }
+        }
+        renderSteps();
+        setTimeout(() => {
+          const nextEl = document.getElementById(`scard-${sIdx + 1}`);
+          if (nextEl) nextEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 120);
+      } else {
+        const fb = document.getElementById(`fb-${sIdx}`);
+        fb.style.display = 'block';
+        fb.className = 'feedback-box feedback-err';
+        fb.innerHTML = renderFormulaText('<strong>启发提示：</strong>' + chosen.feedback);
+      }
+    }
+
+    function unlockCurrentAll() {
+      const steps = MODES_DATA[curSubMode];
+      progressState.unlocked[curSubMode] = steps.length - 1;
+      progressState.done[curSubMode] = steps.map(() => true);
+      if (curSubMode === 'geom' || curSubMode === 'alg') {
+        snapToTarget();
+        const blankEl = document.getElementById('main-blank');
+        if (blankEl) {
+          blankEl.innerHTML = renderFormulaText('[[frac:1|2]]');
+          blankEl.style.color = '#34d399';
+          blankEl.style.borderBottomColor = '#34d399';
+        }
+      }
+      renderSteps();
+    }
+
+    function updateGlobalProgress() {
+      let total = 0;
+      let done = 0;
+      Object.values(progressState.done).forEach(arr => {
+        arr.forEach(v => { total++; if (v) done++; });
+      });
+      document.getElementById('progress-text').textContent = `${done} / ${total}`;
+      document.getElementById('progress-fill').style.width = `${Math.round((done / total) * 100)}%`;
+    }
+
+    function toggleReviewModal() {
+      document.getElementById('review-modal').classList.toggle('open');
+    }
+
+    window.onload = function () {
+      document.getElementById('prob-text').innerHTML = renderFormulaText(PROBLEM_TEXT);
+      document.getElementById('slider-label').innerHTML = renderFormulaText('拖动滑块改变椭圆离心率 e（固定 a = 4）：');
+      const revBody = document.getElementById('review-modal-body');
+      revBody.innerHTML = renderFormulaText(revBody.innerHTML);
+
+      onSliderInput();
+      renderSteps();
+    };
+  </script>
+</body>
+</html>
