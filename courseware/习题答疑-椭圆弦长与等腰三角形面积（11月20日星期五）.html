@@ -1,0 +1,1834 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0, user-scalable=yes">
+  <title>椭圆弦长与等腰三角形面积 · 互动自学实验室</title>
+  <style>
+    :root {
+      --bg-base: #070d19;
+      --bg-card: #0f172a;
+      --bg-panel: #162035;
+      --bg-inset: #0a101d;
+      --border-subtle: #1e293b;
+      --border-active: #3b82f6;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --accent-blue: #2563eb;
+      --accent-amber: #f59e0b;
+      --accent-emerald: #10b981;
+      --accent-rose: #f43f5e;
+      --math-font: "Times New Roman", "STIXGeneral", "Cambria Math", Georgia, serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+      background-color: var(--bg-base);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.65;
+      overflow-x: hidden;
+    }
+
+    /* ================= 出版级纯离线数学公式排版样式 ================= */
+    .m-var {
+      font-family: var(--math-font);
+      font-style: italic;
+      padding: 0 1px;
+    }
+    .m-sym {
+      font-family: var(--math-font);
+      padding: 0 1px;
+    }
+    .m-frac {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      vertical-align: middle;
+      margin: 0 3px;
+      font-family: var(--math-font);
+      font-size: 0.92em;
+      line-height: 1.15;
+    }
+    .m-frac-num {
+      padding: 0 4px 1px 4px;
+      border-bottom: 1.2px solid currentColor;
+      text-align: center;
+      white-space: nowrap;
+    }
+    .m-frac-den {
+      padding: 2px 4px 0 4px;
+      text-align: center;
+      white-space: nowrap;
+    }
+    .m-sqrt {
+      display: inline-flex;
+      align-items: stretch;
+      vertical-align: middle;
+      margin: 0 2px;
+      font-family: var(--math-font);
+    }
+    .m-sqrt-sym {
+      font-size: 1.15em;
+      line-height: 1;
+      padding-right: 1px;
+      display: inline-flex;
+      align-items: center;
+    }
+    .m-sqrt-body {
+      border-top: 1.2px solid currentColor;
+      padding: 1px 3px 0 2px;
+      line-height: 1.2;
+    }
+    sup.m-sup, sub.m-sub {
+      font-family: var(--math-font);
+      font-size: 0.76em;
+      line-height: 0;
+    }
+    .fill-blank {
+      display: inline-block;
+      min-width: 96px;
+      border-bottom: 2px solid #fbbf24;
+      color: #fbbf24;
+      text-align: center;
+      font-weight: 800;
+      padding: 0 8px;
+      margin: 0 4px;
+      transition: all 0.25s;
+    }
+
+    /* ================= 顶部导航栏 ================= */
+    header {
+      background: rgba(15, 23, 42, 0.96);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 12px 18px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 40;
+    }
+
+    .brand-box {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #2563eb, #10b981);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--math-font);
+      font-style: italic;
+      font-weight: 900;
+      font-size: 20px;
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+      flex-shrink: 0;
+    }
+    .brand-title {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+      color: #fff;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .progress-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-panel);
+      border: 1px solid var(--border-subtle);
+      padding: 6px 12px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .progress-track {
+      width: 64px;
+      height: 6px;
+      background: #1e293b;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--accent-emerald);
+      width: 0%;
+      transition: width 0.3s;
+    }
+    .btn-review {
+      background: rgba(245, 158, 11, 0.16);
+      border: 1px solid rgba(245, 158, 11, 0.45);
+      color: #fbbf24;
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 13.5px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+    .btn-review:hover {
+      background: rgba(245, 158, 11, 0.28);
+    }
+
+    /* ================= 主体响应式双栏布局 ================= */
+    main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1.15fr 1fr;
+      gap: 16px;
+      padding: 16px;
+      max-width: 1680px;
+      width: 100%;
+      margin: 0 auto;
+    }
+    @media (max-width: 1024px) {
+      main {
+        grid-template-columns: 1fr;
+        padding: 12px;
+      }
+    }
+
+    .col-left, .col-right {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+    }
+
+    /* 题干区 */
+    .prob-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .prob-badge {
+      font-size: 12px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 6px;
+      background: rgba(37, 99, 235, 0.2);
+      color: #93c5fd;
+      border: 1px solid rgba(59, 130, 246, 0.35);
+    }
+    .prob-hint {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .prob-body {
+      font-size: 16px;
+      color: #f8fafc;
+      line-height: 1.9;
+    }
+    @media (min-width: 1400px) {
+      .prob-body { font-size: 17px; }
+    }
+
+    /* 交互几何画板卡片 */
+    .canvas-card {
+      padding: 0;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .canvas-toolbar {
+      background: var(--bg-inset);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 10px 14px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .tool-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .tool-btn {
+      background: var(--bg-panel);
+      border: 1px solid #334155;
+      color: #e2e8f0;
+      padding: 6px 11px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      user-select: none;
+    }
+    .tool-btn:hover {
+      background: #1e293b;
+      border-color: #475569;
+    }
+    .tool-btn.active-blue {
+      background: rgba(37, 99, 235, 0.28);
+      border-color: #3b82f6;
+      color: #93c5fd;
+    }
+    .tool-btn.active-emerald {
+      background: rgba(16, 185, 129, 0.25);
+      border-color: #10b981;
+      color: #6ee7b7;
+    }
+
+    .legend-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .canvas-viewport {
+      width: 100%;
+      height: 380px;
+      position: relative;
+      background: radial-gradient(circle at center, #0f172a 0%, #060a12 100%);
+      touch-action: none;
+      cursor: grab;
+    }
+    .canvas-viewport:active {
+      cursor: grabbing;
+    }
+    @media (max-width: 768px) {
+      .canvas-viewport { height: 310px; }
+    }
+    canvas#geo-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .canvas-footer {
+      background: var(--bg-inset);
+      border-top: 1px solid var(--border-subtle);
+      padding: 7px 14px;
+      font-size: 12px;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    /* 参数滑块与实时监控仪 */
+    .telemetry-card {
+      transition: box-shadow 0.3s, border-color 0.3s;
+    }
+    .telemetry-card.hit-glow {
+      border-color: var(--accent-emerald);
+      box-shadow: 0 0 22px rgba(16, 185, 129, 0.28);
+    }
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .slider-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #fbbf24;
+    }
+    .slider-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .param-badge {
+      background: var(--bg-inset);
+      border: 1px solid #334155;
+      color: #fbbf24;
+      padding: 3px 10px;
+      border-radius: 6px;
+      font-family: var(--math-font);
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .btn-snap {
+      background: rgba(16, 185, 129, 0.2);
+      border: 1px solid rgba(16, 185, 129, 0.45);
+      color: #34d399;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn-snap:hover {
+      background: rgba(16, 185, 129, 0.35);
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 10px;
+      border-radius: 5px;
+      background: linear-gradient(90deg, #1d4ed8, #3b82f6, #10b981);
+      outline: none;
+      margin: 6px 0 14px 0;
+      cursor: pointer;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #fbbf24;
+      border: 3px solid #ffffff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+      cursor: pointer;
+    }
+
+    .radar-box {
+      background: var(--bg-inset);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 12px 14px;
+    }
+    .radar-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 8px;
+      margin-bottom: 8px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .status-tag {
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 12px;
+    }
+    .status-searching {
+      background: rgba(245, 158, 11, 0.18);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.35);
+    }
+    .status-matched {
+      background: rgba(16, 185, 129, 0.22);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.45);
+    }
+    .radar-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 8px;
+      font-size: 13px;
+    }
+    .metric-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255,255,255,0.02);
+      padding: 6px 10px;
+      border-radius: 8px;
+    }
+    .metric-label { color: var(--text-muted); }
+    .metric-val { font-weight: 700; color: #fff; }
+
+    /* ================= 右侧闯关互动区 ================= */
+    .right-card {
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      flex: 1;
+    }
+    .subtabs-bar {
+      background: var(--bg-inset);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 10px 14px 0 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .subtabs-group {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .subtab {
+      border: 1px solid transparent;
+      border-bottom: none;
+      background: transparent;
+      color: var(--text-muted);
+      padding: 9px 14px;
+      border-radius: 10px 10px 0 0;
+      font-size: 13.5px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .subtab.active-part1 {
+      background: var(--bg-card);
+      border-color: var(--border-subtle);
+      color: #60a5fa;
+    }
+    .subtab.active-part2 {
+      background: var(--bg-card);
+      border-color: var(--border-subtle);
+      color: #34d399;
+    }
+    .subtab.active-variant {
+      background: var(--bg-card);
+      border-color: var(--border-subtle);
+      color: #fbbf24;
+    }
+
+    .pills-bar {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      background: rgba(15, 23, 42, 0.8);
+    }
+    .step-pill {
+      flex: 1;
+      min-width: 66px;
+      text-align: center;
+      padding: 5px 8px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-inset);
+      color: #64748b;
+    }
+    .step-pill.unlocked {
+      border-color: #3b82f6;
+      background: rgba(37, 99, 235, 0.2);
+      color: #93c5fd;
+    }
+    .step-pill.done {
+      border-color: #10b981;
+      background: rgba(16, 185, 129, 0.2);
+      color: #34d399;
+    }
+
+    .steps-scroll {
+      padding: 16px;
+      overflow-y: auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      max-height: 690px;
+    }
+
+    .step-card {
+      background: var(--bg-panel);
+      border: 1px solid #28354f;
+      border-radius: 14px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .step-card.done {
+      border-color: rgba(16, 185, 129, 0.45);
+    }
+    .step-card.locked {
+      background: var(--bg-inset);
+      border-color: var(--border-subtle);
+      opacity: 0.62;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      padding: 13px 16px;
+    }
+    .step-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+    .step-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: #93c5fd;
+    }
+    .step-card.done .step-title {
+      color: #34d399;
+    }
+    .step-status {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-weight: 700;
+      background: rgba(245, 158, 11, 0.18);
+      color: #fbbf24;
+    }
+    .step-card.done .step-status {
+      background: rgba(16, 185, 129, 0.2);
+      color: #34d399;
+    }
+
+    .kp-tag-box {
+      background: rgba(37, 99, 235, 0.12);
+      border: 1px dashed rgba(96, 165, 250, 0.4);
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 13px;
+      color: #bae6fd;
+    }
+
+    .step-question {
+      font-size: 15px;
+      color: #f1f5f9;
+      line-height: 1.85;
+    }
+
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .opt-btn {
+      width: 100%;
+      text-align: left;
+      background: #0f172a;
+      border: 1px solid #334155;
+      color: #e2e8f0;
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-size: 14px;
+      line-height: 1.75;
+      cursor: pointer;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      transition: all 0.15s;
+    }
+    .opt-btn:hover {
+      background: #1e293b;
+      border-color: #60a5fa;
+    }
+    .opt-btn.correct-selected {
+      background: rgba(6, 78, 59, 0.55);
+      border-color: #10b981;
+      color: #d1fae5;
+      font-weight: 600;
+    }
+    .opt-letter {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #1e293b;
+      color: #cbd5e1;
+      font-size: 12px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .opt-btn.correct-selected .opt-letter {
+      background: #10b981;
+      color: #064e3b;
+    }
+
+    .feedback-box {
+      padding: 11px 14px;
+      border-radius: 10px;
+      font-size: 13.5px;
+      line-height: 1.75;
+    }
+    .feedback-ok {
+      background: rgba(6, 78, 59, 0.45);
+      border: 1px solid rgba(16, 185, 129, 0.45);
+      color: #a7f3d0;
+    }
+    .feedback-err {
+      background: rgba(136, 19, 55, 0.45);
+      border: 1px solid rgba(244, 63, 94, 0.5);
+      color: #fecdd3;
+    }
+
+    .explanation-box {
+      background: var(--bg-inset);
+      border: 1px solid #1e293b;
+      border-left: 3px solid #3b82f6;
+      border-radius: 10px;
+      padding: 13px 15px;
+      font-size: 14px;
+      color: #e2e8f0;
+      line-height: 1.85;
+    }
+
+    .right-footer {
+      background: var(--bg-inset);
+      border-top: 1px solid var(--border-subtle);
+      padding: 10px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .btn-teacher {
+      background: rgba(37, 99, 235, 0.18);
+      border: 1px solid rgba(59, 130, 246, 0.45);
+      color: #93c5fd;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn-teacher:hover {
+      background: rgba(37, 99, 235, 0.32);
+      color: #fff;
+    }
+
+    /* ================= 知识点复习抽屉弹窗 ================= */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 6, 23, 0.85);
+      z-index: 60;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-backdrop.open {
+      display: flex;
+    }
+    .modal-box {
+      background: var(--bg-card);
+      border: 1px solid #334155;
+      border-radius: 18px;
+      max-width: 940px;
+      width: 100%;
+      max-height: 88vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.65);
+    }
+    .modal-head {
+      background: var(--bg-inset);
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-head h2 {
+      font-size: 17px;
+      font-weight: 800;
+      color: #fbbf24;
+    }
+    .btn-close {
+      background: var(--bg-panel);
+      border: 1px solid #334155;
+      color: #cbd5e1;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .modal-body {
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      font-size: 14.5px;
+      line-height: 1.85;
+    }
+    .review-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+      gap: 12px;
+    }
+    .review-item {
+      background: var(--bg-panel);
+      border: 1px solid #28354f;
+      border-radius: 12px;
+      padding: 14px;
+    }
+    .review-item h4 {
+      color: #60a5fa;
+      margin-bottom: 6px;
+      font-size: 15px;
+    }
+    .review-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+    }
+    .review-table th, .review-table td {
+      border: 1px solid #28354f;
+      padding: 10px 12px;
+      text-align: left;
+    }
+    .review-table th {
+      background: var(--bg-inset);
+      color: #93c5fd;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 顶部导航栏 -->
+  <header>
+    <div class="brand-box">
+      <div class="brand-icon">G</div>
+      <div>
+        <div class="brand-title">
+          椭圆弦长与等腰三角形面积 · 互动自学实验室
+        </div>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <div class="progress-pill">
+        <span>闯关进度</span>
+        <span id="progress-text" style="color:#34d399;">0 / 9</span>
+        <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+      </div>
+      <button class="btn-review" onclick="toggleReviewModal()">核心知识点复习锦囊</button>
+    </div>
+  </header>
+
+  <!-- 主工作区 -->
+  <main>
+    <!-- 左侧：题干 + 动态几何画板 + 截距滑块监控 -->
+    <div class="col-left">
+      <div class="card">
+        <div class="prob-header">
+          <span class="prob-badge">直线与椭圆综合（填空自测模式）</span>
+          <span class="prob-hint">拖动下方截距 m 滑块观察等腰三角形何时成立，再完成右侧闯关</span>
+        </div>
+        <div class="prob-body" id="prob-text"></div>
+      </div>
+
+      <div class="card canvas-card">
+        <div class="canvas-toolbar">
+          <div class="tool-group">
+            <button class="tool-btn" onclick="zoomCanvas(1.15)">+ 放大</button>
+            <button class="tool-btn" onclick="zoomCanvas(0.87)">- 缩小</button>
+            <button class="tool-btn" onclick="resetCanvas()">重置视图</button>
+            <button class="tool-btn active-blue" id="btn-foci" onclick="toggleFoci()">焦点 F₁, F₂：开</button>
+            <button class="tool-btn active-emerald" id="btn-median" onclick="toggleMedian()">中线 PM 与垂直标记：开</button>
+          </div>
+          <div class="legend-bar">
+            <span class="legend-item"><span class="dot" style="background:#fbbf24;"></span>直线 l 与弦 AB</span>
+            <span class="legend-item"><span class="dot" style="background:#10b981;"></span>PM ⊥ AB 成立 (m=2)</span>
+          </div>
+        </div>
+
+        <div class="canvas-viewport" id="canvas-wrap">
+          <canvas id="geo-canvas"></canvas>
+        </div>
+
+        <div class="canvas-footer">
+          <span>单指 / 左键拖拽：平移坐标系视图</span>
+          <span>双指捏合 / 滚轮：无级缩放</span>
+          <span>紫色虚线：顶点 P(-3, 2) 到弦 AB 中点 M 的连线</span>
+        </div>
+      </div>
+
+      <div class="card telemetry-card" id="telemetry-card">
+        <div class="slider-header">
+          <div class="slider-title" id="slider-label">拖动滑块改变直线 l : y = x + m 的纵截距 m：</div>
+          <div class="slider-controls">
+            <span class="param-badge" id="param-badge">m = 0.50</span>
+            <button class="btn-snap" onclick="snapToTarget()">一键定标 (m = 2)</button>
+          </div>
+        </div>
+        <input type="range" id="param-slider" min="-3.80" max="3.80" step="0.05" value="0.50" oninput="onSliderInput()">
+
+        <div class="radar-box">
+          <div class="radar-top">
+            <span>实时几何与代数关系监控仪</span>
+            <span class="status-tag status-searching" id="radar-status">调整 m 使 PM ⊥ AB (k_PM · k_AB = -1)</span>
+          </div>
+          <div class="radar-grid" id="radar-grid"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 右侧：分步自学闯关 + 同源变式训练 -->
+    <div class="col-right">
+      <div class="card right-card">
+        <div class="subtabs-bar">
+          <div class="subtabs-group">
+            <button class="subtab active-part1" id="subtab-part1" onclick="switchSubMode('part1')">第(1)问：求椭圆标准方程</button>
+            <button class="subtab" id="subtab-part2" onclick="switchSubMode('part2')">第(2)问：等腰转化与面积精算</button>
+            <button class="subtab" id="subtab-variant" onclick="switchSubMode('variant')">同源变式拔高训练</button>
+          </div>
+        </div>
+
+        <div class="pills-bar" id="pills-bar"></div>
+        <div class="steps-scroll" id="steps-container"></div>
+
+        <div class="right-footer">
+          <span>提示：每关均附带“关联知识点复习”，选错可看启发提示</span>
+          <button class="btn-teacher" onclick="unlockCurrentAll()">教师演示：一键展开本栏全部解析</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- 核心知识点复习锦囊弹窗 -->
+  <div class="modal-backdrop" id="review-modal" onclick="if(event.target===this) toggleReviewModal()">
+    <div class="modal-box">
+      <div class="modal-head">
+        <h2>解析几何 · 椭圆方程、弦长公式与等腰三角形核心知识点锦囊</h2>
+        <button class="btn-close" onclick="toggleReviewModal()">×</button>
+      </div>
+      <div class="modal-body" id="review-modal-body">
+        <div class="review-grid">
+          <div class="review-item">
+            <h4>1. 椭圆基本几何量与离心率</h4>
+            <p>• 标准方程（焦点在 x 轴）：[[frac:x[[sup:2]]|a[[sup:2]]]] + [[frac:y[[sup:2]]|b[[sup:2]]]] = 1 (a > b > 0)<br>
+               • 核心关系：a[[sup:2]] = b[[sup:2]] + c[[sup:2]]，右焦点 (c, 0)<br>
+               • 离心率定义：e = [[frac:c|a]] ∈ (0, 1)，已知 c 和 e 时直接用 a = [[frac:c|e]] 求 a。</p>
+          </div>
+          <div class="review-item">
+            <h4>2. 等腰三角形“三线合一”几何转化</h4>
+            <p>• <strong>核心结论：</strong>若 △PAB 以 AB 为底边、P 为顶点构成等腰三角形，设 M 为底边 AB 的中点，则<strong>中线 PM 垂直于底边 AB</strong>（PM ⊥ AB）！<br>
+               • <strong>斜率翻译：</strong>当直线 AB 与 PM 斜率均存在且不为 0 时，<strong>k[[sub:PM]] · k[[sub:AB]] = -1</strong>（本题 k[[sub:AB]] = 1，故 k[[sub:PM]] = -1）。</p>
+          </div>
+          <div class="review-item">
+            <h4>3. 直线与椭圆联立韦达定理模板</h4>
+            <p>• 设直线 l : y = kx + m 与椭圆联立消去 y，整理为 Ax[[sup:2]] + Bx + C = 0 (A ≠ 0)：<br>
+               &nbsp;&nbsp;① 判别式：<strong>Δ = B[[sup:2]] - 4AC > 0</strong>（确定参数 m 的取值范围）；<br>
+               &nbsp;&nbsp;② 韦达定理：x[[sub:1]] + x[[sub:2]] = -[[frac:B|A]]，x[[sub:1]]x[[sub:2]] = [[frac:C|A]]；<br>
+               &nbsp;&nbsp;③ 中点坐标：x[[sub:0]] = [[frac:x[[sub:1]] + x[[sub:2]]|2]]，y[[sub:0]] = kx[[sub:0]] + m。</p>
+          </div>
+          <div class="review-item">
+            <h4>4. 弦长公式与点到直线距离公式</h4>
+            <p>• <strong>弦长公式：</strong>|AB| = [[sqrt:1 + k[[sup:2]]]] · |x[[sub:1]] - x[[sub:2]]| = [[sqrt:1 + k[[sup:2]]]] · [[sqrt:(x[[sub:1]] + x[[sub:2]])[[sup:2]] - 4x[[sub:1]]x[[sub:2]]]]<br>
+               • <strong>点到直线距离：</strong>点 P(x[[sub:P]], y[[sub:P]]) 到直线 Ax + By + C = 0 的距离 d = [[frac:|Ax[[sub:P]] + By[[sub:P]] + C|| [[sqrt:A[[sup:2]] + B[[sup:2]]]]]]<br>
+               • <strong>面积公式：</strong>S[[sub:△PAB]] = [[frac:1|2]] |AB| · d（或 [[frac:1|2]] |AB| · |PM|）。</p>
+          </div>
+        </div>
+
+        <table class="review-table">
+          <thead>
+            <tr>
+              <th>考场高频易错点</th>
+              <th>常见错误</th>
+              <th>规范防坑策略</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>遗漏判别式 Δ > 0 检验</td>
+              <td>解出 m 后直接代回算面积，不验证直线与椭圆是否真有两个不同交点</td>
+              <td>联立后第一步先算 Δ > 0 求出 m 范围；解出 m 后写明“满足 Δ > 0”及“点 P 不在直线 l 上”</td>
+            </tr>
+            <tr>
+              <td>弦长公式漏乘 [[sqrt:1 + k[[sup:2]]]]</td>
+              <td>直接把 |x[[sub:1]] - x[[sub:2]]| 当成弦长 |AB|</td>
+              <td>切记斜率为 k 的直线弦长必须乘以 [[sqrt:1 + k[[sup:2]]]]（本题 k = 1，故乘 [[sqrt:2]]）</td>
+            </tr>
+            <tr>
+              <td>求中点 y[[sub:0]] 时算错</td>
+              <td>把 y[[sub:0]] 算成 [[frac:y[[sub:1]] + y[[sub:2]]|2]] 时重新代椭圆方程</td>
+              <td>中点 M 在直线 l 上，直接代入直线方程 <strong>y[[sub:0]] = kx[[sub:0]] + m</strong> 最快最准！</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /************************************************************************
+     * 1. 单遍扫描词法公式渲染器 (Single-Pass Tokenizer)
+     *    纯 DOM/安全HTML 结构输出，杜绝任何转义字符与反斜杠泄漏
+     ************************************************************************/
+    function parseBracketContent(str, startIdx) {
+      let depth = 1;
+      let i = startIdx;
+      while (i < str.length && depth > 0) {
+        if (str[i] === '[' && str[i + 1] === '[') {
+          depth++;
+          i += 2;
+        } else if (str[i] === ']' && str[i + 1] === ']') {
+          depth--;
+          if (depth === 0) {
+            return { content: str.slice(startIdx, i), nextIdx: i + 2 };
+          }
+          i += 2;
+        } else {
+          i++;
+        }
+      }
+      return { content: str.slice(startIdx), nextIdx: str.length };
+    }
+
+    function splitTopLevelPipe(content) {
+      const parts = [];
+      let depth = 0;
+      let last = 0;
+      for (let i = 0; i < content.length; i++) {
+        if (content[i] === '[' && content[i + 1] === '[') {
+          depth++;
+          i++;
+        } else if (content[i] === ']' && content[i + 1] === ']') {
+          depth--;
+          i++;
+        } else if (content[i] === '|' && depth === 0) {
+          parts.push(content.slice(last, i));
+          last = i + 1;
+        }
+      }
+      parts.push(content.slice(last));
+      return parts;
+    }
+
+    function renderFormulaText(input) {
+      if (!input) return "";
+      let out = "";
+      let i = 0;
+      while (i < input.length) {
+        // 1. 匹配自定义结构标记 [[tag:...]]
+        if (input[i] === '[' && input[i + 1] === '[') {
+          const parsed = parseBracketContent(input, i + 2);
+          const colonPos = parsed.content.indexOf(':');
+          if (colonPos !== -1) {
+            const tag = parsed.content.slice(0, colonPos);
+            const body = parsed.content.slice(colonPos + 1);
+            if (tag === 'frac') {
+              const [num, den] = splitTopLevelPipe(body);
+              out += `<span class="m-frac"><span class="m-frac-num">${renderFormulaText(num)}</span><span class="m-frac-den">${renderFormulaText(den || '')}</span></span>`;
+            } else if (tag === 'sqrt') {
+              out += `<span class="m-sqrt"><span class="m-sqrt-sym">√</span><span class="m-sqrt-body">${renderFormulaText(body)}</span></span>`;
+            } else if (tag === 'sup') {
+              out += `<sup class="m-sup">${renderFormulaText(body)}</sup>`;
+            } else if (tag === 'sub') {
+              out += `<sub class="m-sub">${renderFormulaText(body)}</sub>`;
+            } else if (tag === 'blank1') {
+              out += `<span class="fill-blank" id="blank-1">${renderFormulaText(body)}</span>`;
+            } else if (tag === 'blank2') {
+              out += `<span class="fill-blank" id="blank-2">${renderFormulaText(body)}</span>`;
+            } else {
+              out += renderFormulaText(body);
+            }
+          } else {
+            out += parsed.content;
+          }
+          i = parsed.nextIdx;
+          continue;
+        }
+
+        // 2. 跳过已有 HTML 标签（如 <strong>, <br>）
+        if (input[i] === '<') {
+          const closeTag = input.indexOf('>', i);
+          if (closeTag !== -1) {
+            out += input.slice(i, closeTag + 1);
+            i = closeTag + 1;
+            continue;
+          }
+        }
+
+        // 3. 单个英文字母渲染为数学衬线斜体
+        const ch = input[i];
+        if (/[A-Za-z]/.test(ch)) {
+          out += `<span class="m-var">${ch}</span>`;
+          i++;
+          continue;
+        }
+
+        out += ch;
+        i++;
+      }
+      return out;
+    }
+
+    /************************************************************************
+     * 2. 题库与双问分步闯关数据（当填空题看，每步嵌入知识点复习）
+     ************************************************************************/
+    const PROBLEM_TEXT = `已知椭圆 G：[[frac:x[[sup:2]]|a[[sup:2]]]] + [[frac:y[[sup:2]]|b[[sup:2]]]] = 1 (a > b > 0) 的离心率为 [[frac:[[sqrt:6]]|3]]，右焦点为 (2[[sqrt:2]], 0)。斜率为 1 的直线 l 与椭圆 G 交于 A、B 两点，以 AB 为底边作等腰三角形，顶点为 P(-3, 2)。<br>
+      (1) 椭圆 G 的标准方程为 [[blank1: ? ]] ；<br>
+      (2) △PAB 的面积为 [[blank2: ? ]] 。`;
+
+    const MODES_DATA = {
+      // ==================== 第(1)问：求椭圆标准方程 ====================
+      part1: [
+        {
+          title: "第 1 关：由右焦点坐标与离心率求出 a[[sup:2]]",
+          kp: "复习知识点：① 焦点在 x 轴上的椭圆右焦点坐标为 (c, 0)；② 离心率公式 e = [[frac:c|a]] ⇒ a = [[frac:c|e]]。",
+          question: "已知椭圆 G 的右焦点为 (2[[sqrt:2]], 0)，离心率 e = [[frac:[[sqrt:6]]|3]]。由此可知半焦距 c 与长半轴长 a 的平方 a[[sup:2]] 分别为？",
+          options: [
+            {
+              text: "c = 2[[sqrt:2]]，a = [[frac:2[[sqrt:2]]| [[frac:[[sqrt:6]]|3]]]] = 2[[sqrt:3]]，故 a[[sup:2]] = 12",
+              correct: true,
+              feedback: "计算非常精准！[[frac:2[[sqrt:2]]| [[sqrt:6]]]] × 3 = [[frac:6[[sqrt:2]]| [[sqrt:6]]]] = [[frac:6| [[sqrt:3]]]] = 2[[sqrt:3]]，所以 a[[sup:2]] = (2[[sqrt:3]])[[sup:2]] = 12。"
+            },
+            {
+              text: "c = 2[[sqrt:2]]，a = 2[[sqrt:2]] × [[frac:[[sqrt:6]]|3]] = [[frac:4[[sqrt:3]]|3]]，故 a[[sup:2]] = [[frac:16|3]]",
+              correct: false,
+              feedback: "公式记反啦！e = [[frac:c|a]] ⇒ a = [[frac:c|e]]（是用 c 除以 e，而不是 c 乘以 e，且椭圆中必定满足 a > c > 0 哦）。"
+            }
+          ],
+          explanation: `<strong>【求 a[[sup:2]] 规范步骤】</strong><br>
+            因为椭圆 G 的右焦点为 (2[[sqrt:2]], 0)，所以 c = 2[[sqrt:2]]。<br>
+            又离心率 e = [[frac:c|a]] = [[frac:[[sqrt:6]]|3]]，故 a = [[frac:2[[sqrt:2]]| [[frac:[[sqrt:6]]|3]]]] = 2[[sqrt:3]]，从而 a[[sup:2]] = 12。`
+        },
+        {
+          title: "第 2 关：利用 a[[sup:2]] = b[[sup:2]] + c[[sup:2]] 求出 b[[sup:2]] 与椭圆方程",
+          kp: "复习知识点：① 椭圆中 a、b、c 的勾股关系：a[[sup:2]] = b[[sup:2]] + c[[sup:2]]（注意 a 最大）；② 焦点在 x 轴时 a[[sup:2]] 写在 x[[sup:2]] 下方。",
+          question: "已求得 a[[sup:2]] = 12，c = 2[[sqrt:2]]（即 c[[sup:2]] = 8），则短半轴长的平方 b[[sup:2]] 与椭圆 G 的标准方程为？",
+          options: [
+            {
+              text: "b[[sup:2]] = a[[sup:2]] - c[[sup:2]] = 12 - 8 = 4，椭圆 G 的方程为 [[frac:x[[sup:2]]|12]] + [[frac:y[[sup:2]]|4]] = 1",
+              correct: true,
+              feedback: "第(1)问顺利拿下！右焦点在 x 轴上，a[[sup:2]] = 12，b[[sup:2]] = 4，标准方程为 [[frac:x[[sup:2]]|12]] + [[frac:y[[sup:2]]|4]] = 1。"
+            },
+            {
+              text: "b[[sup:2]] = a[[sup:2]] + c[[sup:2]] = 20，椭圆 G 的方程为 [[frac:x[[sup:2]]|12]] + [[frac:y[[sup:2]]|20]] = 1",
+              correct: false,
+              feedback: "注意椭圆中长半轴 a 是最大的，满足 a[[sup:2]] = b[[sup:2]] + c[[sup:2]]，因此 b[[sup:2]] = a[[sup:2]] - c[[sup:2]] = 12 - 8 = 4。"
+            }
+          ],
+          explanation: `<strong>【第(1)问完整结论】</strong><br>
+            由 b[[sup:2]] = a[[sup:2]] - c[[sup:2]] = 12 - (2[[sqrt:2]])[[sup:2]] = 4，<br>
+            所以椭圆 G 的标准方程为 <strong>[[frac:x[[sup:2]]|12]] + [[frac:y[[sup:2]]|4]] = 1</strong>。`
+        }
+      ],
+
+      // ==================== 第(2)问：等腰转化与面积精算 ====================
+      part2: [
+        {
+          title: "第 1 关：设直线 l 方程并与椭圆联立消元",
+          kp: "复习知识点：① 已知斜率 k = 1 的直线设斜截式 y = x + m；② 联立消元时先两边同乘分母最小公倍数 12，减少分数运算。",
+          question: "因为直线 l 的斜率为 1，设直线 l 的方程为 y = x + m。将其代入椭圆方程 [[frac:x[[sup:2]]|12]] + [[frac:y[[sup:2]]|4]] = 1（即 x[[sup:2]] + 3y[[sup:2]] = 12）消去 y，整理得到的关于 x 的一元二次方程与判别式条件为？",
+          options: [
+            {
+              text: "4x[[sup:2]] + 6mx + 3m[[sup:2]] - 12 = 0，由 Δ = 36m[[sup:2]] - 16(3m[[sup:2]] - 12) = 192 - 12m[[sup:2]] > 0 得 -4 < m < 4",
+              correct: true,
+              feedback: "非常稳健！x[[sup:2]] + 3(x + m)[[sup:2]] = 12 展开合并得 4x[[sup:2]] + 6mx + 3m[[sup:2]] - 12 = 0，判别式 Δ > 0 锁定了 m ∈ (-4, 4)。"
+            },
+            {
+              text: "4x[[sup:2]] + 3mx + 3m[[sup:2]] - 12 = 0，由 Δ > 0 得 -2 < m < 2",
+              correct: false,
+              feedback: "完全平方展开别漏乘 2 倍积：3(x + m)[[sup:2]] = 3x[[sup:2]] + 6mx + 3m[[sup:2]]，一次项系数是 6m 而不是 3m 哦！"
+            }
+          ],
+          explanation: `<strong>【联立消元模板】</strong><br>
+            设直线 l : y = x + m，与 x[[sup:2]] + 3y[[sup:2]] = 12 联立得：<br>
+            x[[sup:2]] + 3(x[[sup:2]] + 2mx + m[[sup:2]]) = 12 ⇒ <strong>4x[[sup:2]] + 6mx + 3m[[sup:2]] - 12 = 0</strong>。<br>
+            因为直线与椭圆交于不同两点 A、B，所以 Δ = (6m)[[sup:2]] - 4 × 4(3m[[sup:2]] - 12) = 192 - 12m[[sup:2]] > 0 ⇒ <strong>-4 < m < 4</strong>。`
+        },
+        {
+          title: "第 2 关：用韦达定理求出弦 AB 中点 M 的坐标",
+          kp: "复习知识点：① 韦达定理 x[[sub:1]] + x[[sub:2]] = -[[frac:B|A]]；② 中点横坐标 x[[sub:0]] = [[frac:x[[sub:1]] + x[[sub:2]]|2]]，纵坐标直接代入直线方程 y[[sub:0]] = x[[sub:0]] + m。",
+          question: "设 A(x[[sub:1]], y[[sub:1]])，B(x[[sub:2]], y[[sub:2]])，由韦达定理得 x[[sub:1]] + x[[sub:2]] = -[[frac:6m|4]] = -[[frac:3m|2]]。则弦 AB 的中点 M(x[[sub:0]], y[[sub:0]]) 的坐标（用 m 表示）为？",
+          options: [
+            {
+              text: "x[[sub:0]] = -[[frac:3m|4]]，y[[sub:0]] = x[[sub:0]] + m = [[frac:m|4]]，即 M(-[[frac:3m|4]], [[frac:m|4]])",
+              correct: true,
+              feedback: "太棒了！中点在直线 y = x + m 上，直接算 y[[sub:0]] = -[[frac:3m|4]] + m = [[frac:m|4]]，干净利落！"
+            },
+            {
+              text: "x[[sub:0]] = -[[frac:3m|2]]，y[[sub:0]] = -[[frac:m|2]]",
+              correct: false,
+              feedback: "中点坐标要除以 2！x[[sub:1]] + x[[sub:2]] = -[[frac:3m|2]]，所以中点横坐标 x[[sub:0]] = [[frac:x[[sub:1]] + x[[sub:2]]|2]] = -[[frac:3m|4]]。"
+            }
+          ],
+          explanation: `<strong>【弦中点坐标公式】</strong><br>
+            设弦 AB 的中点为 M(x[[sub:0]], y[[sub:0]])，则 x[[sub:0]] = [[frac:x[[sub:1]] + x[[sub:2]]|2]] = -[[frac:3m|4]]。<br>
+            又点 M 在直线 l : y = x + m 上，故 y[[sub:0]] = -[[frac:3m|4]] + m = [[frac:m|4]]，即 <strong>M(-[[frac:3m|4]], [[frac:m|4]])</strong>。`
+        },
+        {
+          title: "第 3 关：【核心转化】利用等腰三角形“三线合一”求出 m",
+          kp: "复习知识点：① 等腰三角形底边上的中线与高线重合（PM ⊥ AB）；② 两垂直直线斜率之积 k[[sub:PM]] · k[[sub:AB]] = -1。",
+          question: "因为 △PAB 是以 AB 为底边、P(-3, 2) 为顶点的等腰三角形，M 为 AB 中点，所以 <strong>PM ⊥ AB</strong>。已知直线 AB 的斜率 k[[sub:AB]] = 1，故直线 PM 的斜率 k[[sub:PM]] = [[frac:y[[sub:0]] - 2|x[[sub:0]] - (-3)]] = [[frac:[[frac:m|4]] - 2|-[[frac:3m|4]] + 3]] = -1。解得纵截距 m 的值为？",
+          options: [
+            {
+              text: "[[frac:m - 8|-3m + 12]] = -1 ⇒ m - 8 = 3m - 12 ⇒ 2m = 4 ⇒ m = 2（满足 -4 < 2 < 4，且 P 不在 l 上）",
+              correct: true,
+              feedback: "完美突破核心难点！把“以 AB 为底边的等腰三角形”翻译成“PM ⊥ AB ⇒ k[[sub:PM]] = -1”，立刻锁定唯一解 m = 2！"
+            },
+            {
+              text: "[[frac:m - 8|-3m + 12]] = 1 ⇒ m - 8 = -3m + 12 ⇒ m = 5",
+              correct: false,
+              feedback: "垂直直线斜率乘积为 -1！已知 k[[sub:AB]] = 1，所以 k[[sub:PM]] = -1（而不是 +1），且 m = 5 也超出了 (-4, 4) 的范围。"
+            }
+          ],
+          explanation: `<strong>【等腰条件代数化】</strong><br>
+            因为 △PAB 以 AB 为底边，M 为 AB 中点，所以 PM ⊥ AB。<br>
+            又 k[[sub:AB]] = 1，故 k[[sub:PM]] = -1，即 [[frac:[[frac:m|4]] - 2|-[[frac:3m|4]] + 3]] = -1 ⇒ [[frac:m - 8|-3m + 12]] = -1 ⇒ m - 8 = 3m - 12 ⇒ <strong>m = 2</strong>。<br>
+            检验：m = 2 ∈ (-4, 4) 满足 Δ > 0，且点 P(-3, 2) 不在直线 l : y = x + 2 上（2 ≠ -3 + 2），符合题意。`
+        },
+        {
+          title: "第 4 关：计算弦长 |AB| 与顶点 P 到直线 l 的距离（高）",
+          kp: "复习知识点：① 弦长公式 |AB| = [[sqrt:1 + k[[sup:2]]]] · [[sqrt:(x[[sub:1]] + x[[sub:2]])[[sup:2]] - 4x[[sub:1]]x[[sub:2]]]]（或直接解方程求交点坐标）；② 点到直线距离 d = [[frac:|Ax[[sub:0]] + By[[sub:0]] + C|| [[sqrt:A[[sup:2]] + B[[sup:2]]]]]]。",
+          question: "当 m = 2 时，直线 l 的方程为 x - y + 2 = 0，联立方程变为 4x[[sup:2]] + 12x = 0（即 x[[sub:1]] + x[[sub:2]] = -3，x[[sub:1]]x[[sub:2]] = 0）。则底边弦长 |AB| 与顶点 P(-3, 2) 到直线 l 的距离 d 分别为？",
+          options: [
+            {
+              text: "|AB| = [[sqrt:1 + 1[[sup:2]]]] · [[sqrt:(-3)[[sup:2]] - 0]] = 3[[sqrt:2]]，高 d = [[frac:|-3 - 2 + 2|| [[sqrt:1[[sup:2]] + (-1)[[sup:2]]]]]] = [[frac:3| [[sqrt:2]]]] = [[frac:3[[sqrt:2]]|2]]",
+              correct: true,
+              feedback: "太丝滑了！当 m = 2 时 4x[[sup:2]] + 12x = 0 直接解出 x[[sub:1]] = 0, x[[sub:2]] = -3，即 A(0, 2), B(-3, -1)，弦长 |AB| = 3[[sqrt:2]]，高 d = [[frac:3[[sqrt:2]]|2]]！"
+            },
+            {
+              text: "|AB| = 3，高 d = [[frac:3[[sqrt:2]]|2]]",
+              correct: false,
+              feedback: "弦长公式别漏掉前面的 [[sqrt:1 + k[[sup:2]]]] = [[sqrt:2]] 哦！|x[[sub:1]] - x[[sub:2]]| = 3，乘以 [[sqrt:2]] 才是真正的斜线段弦长 |AB| = 3[[sqrt:2]]。"
+            }
+          ],
+          explanation: `<strong>【弦长与高的双保险计算】</strong><br>
+            • <strong>底边弦长 |AB|：</strong>将 m = 2 代入 4x[[sup:2]] + 6mx + 3m[[sup:2]] - 12 = 0，得 4x[[sup:2]] + 12x = 0 ⇒ x[[sub:1]] = 0，x[[sub:2]] = -3（即交点为 A(0, 2)，B(-3, -1)）。<br>
+            由弦长公式得 |AB| = [[sqrt:1 + 1[[sup:2]]]] · |0 - (-3)| = <strong>3[[sqrt:2]]</strong>。<br>
+            • <strong>三角形的高 d：</strong>点 P(-3, 2) 到直线 l : x - y + 2 = 0 的距离 d = [[frac:|-3 - 2 + 2|| [[sqrt:1[[sup:2]] + (-1)[[sup:2]]]]]] = [[frac:3| [[sqrt:2]]]] = <strong>[[frac:3[[sqrt:2]]|2]]</strong>（也可用两点间距离公式直接算 |PM| = [[frac:3[[sqrt:2]]|2]]）。`
+        },
+        {
+          title: "第 5 关：代入三角形面积公式求出最终结果",
+          kp: "复习知识点：三角形面积公式 S[[sub:△PAB]] = [[frac:1|2]] × 底边长 |AB| × 高 d。",
+          question: "已知底边 |AB| = 3[[sqrt:2]]，高 d = |PM| = [[frac:3[[sqrt:2]]|2]]，则 △PAB 的面积 S[[sub:△PAB]] 为？",
+          options: [
+            {
+              text: "S[[sub:△PAB]] = [[frac:1|2]] × 3[[sqrt:2]] × [[frac:3[[sqrt:2]]|2]] = [[frac:9|2]]",
+              correct: true,
+              feedback: "满分通关！[[sqrt:2]] × [[sqrt:2]] = 2 与分母中的 2 恰好约掉，最终面积为简洁干净的 [[frac:9|2]]！"
+            },
+            {
+              text: "S[[sub:△PAB]] = 3[[sqrt:2]] × [[frac:3[[sqrt:2]]|2]] = 9",
+              correct: false,
+              feedback: "三角形面积公式千万别忘记乘以 [[frac:1|2]] 哦！[[frac:1|2]] × 9 = [[frac:9|2]]。"
+            }
+          ],
+          explanation: `<strong>【第(2)问完整结论】</strong><br>
+            S[[sub:△PAB]] = [[frac:1|2]] |AB| · d = [[frac:1|2]] × 3[[sqrt:2]] × [[frac:3[[sqrt:2]]|2]] = <strong>[[frac:9|2]]</strong>。`
+        }
+      ],
+
+      // ==================== 同源变式拔高训练 ====================
+      variant: [
+        {
+          title: "同源变式 1（直线斜率变为 k = -1）：迁移“联立 → 中点 → 垂直斜率”通法",
+          kp: "复习知识点：① 若直线 AB 斜率 k[[sub:AB]] = -1，由 PM ⊥ AB 可得 k[[sub:PM]] = 1；② 同样需先检验判别式 Δ > 0。",
+          question: "【变式 1】保持椭圆 G：[[frac:x[[sup:2]]|12]] + [[frac:y[[sup:2]]|4]] = 1 与顶点 P(-3, 2) 不变，若将直线 l 的斜率改为 <strong>-1</strong>（设直线 l : y = -x + m），直线 l 与椭圆 G 交于 A、B 两点，且 △PAB 仍是以 AB 为底边的等腰三角形。联立 x[[sup:2]] + 3(-x + m)[[sup:2]] = 12 得 4x[[sup:2]] - 6mx + 3m[[sup:2]] - 12 = 0，则弦 AB 的中点 M 坐标与纵截距 m 的值为？",
+          options: [
+            {
+              text: "中点 M([[frac:3m|4]], [[frac:m|4]])，由 k[[sub:PM]] = [[frac:[[frac:m|4]] - 2| [[frac:3m|4]] + 3]] = 1 解得 m - 8 = 3m + 12 ⇒ m = -10，超出 Δ > 0 的范围 (-4, 4)，故不存在！",
+              correct: true,
+              feedback: "太厉害了！这是一道典型的“存在性陷阱变式”：算出的 m = -10 不满足判别式 Δ > 0（-4 < m < 4），说明斜率为 -1 时根本不存在满足条件的弦 AB！"
+            },
+            {
+              text: "中点 M([[frac:3m|4]], [[frac:m|4]])，由 k[[sub:PM]] = 1 解得 m = -10，故存在这样的直线 l",
+              correct: false,
+              feedback: "掉进判别式陷阱啦！4x[[sup:2]] - 6mx + 3m[[sup:2]] - 12 = 0 的判别式 Δ = 192 - 12m[[sup:2]] > 0 要求 -4 < m < 4，m = -10 时直线与椭圆根本不相交！"
+            }
+          ],
+          explanation: `<strong>【变式 1 深度点评（判别式检验的重要性）】</strong><br>
+            1. 联立 y = -x + m 与椭圆得 4x[[sup:2]] - 6mx + 3m[[sup:2]] - 12 = 0，判别式 Δ > 0 仍要求 <strong>-4 < m < 4</strong>；<br>
+            2. 中点 M([[frac:3m|4]], [[frac:m|4]])，由 PM ⊥ AB 且 k[[sub:AB]] = -1 得 k[[sub:PM]] = 1 ⇒ [[frac:[[frac:m|4]] - 2| [[frac:3m|4]] + 3]] = 1 ⇒ m = -10 ∉ (-4, 4)，故此时不存在满足条件的等腰三角形。`
+        },
+        {
+          title: "同源变式 2（条件升级为“等腰直角三角形”）：探索弦长与高的等量关系",
+          kp: "复习知识点：① 若 △PAB 是以 AB 为底边的<strong>等腰直角三角形</strong>（∠APB = 90°），则底边上的高 |PM| 等于斜边 |AB| 的一半，即 <strong>|AB| = 2|PM|</strong>！",
+          question: "【变式 2】若已知椭圆 G：[[frac:x[[sup:2]]|12]] + [[frac:y[[sup:2]]|4]] = 1，斜率为 1 的直线 l 与椭圆交于 A、B 两点，且存在点 P 使得 △PAB 是以 AB 为底边的<strong>等腰直角三角形</strong>（即 PM ⊥ AB 且 |AB| = 2|PM|）。已知对任意截距 m ∈ (-4, 4)，弦长 |AB| = [[sqrt:2]] · [[sqrt:(-[[frac:3m|2]])[[sup:2]] - (3m[[sup:2]] - 12)]] = [[frac:[[sqrt:2]]|2]] [[sqrt:48 - 3m[[sup:2]]]]。当 m = 2 时，若点 P 在直线 l 上方使 △PAB 为等腰直角三角形，则高 |PM| 的长度应为？",
+          options: [
+            {
+              text: "m = 2 时弦长 |AB| = 3[[sqrt:2]]，由等腰直角三角形性质 |PM| = [[frac:1|2]] |AB| = [[frac:3[[sqrt:2]]|2]]（恰好就是原题中的 P(-3, 2)！）",
+              correct: true,
+              feedback: "神级发现！原题中 |AB| = 3[[sqrt:2]]，高 |PM| = [[frac:3[[sqrt:2]]|2]]，恰好满足 |AB| = 2|PM|，所以原题中的 △PAB 本身就是一个等腰直角三角形！"
+            },
+            {
+              text: "由 |PM| = |AB| 得 |PM| = 3[[sqrt:2]]",
+              correct: false,
+              feedback: "等腰直角三角形斜边（底边 AB）上的中线（也是高 PM）等于斜边的一半，即 |PM| = [[frac:1|2]] |AB| = [[frac:3[[sqrt:2]]|2]]！"
+            }
+          ],
+          explanation: `<strong>【几何性质彩蛋】</strong><br>
+            因为原题中底边 |AB| = 3[[sqrt:2]]，高 |PM| = [[frac:3[[sqrt:2]]|2]] = [[frac:1|2]] |AB|，根据“三角形一边上的中线等于这边的一半，则该三角形为直角三角形”，原题中的 △PAB 实际上是一个<strong>等腰直角三角形</strong>（∠APB = 90°）！`
+        }
+      ]
+    };
+
+    /************************************************************************
+     * 3. 2D 解析几何动态画板引擎（支持鼠标与希沃触控屏平移、缩放）
+     ************************************************************************/
+    let curSubMode = 'part1';
+    let showFoci = true;
+    let showMedian = true;
+
+    const progressState = {
+      unlocked: { part1: 0, part2: 0, variant: 0 },
+      done: {
+        part1: [false, false],
+        part2: [false, false, false, false, false],
+        variant: [false, false]
+      }
+    };
+
+    const view = {
+      zoom: 1.0,
+      panX: 0,
+      panY: 0
+    };
+
+    const canvas = document.getElementById('geo-canvas');
+    const ctx = canvas.getContext('2d');
+    const wrap = document.getElementById('canvas-wrap');
+
+    function toCanvas(mx, my, cx, cy, scale) {
+      return {
+        x: cx + mx * scale,
+        y: cy - my * scale
+      };
+    }
+
+    function drawArrow(x1, y1, x2, y2, color, label = "") {
+      ctx.save();
+      ctx.beginPath();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1.6;
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
+
+      const ang = Math.atan2(y2 - y1, x2 - x1);
+      const len = 8;
+      ctx.beginPath();
+      ctx.fillStyle = color;
+      ctx.moveTo(x2, y2);
+      ctx.lineTo(x2 - len * Math.cos(ang - Math.PI / 6), y2 - len * Math.sin(ang - Math.PI / 6));
+      ctx.lineTo(x2 - len * Math.cos(ang + Math.PI / 6), y2 - len * Math.sin(ang + Math.PI / 6));
+      ctx.closePath();
+      ctx.fill();
+
+      if (label) {
+        ctx.font = 'italic bold 15px "Times New Roman", serif';
+        ctx.fillStyle = color;
+        ctx.fillText(label, x2 + 6, y2 + 5);
+      }
+      ctx.restore();
+    }
+
+    function drawPoint(pt, color, r = 4.5, label = "", offset = { x: 6, y: -8 }) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(pt.x, pt.y, r, 0, Math.PI * 2);
+      ctx.fillStyle = color;
+      ctx.fill();
+      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = '#070d19';
+      ctx.stroke();
+
+      if (label) {
+        ctx.font = 'bold 13px "Times New Roman", "PingFang SC", sans-serif';
+        const tw = ctx.measureText(label).width;
+        ctx.fillStyle = 'rgba(10, 16, 29, 0.85)';
+        ctx.fillRect(pt.x + offset.x - 3, pt.y + offset.y - 11, tw + 6, 16);
+        ctx.fillStyle = color;
+        ctx.fillText(label, pt.x + offset.x, pt.y + offset.y + 1);
+      }
+      ctx.restore();
+    }
+
+    function renderGeometry() {
+      const rect = wrap.getBoundingClientRect();
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const w = rect.width;
+      const h = rect.height;
+      if (canvas.width !== Math.round(w * dpr) || canvas.height !== Math.round(h * dpr)) {
+        canvas.width = Math.round(w * dpr);
+        canvas.height = Math.round(h * dpr);
+      }
+
+      ctx.save();
+      ctx.scale(dpr, dpr);
+      ctx.clearRect(0, 0, w, h);
+
+      const m = parseFloat(document.getElementById('param-slider').value);
+      const a = Math.sqrt(12); // ~3.464
+      const b = 2.0;
+      const c = Math.sqrt(8);  // ~2.828
+
+      // 联立方程 4x^2 + 6mx + 3m^2 - 12 = 0
+      const disc = 192 - 12 * m * m;
+      const hasInter = disc > 0;
+      let x1 = 0, y1 = 0, x2 = 0, y2 = 0;
+      if (hasInter) {
+        const sq = Math.sqrt(disc);
+        x1 = (-6 * m + sq) / 8;
+        y1 = x1 + m;
+        x2 = (-6 * m - sq) / 8;
+        y2 = x2 + m;
+      }
+
+      const x0 = -0.75 * m;
+      const y0 = 0.25 * m;
+      const px = -3.0, py = 2.0;
+
+      const scale = (Math.min(w, h) / 8.8) * view.zoom;
+      const cx = w * 0.52 + view.panX;
+      const cy = h * 0.55 + view.panY;
+
+      // 1. 网格背景
+      ctx.strokeStyle = 'rgba(30, 41, 59, 0.45)';
+      ctx.lineWidth = 1;
+      for (let gx = -8; gx <= 8; gx++) {
+        const p = toCanvas(gx, 0, cx, cy, scale);
+        ctx.beginPath(); ctx.moveTo(p.x, 0); ctx.lineTo(p.x, h); ctx.stroke();
+      }
+      for (let gy = -6; gy <= 6; gy++) {
+        const p = toCanvas(0, gy, cx, cy, scale);
+        ctx.beginPath(); ctx.moveTo(0, p.y); ctx.lineTo(w, p.y); ctx.stroke();
+      }
+
+      // 2. 坐标轴
+      const leftAxis = toCanvas(-5.2, 0, cx, cy, scale);
+      const rightAxis = toCanvas(5.2, 0, cx, cy, scale);
+      const botAxis = toCanvas(0, -3.6, cx, cy, scale);
+      const topAxis = toCanvas(0, 4.2, cx, cy, scale);
+      drawArrow(leftAxis.x, leftAxis.y, rightAxis.x, rightAxis.y, '#64748b', 'x');
+      drawArrow(botAxis.x, botAxis.y, topAxis.x, topAxis.y, '#64748b', 'y');
+
+      // 3. 椭圆 G: x^2/12 + y^2/4 = 1
+      ctx.save();
+      ctx.beginPath();
+      ctx.ellipse(cx, cy, a * scale, b * scale, 0, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(37, 99, 235, 0.09)';
+      ctx.fill();
+      ctx.strokeStyle = '#3b82f6';
+      ctx.lineWidth = 2.2;
+      ctx.stroke();
+      ctx.restore();
+
+      // 4. 直线 l: y = x + m
+      const lStart = toCanvas(-4.8, -4.8 + m, cx, cy, scale);
+      const lEnd = toCanvas(4.4, 4.4 + m, cx, cy, scale);
+      ctx.save();
+      ctx.beginPath();
+      ctx.strokeStyle = 'rgba(251, 191, 36, 0.65)';
+      ctx.lineWidth = 1.8;
+      ctx.moveTo(lStart.x, lStart.y);
+      ctx.lineTo(lEnd.x, lEnd.y);
+      ctx.stroke();
+      ctx.restore();
+
+      const ptP = toCanvas(px, py, cx, cy, scale);
+      const isHit = Math.abs(m - 2.0) < 0.04;
+      const activeCol = isHit ? '#10b981' : '#fbbf24';
+
+      // 5. 交点 A, B 与 △PAB
+      if (hasInter) {
+        const ptA = toCanvas(x1, y1, cx, cy, scale);
+        const ptB = toCanvas(x2, y2, cx, cy, scale);
+        const ptM = toCanvas(x0, y0, cx, cy, scale);
+
+        // △PAB 填充
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(ptP.x, ptP.y);
+        ctx.lineTo(ptA.x, ptA.y);
+        ctx.lineTo(ptB.x, ptB.y);
+        ctx.closePath();
+        ctx.fillStyle = isHit ? 'rgba(16, 185, 129, 0.24)' : 'rgba(245, 158, 11, 0.14)';
+        ctx.fill();
+
+        // 两腰 PA, PB
+        ctx.beginPath();
+        ctx.strokeStyle = isHit ? '#34d399' : '#94a3b8';
+        ctx.lineWidth = isHit ? 2.4 : 1.7;
+        ctx.moveTo(ptA.x, ptA.y);
+        ctx.lineTo(ptP.x, ptP.y);
+        ctx.lineTo(ptB.x, ptB.y);
+        ctx.stroke();
+
+        // 底边弦 AB 高亮
+        ctx.beginPath();
+        ctx.strokeStyle = activeCol;
+        ctx.lineWidth = 3.2;
+        ctx.moveTo(ptA.x, ptA.y);
+        ctx.lineTo(ptB.x, ptB.y);
+        ctx.stroke();
+        ctx.restore();
+
+        // 中线 PM 与垂直标记
+        if (showMedian) {
+          ctx.save();
+          ctx.beginPath();
+          ctx.setLineDash([5, 4]);
+          ctx.strokeStyle = isHit ? '#10b981' : '#c084fc';
+          ctx.lineWidth = 2;
+          ctx.moveTo(ptP.x, ptP.y);
+          ctx.lineTo(ptM.x, ptM.y);
+          ctx.stroke();
+          ctx.restore();
+
+          // 当 PM ⊥ AB 时画出直角符号
+          if (isHit) {
+            const ux = (ptA.x - ptM.x) / Math.hypot(ptA.x - ptM.x, ptA.y - ptM.y);
+            const uy = (ptA.y - ptM.y) / Math.hypot(ptA.x - ptM.x, ptA.y - ptM.y);
+            const vx = (ptP.x - ptM.x) / Math.hypot(ptP.x - ptM.x, ptP.y - ptM.y);
+            const vy = (ptP.y - ptM.y) / Math.hypot(ptP.x - ptM.x, ptP.y - ptM.y);
+            const sz = 10;
+            ctx.save();
+            ctx.beginPath();
+            ctx.strokeStyle = '#10b981';
+            ctx.lineWidth = 1.8;
+            ctx.moveTo(ptM.x + ux * sz, ptM.y + uy * sz);
+            ctx.lineTo(ptM.x + (ux + vx) * sz, ptM.y + (uy + vy) * sz);
+            ctx.lineTo(ptM.x + vx * sz, ptM.y + vy * sz);
+            ctx.stroke();
+            ctx.restore();
+          }
+
+          drawPoint(ptM, isHit ? '#10b981' : '#c084fc', 4.5, `M(${x0.toFixed(2)}, ${y0.toFixed(2)})`, { x: 8, y: 14 });
+        }
+
+        drawPoint(ptA, activeCol, 5, 'A', { x: 8, y: -6 });
+        drawPoint(ptB, activeCol, 5, 'B', { x: -18, y: 14 });
+      }
+
+      // 6. 焦点 F1, F2 与定点 P(-3, 2)
+      if (showFoci) {
+        const ptF1 = toCanvas(-c, 0, cx, cy, scale);
+        const ptF2 = toCanvas(c, 0, cx, cy, scale);
+        drawPoint(ptF1, '#f87171', 4.2, 'F₁(-2√2,0)', { x: -34, y: 16 });
+        drawPoint(ptF2, '#f87171', 4.2, 'F₂(2√2,0)', { x: -16, y: 16 });
+      }
+
+      drawPoint(ptP, '#f43f5e', 5.5, 'P(-3, 2)', { x: -24, y: -10 });
+
+      ctx.restore();
+    }
+
+    // 画板平移与缩放事件（兼容触屏与鼠标）
+    let isDragging = false;
+    let lastPt = { x: 0, y: 0 };
+    let lastDist = 0;
+
+    wrap.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      lastPt = { x: e.clientX, y: e.clientY };
+    });
+    window.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      view.panX += e.clientX - lastPt.x;
+      view.panY += e.clientY - lastPt.y;
+      lastPt = { x: e.clientX, y: e.clientY };
+      renderGeometry();
+    });
+    window.addEventListener('mouseup', () => { isDragging = false; });
+
+    wrap.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const f = e.deltaY < 0 ? 1.08 : 0.92;
+      view.zoom = Math.max(0.5, Math.min(3.0, view.zoom * f));
+      renderGeometry();
+    }, { passive: false });
+
+    wrap.addEventListener('touchstart', (e) => {
+      if (e.touches.length === 1) {
+        isDragging = true;
+        lastPt = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      } else if (e.touches.length === 2) {
+        isDragging = false;
+        lastDist = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        );
+      }
+    }, { passive: false });
+
+    wrap.addEventListener('touchmove', (e) => {
+      e.preventDefault();
+      if (isDragging && e.touches.length === 1) {
+        view.panX += e.touches[0].clientX - lastPt.x;
+        view.panY += e.touches[0].clientY - lastPt.y;
+        lastPt = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        renderGeometry();
+      } else if (e.touches.length === 2) {
+        const dist = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        );
+        if (lastDist > 0) {
+          view.zoom = Math.max(0.5, Math.min(3.0, view.zoom * (dist / lastDist)));
+        }
+        lastDist = dist;
+        renderGeometry();
+      }
+    }, { passive: false });
+    wrap.addEventListener('touchend', () => { isDragging = false; });
+
+    const ro = new ResizeObserver(() => renderGeometry());
+    ro.observe(wrap);
+
+    function zoomCanvas(f) {
+      view.zoom = Math.max(0.5, Math.min(3.0, view.zoom * f));
+      renderGeometry();
+    }
+    function resetCanvas() {
+      view.zoom = 1.0;
+      view.panX = 0;
+      view.panY = 0;
+      renderGeometry();
+    }
+    function toggleFoci() {
+      showFoci = !showFoci;
+      const btn = document.getElementById('btn-foci');
+      btn.textContent = showFoci ? '焦点 F₁, F₂：开' : '焦点 F₁, F₂：关';
+      btn.classList.toggle('active-blue', showFoci);
+      renderGeometry();
+    }
+    function toggleMedian() {
+      showMedian = !showMedian;
+      const btn = document.getElementById('btn-median');
+      btn.textContent = showMedian ? '中线 PM 与垂直标记：开' : '中线 PM 与垂直标记：关';
+      btn.classList.toggle('active-emerald', showMedian);
+      renderGeometry();
+    }
+
+    /************************************************************************
+     * 4. 滑块监控与闯关引导逻辑
+     ************************************************************************/
+    function onSliderInput() {
+      const m = parseFloat(document.getElementById('param-slider').value);
+      document.getElementById('param-badge').textContent = `m = ${m.toFixed(2)}`;
+
+      const x0 = -0.75 * m;
+      const y0 = 0.25 * m;
+      const kPM = (y0 - 2.0) / (x0 - (-3.0));
+      const slopeProd = kPM * 1.0;
+
+      const disc = 192 - 12 * m * m;
+      const ab = disc > 0 ? Math.sqrt(2) * (Math.sqrt(disc) / 4) : 0;
+      const distP = Math.abs(-3.0 - 2.0 + m) / Math.SQRT2;
+      const area = 0.5 * ab * distP;
+
+      const isHit = Math.abs(m - 2.0) < 0.04;
+      const card = document.getElementById('telemetry-card');
+      const status = document.getElementById('radar-status');
+      const grid = document.getElementById('radar-grid');
+
+      card.classList.toggle('hit-glow', isHit);
+      status.className = `status-tag ${isHit ? 'status-matched' : 'status-searching'}`;
+      status.textContent = isHit ? '★ PM ⊥ AB 成立 (m = 2，S = 9/2)！' : '调整 m 使 k_PM · k_AB = -1';
+
+      grid.innerHTML = renderFormulaText(`
+        <div class="metric-row"><span class="metric-label">弦 AB 中点 M(x[[sub:0]], y[[sub:0]])：</span><span class="metric-val">(${x0.toFixed(2)}, ${y0.toFixed(2)})</span></div>
+        <div class="metric-row"><span class="metric-label">斜率之积 k[[sub:PM]] · k[[sub:AB]]：</span><span class="metric-val" style="color:${isHit ? '#34d399' : '#fbbf24'}">${isHit ? '-1.00 (垂直!)' : slopeProd.toFixed(2)}</span></div>
+        <div class="metric-row"><span class="metric-label">当前弦长 |AB| 与高 d：</span><span class="metric-val">${isHit ? '3√2 与 3√2/2' : `${ab.toFixed(2)} 与 ${distP.toFixed(2)}`}</span></div>
+        <div class="metric-row"><span class="metric-label">实时面积 S[[sub:△PAB]]：</span><span class="metric-val" style="color:${isHit ? '#34d399' : '#fff'}">${isHit ? '9/2 (4.50)' : area.toFixed(2)}</span></div>
+      `);
+
+      renderGeometry();
+    }
+
+    function snapToTarget() {
+      document.getElementById('param-slider').value = 2.00;
+      onSliderInput();
+    }
+
+    function switchSubMode(mode) {
+      curSubMode = mode;
+      document.getElementById('subtab-part1').className = `subtab ${mode === 'part1' ? 'active-part1' : ''}`;
+      document.getElementById('subtab-part2').className = `subtab ${mode === 'part2' ? 'active-part2' : ''}`;
+      document.getElementById('subtab-variant').className = `subtab ${mode === 'variant' ? 'active-variant' : ''}`;
+      renderSteps();
+    }
+
+    function renderSteps() {
+      const steps = MODES_DATA[curSubMode];
+      const unlockedMax = progressState.unlocked[curSubMode];
+      const doneArr = progressState.done[curSubMode];
+
+      const pillsBar = document.getElementById('pills-bar');
+      pillsBar.innerHTML = steps.map((_, idx) => {
+        const isDone = doneArr[idx];
+        const isUnlocked = idx <= unlockedMax;
+        const cls = isDone ? 'done' : (isUnlocked ? 'unlocked' : '');
+        const mark = isDone ? '✓ ' : (isUnlocked ? '● ' : '🔒 ');
+        return `<div class="step-pill ${cls}">${mark}第 ${idx + 1} 关</div>`;
+      }).join('');
+
+      const container = document.getElementById('steps-container');
+      container.innerHTML = steps.map((st, sIdx) => {
+        const isDone = doneArr[sIdx];
+        const isUnlocked = sIdx <= unlockedMax;
+
+        if (!isUnlocked) {
+          return `
+            <div class="step-card locked">
+              <span style="font-weight:700;font-size:14px;">🔒 ${renderFormulaText(st.title)}</span>
+              <span style="font-size:12px;">完成上一关后解锁</span>
+            </div>
+          `;
+        }
+
+        const optsHtml = st.options.map((opt, oIdx) => {
+          const isCorrectDone = isDone && opt.correct;
+          return `
+            <button class="opt-btn ${isCorrectDone ? 'correct-selected' : ''}" onclick="chooseOption(${sIdx}, ${oIdx})">
+              <span class="opt-letter">${isCorrectDone ? '✓' : (oIdx === 0 ? 'A' : 'B')}</span>
+              <span>${renderFormulaText(opt.text)}</span>
+            </button>
+          `;
+        }).join('');
+
+        const correctOpt = st.options.find(o => o.correct);
+
+        return `
+          <div class="step-card ${isDone ? 'done' : ''}" id="scard-${sIdx}">
+            <div class="step-top">
+              <div class="step-title">${renderFormulaText(st.title)}</div>
+              <span class="step-status">${isDone ? '已通关' : '请作答'}</span>
+            </div>
+            <div class="kp-tag-box">${renderFormulaText('<strong>关联知识点复习：</strong>' + st.kp)}</div>
+            <div class="step-question">${renderFormulaText(st.question)}</div>
+            <div class="options-list">${optsHtml}</div>
+            <div id="fb-${sIdx}" class="feedback-box ${isDone ? 'feedback-ok' : ''}" style="display:${isDone ? 'block' : 'none'};">
+              ${isDone ? renderFormulaText('<strong>解析点评：</strong>' + correctOpt.feedback) : ''}
+            </div>
+            <div id="exp-${sIdx}" class="explanation-box" style="display:${isDone ? 'block' : 'none'};">
+              ${renderFormulaText(st.explanation)}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      updateGlobalProgress();
+    }
+
+    function fillBlankAnswer(which) {
+      if (which === 1) {
+        const b1 = document.getElementById('blank-1');
+        if (b1) {
+          b1.innerHTML = renderFormulaText('[[frac:x[[sup:2]]|12]] + [[frac:y[[sup:2]]|4]] = 1');
+          b1.style.color = '#34d399';
+          b1.style.borderBottomColor = '#34d399';
+        }
+      } else if (which === 2) {
+        snapToTarget();
+        const b2 = document.getElementById('blank-2');
+        if (b2) {
+          b2.innerHTML = renderFormulaText('[[frac:9|2]]');
+          b2.style.color = '#34d399';
+          b2.style.borderBottomColor = '#34d399';
+        }
+      }
+    }
+
+    function chooseOption(sIdx, oIdx) {
+      const steps = MODES_DATA[curSubMode];
+      const step = steps[sIdx];
+      const chosen = step.options[oIdx];
+
+      if (chosen.correct) {
+        progressState.done[curSubMode][sIdx] = true;
+        if (progressState.unlocked[curSubMode] <= sIdx && sIdx + 1 < steps.length) {
+          progressState.unlocked[curSubMode] = sIdx + 1;
+        }
+        if (curSubMode === 'part1' && sIdx === steps.length - 1) {
+          fillBlankAnswer(1);
+        }
+        if (curSubMode === 'part2' && sIdx === steps.length - 1) {
+          fillBlankAnswer(2);
+        }
+        renderSteps();
+        setTimeout(() => {
+          const nextEl = document.getElementById(`scard-${sIdx + 1}`);
+          if (nextEl) nextEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 120);
+      } else {
+        const fb = document.getElementById(`fb-${sIdx}`);
+        fb.style.display = 'block';
+        fb.className = 'feedback-box feedback-err';
+        fb.innerHTML = renderFormulaText('<strong>启发提示：</strong>' + chosen.feedback);
+      }
+    }
+
+    function unlockCurrentAll() {
+      const steps = MODES_DATA[curSubMode];
+      progressState.unlocked[curSubMode] = steps.length - 1;
+      progressState.done[curSubMode] = steps.map(() => true);
+      if (curSubMode === 'part1') fillBlankAnswer(1);
+      if (curSubMode === 'part2') fillBlankAnswer(2);
+      renderSteps();
+    }
+
+    function updateGlobalProgress() {
+      let total = 0;
+      let done = 0;
+      Object.values(progressState.done).forEach(arr => {
+        arr.forEach(v => { total++; if (v) done++; });
+      });
+      document.getElementById('progress-text').textContent = `${done} / ${total}`;
+      document.getElementById('progress-fill').style.width = `${Math.round((done / total) * 100)}%`;
+    }
+
+    function toggleReviewModal() {
+      document.getElementById('review-modal').classList.toggle('open');
+    }
+
+    window.onload = function () {
+      document.getElementById('prob-text').innerHTML = renderFormulaText(PROBLEM_TEXT);
+      document.getElementById('slider-label').innerHTML = renderFormulaText('拖动滑块改变直线 l : y = x + m 的纵截距 m：');
+      const revBody = document.getElementById('review-modal-body');
+      revBody.innerHTML = renderFormulaText(revBody.innerHTML);
+
+      onSliderInput();
+      renderSteps();
+    };
+  </script>
+</body>
+</html>
