@@ -1,0 +1,1983 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0, user-scalable=yes">
+  <title>解三角形边角互化与锐角三角形范围互动实验室</title>
+  <style>
+    :root {
+      --bg-base: #070d19;
+      --bg-card: #0f172a;
+      --bg-panel: #162035;
+      --bg-inset: #0a101d;
+      --border-subtle: #1e293b;
+      --border-active: #3b82f6;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --accent-blue: #2563eb;
+      --accent-amber: #f59e0b;
+      --accent-emerald: #10b981;
+      --accent-rose: #f43f5e;
+      --math-font: "Times New Roman", "STIXGeneral", "Cambria Math", Georgia, serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+      background-color: var(--bg-base);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.65;
+      overflow-x: hidden;
+    }
+
+    /* ================= 出版级纯离线数学公式排版样式 ================= */
+    .m-var {
+      font-family: var(--math-font);
+      font-style: italic;
+      padding: 0 1px;
+    }
+    .m-func {
+      font-family: var(--math-font);
+      font-style: normal;
+      padding: 0 1px;
+    }
+    .m-frac {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      vertical-align: middle;
+      margin: 0 3px;
+      font-family: var(--math-font);
+      font-size: 0.92em;
+      line-height: 1.15;
+    }
+    .m-frac-num {
+      padding: 0 4px 1px 4px;
+      border-bottom: 1.2px solid currentColor;
+      text-align: center;
+      white-space: nowrap;
+    }
+    .m-frac-den {
+      padding: 2px 4px 0 4px;
+      text-align: center;
+      white-space: nowrap;
+    }
+    .m-sqrt {
+      display: inline-flex;
+      align-items: stretch;
+      vertical-align: middle;
+      margin: 0 2px;
+      font-family: var(--math-font);
+    }
+    .m-sqrt-sym {
+      font-size: 1.15em;
+      line-height: 1;
+      padding-right: 1px;
+      display: inline-flex;
+      align-items: center;
+    }
+    .m-sqrt-body {
+      border-top: 1.2px solid currentColor;
+      padding: 1px 3px 0 2px;
+      line-height: 1.2;
+    }
+    .m-cases {
+      display: inline-flex;
+      align-items: center;
+      vertical-align: middle;
+      margin: 4px 4px;
+      font-family: var(--math-font);
+    }
+    .m-cases-brace {
+      font-size: 2.2em;
+      line-height: 1;
+      font-weight: 300;
+      margin-right: 4px;
+      transform: scaleY(1.15);
+    }
+    .m-cases-rows {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      text-align: left;
+      font-size: 0.95em;
+    }
+    sup.m-sup, sub.m-sub {
+      font-family: var(--math-font);
+      font-size: 0.76em;
+      line-height: 0;
+    }
+    .fill-blank {
+      display: inline-block;
+      min-width: 96px;
+      border-bottom: 2px solid #fbbf24;
+      color: #fbbf24;
+      text-align: center;
+      font-weight: 800;
+      padding: 0 8px;
+      margin: 0 4px;
+      transition: all 0.25s;
+    }
+
+    /* ================= 顶部导航栏 ================= */
+    header {
+      background: rgba(15, 23, 42, 0.96);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 12px 18px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 40;
+    }
+
+    .brand-box {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #2563eb, #10b981);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--math-font);
+      font-weight: 900;
+      font-size: 18px;
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+      flex-shrink: 0;
+    }
+    .brand-title {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+      color: #fff;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .progress-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-panel);
+      border: 1px solid var(--border-subtle);
+      padding: 6px 12px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .progress-track {
+      width: 64px;
+      height: 6px;
+      background: #1e293b;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--accent-emerald);
+      width: 0%;
+      transition: width 0.3s;
+    }
+    .btn-review {
+      background: rgba(245, 158, 11, 0.16);
+      border: 1px solid rgba(245, 158, 11, 0.45);
+      color: #fbbf24;
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 13.5px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+    .btn-review:hover {
+      background: rgba(245, 158, 11, 0.28);
+    }
+
+    /* ================= 主体响应式双栏布局 ================= */
+    main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1.16fr 1fr;
+      gap: 16px;
+      padding: 16px;
+      max-width: 1680px;
+      width: 100%;
+      margin: 0 auto;
+    }
+    @media (max-width: 1024px) {
+      main {
+        grid-template-columns: 1fr;
+        padding: 12px;
+      }
+    }
+
+    .col-left, .col-right {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+    }
+
+    /* 题干区 */
+    .prob-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .prob-badge {
+      font-size: 12px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 6px;
+      background: rgba(37, 99, 235, 0.2);
+      color: #93c5fd;
+      border: 1px solid rgba(59, 130, 246, 0.35);
+    }
+    .prob-hint {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .prob-body {
+      font-size: 16px;
+      color: #f8fafc;
+      line-height: 1.9;
+    }
+    @media (min-width: 1400px) {
+      .prob-body { font-size: 17px; }
+    }
+
+    /* 双联动动态画板卡片 */
+    .canvas-card {
+      padding: 0;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .canvas-toolbar {
+      background: var(--bg-inset);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 10px 14px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .tool-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .tool-btn {
+      background: var(--bg-panel);
+      border: 1px solid #334155;
+      color: #e2e8f0;
+      padding: 6px 11px;
+      border-radius: 8px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      user-select: none;
+    }
+    .tool-btn:hover {
+      background: #1e293b;
+      border-color: #475569;
+    }
+    .tool-btn.active-blue {
+      background: rgba(37, 99, 235, 0.28);
+      border-color: #3b82f6;
+      color: #93c5fd;
+    }
+    .tool-btn.active-emerald {
+      background: rgba(16, 185, 129, 0.25);
+      border-color: #10b981;
+      color: #6ee7b7;
+    }
+
+    .legend-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .canvas-viewport {
+      width: 100%;
+      height: 440px;
+      position: relative;
+      background: radial-gradient(circle at center, #0f172a 0%, #060a12 100%);
+      touch-action: pan-y;
+    }
+    @media (max-width: 768px) {
+      .canvas-viewport { height: 390px; }
+    }
+    canvas#geo-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .canvas-footer {
+      background: var(--bg-inset);
+      border-top: 1px solid var(--border-subtle);
+      padding: 7px 14px;
+      font-size: 12px;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    /* 参数滑块与实时监控仪 */
+    .telemetry-card {
+      transition: box-shadow 0.3s, border-color 0.3s;
+    }
+    .telemetry-card.acute-glow {
+      border-color: rgba(16, 185, 129, 0.65);
+      box-shadow: 0 0 20px rgba(16, 185, 129, 0.18);
+    }
+    .telemetry-card.obtuse-glow {
+      border-color: rgba(244, 63, 94, 0.65);
+      box-shadow: 0 0 20px rgba(244, 63, 94, 0.22);
+    }
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .slider-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #fbbf24;
+    }
+    .slider-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .param-badge {
+      background: var(--bg-inset);
+      border: 1px solid #334155;
+      color: #fbbf24;
+      padding: 3px 10px;
+      border-radius: 6px;
+      font-family: var(--math-font);
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .btn-preset {
+      background: rgba(16, 185, 129, 0.16);
+      border: 1px solid rgba(16, 185, 129, 0.42);
+      color: #34d399;
+      padding: 4px 9px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-preset:hover {
+      background: rgba(16, 185, 129, 0.32);
+    }
+    .btn-preset.warn {
+      background: rgba(245, 158, 11, 0.16);
+      border-color: rgba(245, 158, 11, 0.45);
+      color: #fbbf24;
+    }
+    .btn-preset.warn:hover {
+      background: rgba(245, 158, 11, 0.32);
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 10px;
+      border-radius: 5px;
+      background: linear-gradient(90deg, #f43f5e 0%, #f43f5e 20%, #10b981 20%, #10b981 80%, #f43f5e 80%, #f43f5e 100%);
+      outline: none;
+      margin: 6px 0 14px 0;
+      cursor: pointer;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #fbbf24;
+      border: 3px solid #ffffff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+      cursor: pointer;
+    }
+
+    .radar-box {
+      background: var(--bg-inset);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 12px 14px;
+    }
+    .radar-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 8px;
+      margin-bottom: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .status-tag {
+      padding: 2px 9px;
+      border-radius: 6px;
+      font-size: 12px;
+    }
+    .status-acute {
+      background: rgba(16, 185, 129, 0.22);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.45);
+    }
+    .status-obtuse {
+      background: rgba(244, 63, 94, 0.22);
+      color: #fda4af;
+      border: 1px solid rgba(244, 63, 94, 0.5);
+    }
+    .radar-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 8px;
+      font-size: 13px;
+    }
+    .metric-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255,255,255,0.02);
+      padding: 6px 10px;
+      border-radius: 8px;
+    }
+    .metric-label { color: var(--text-muted); }
+    .metric-val { font-weight: 700; color: #fff; }
+
+    /* ================= 右侧闯关互动区 ================= */
+    .right-card {
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      flex: 1;
+    }
+    .subtabs-bar {
+      background: var(--bg-inset);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 10px 14px 0 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .subtabs-group {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .subtab {
+      border: 1px solid transparent;
+      border-bottom: none;
+      background: transparent;
+      color: var(--text-muted);
+      padding: 9px 13px;
+      border-radius: 10px 10px 0 0;
+      font-size: 13.5px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .subtab.active-part1 {
+      background: var(--bg-card);
+      border-color: var(--border-subtle);
+      color: #60a5fa;
+    }
+    .subtab.active-part2 {
+      background: var(--bg-card);
+      border-color: var(--border-subtle);
+      color: #34d399;
+    }
+    .subtab.active-variant {
+      background: var(--bg-card);
+      border-color: var(--border-subtle);
+      color: #fbbf24;
+    }
+
+    .pills-bar {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      background: rgba(15, 23, 42, 0.8);
+    }
+    .step-pill {
+      flex: 1;
+      min-width: 66px;
+      text-align: center;
+      padding: 5px 8px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-inset);
+      color: #64748b;
+    }
+    .step-pill.unlocked {
+      border-color: #3b82f6;
+      background: rgba(37, 99, 235, 0.2);
+      color: #93c5fd;
+    }
+    .step-pill.done {
+      border-color: #10b981;
+      background: rgba(16, 185, 129, 0.2);
+      color: #34d399;
+    }
+
+    .steps-scroll {
+      padding: 16px;
+      overflow-y: auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      max-height: 720px;
+    }
+
+    .step-card {
+      background: var(--bg-panel);
+      border: 1px solid #28354f;
+      border-radius: 14px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .step-card.done {
+      border-color: rgba(16, 185, 129, 0.45);
+    }
+    .step-card.locked {
+      background: var(--bg-inset);
+      border-color: var(--border-subtle);
+      opacity: 0.62;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      padding: 13px 16px;
+    }
+    .step-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+    .step-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: #93c5fd;
+    }
+    .step-card.done .step-title {
+      color: #34d399;
+    }
+    .step-status {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-weight: 700;
+      background: rgba(245, 158, 11, 0.18);
+      color: #fbbf24;
+    }
+    .step-card.done .step-status {
+      background: rgba(16, 185, 129, 0.2);
+      color: #34d399;
+    }
+
+    .kp-tag-box {
+      background: rgba(37, 99, 235, 0.12);
+      border: 1px dashed rgba(96, 165, 250, 0.4);
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 13px;
+      color: #bae6fd;
+    }
+
+    .step-question {
+      font-size: 15px;
+      color: #f1f5f9;
+      line-height: 1.85;
+    }
+
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .opt-btn {
+      width: 100%;
+      text-align: left;
+      background: #0f172a;
+      border: 1px solid #334155;
+      color: #e2e8f0;
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-size: 14px;
+      line-height: 1.75;
+      cursor: pointer;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      transition: all 0.15s;
+    }
+    .opt-btn:hover {
+      background: #1e293b;
+      border-color: #60a5fa;
+    }
+    .opt-btn.correct-selected {
+      background: rgba(6, 78, 59, 0.55);
+      border-color: #10b981;
+      color: #d1fae5;
+      font-weight: 600;
+    }
+    .opt-letter {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #1e293b;
+      color: #cbd5e1;
+      font-size: 12px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .opt-btn.correct-selected .opt-letter {
+      background: #10b981;
+      color: #064e3b;
+    }
+
+    .feedback-box {
+      padding: 11px 14px;
+      border-radius: 10px;
+      font-size: 13.5px;
+      line-height: 1.75;
+    }
+    .feedback-ok {
+      background: rgba(6, 78, 59, 0.45);
+      border: 1px solid rgba(16, 185, 129, 0.45);
+      color: #a7f3d0;
+    }
+    .feedback-err {
+      background: rgba(136, 19, 55, 0.45);
+      border: 1px solid rgba(244, 63, 94, 0.5);
+      color: #fecdd3;
+    }
+
+    .explanation-box {
+      background: var(--bg-inset);
+      border: 1px solid #1e293b;
+      border-left: 3px solid #3b82f6;
+      border-radius: 10px;
+      padding: 13px 15px;
+      font-size: 14px;
+      color: #e2e8f0;
+      line-height: 1.85;
+    }
+
+    .right-footer {
+      background: var(--bg-inset);
+      border-top: 1px solid var(--border-subtle);
+      padding: 10px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .btn-teacher {
+      background: rgba(37, 99, 235, 0.18);
+      border: 1px solid rgba(59, 130, 246, 0.45);
+      color: #93c5fd;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn-teacher:hover {
+      background: rgba(37, 99, 235, 0.32);
+      color: #fff;
+    }
+
+    /* ================= 知识点复习抽屉弹窗 ================= */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 6, 23, 0.85);
+      z-index: 60;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-backdrop.open {
+      display: flex;
+    }
+    .modal-box {
+      background: var(--bg-card);
+      border: 1px solid #334155;
+      border-radius: 18px;
+      max-width: 960px;
+      width: 100%;
+      max-height: 88vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.65);
+    }
+    .modal-head {
+      background: var(--bg-inset);
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-head h2 {
+      font-size: 17px;
+      font-weight: 800;
+      color: #fbbf24;
+    }
+    .btn-close {
+      background: var(--bg-panel);
+      border: 1px solid #334155;
+      color: #cbd5e1;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .modal-body {
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      font-size: 14.5px;
+      line-height: 1.85;
+    }
+    .review-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+      gap: 12px;
+    }
+    .review-item {
+      background: var(--bg-panel);
+      border: 1px solid #28354f;
+      border-radius: 12px;
+      padding: 14px;
+    }
+    .review-item h4 {
+      color: #60a5fa;
+      margin-bottom: 6px;
+      font-size: 15px;
+    }
+    .review-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+    }
+    .review-table th, .review-table td {
+      border: 1px solid #28354f;
+      padding: 10px 12px;
+      text-align: left;
+    }
+    .review-table th {
+      background: var(--bg-inset);
+      color: #93c5fd;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 顶部导航栏 -->
+  <header>
+    <div class="brand-box">
+      <div class="brand-icon">△</div>
+      <div>
+        <div class="brand-title">
+          解三角形边角互化与锐角三角形范围互动实验室
+        </div>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <div class="progress-pill">
+        <span>闯关进度</span>
+        <span id="progress-text" style="color:#34d399;">0 / 9</span>
+        <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+      </div>
+      <button class="btn-review" onclick="toggleReviewModal()">核心知识点复习抽屉</button>
+    </div>
+  </header>
+
+  <!-- 主工作区 -->
+  <main>
+    <!-- 左侧：题干 + 双联动动态画板 + 角度滑块监控 -->
+    <div class="col-left">
+      <div class="card">
+        <div class="prob-header">
+          <span class="prob-badge">高三一轮解三角形压轴题型（填空自测模式）</span>
+          <span class="prob-hint">拖动下方角 B 滑块观察外接圆顶点与函数曲线双联动，再完成右侧闯关</span>
+        </div>
+        <div class="prob-body" id="prob-text"></div>
+      </div>
+
+      <div class="card canvas-card">
+        <div class="canvas-toolbar">
+          <div class="tool-group">
+            <button class="tool-btn active-blue" id="btn-circle" onclick="toggleCircumcircle()">外接圆与定角轨迹：开</button>
+            <button class="tool-btn active-emerald" id="btn-func-guide" onclick="toggleFuncGuide()">函数边界参考线：开</button>
+            <button class="tool-btn" id="btn-var-calc" onclick="toggleVarCalc()">补充 a=√3 周长与面积监控：关</button>
+            <button class="tool-btn" onclick="resetCanvas()">重置默认视角 (B=60°)</button>
+          </div>
+          <div class="legend-bar">
+            <span class="legend-item"><span class="dot" style="background:#10b981;"></span>锐角有效区间 (30°, 90°)</span>
+            <span class="legend-item"><span class="dot" style="background:#f43f5e;"></span>钝角/直角越界区间</span>
+          </div>
+        </div>
+
+        <div class="canvas-viewport" id="canvas-wrap">
+          <canvas id="geo-canvas"></canvas>
+        </div>
+
+        <div class="canvas-footer">
+          <span>上半区：固定顶角 A=60°，顶点 A 沿外接圆弧随角 B 滑动</span>
+          <span>下半区：同步绘制正弦型 f(B) = cos B - cos(60°+B) = sin(B + 30°)</span>
+        </div>
+      </div>
+
+      <div class="card telemetry-card acute-glow" id="telemetry-card">
+        <div class="slider-header">
+          <div class="slider-title" id="slider-label">拖动滑块改变角 B 的大小（10° ~ 110°，步长 1°）：</div>
+          <div class="slider-controls">
+            <span class="param-badge" id="param-badge">B = 60°</span>
+            <button class="btn-preset warn" onclick="setAngleB(30)">左边界 B=30°</button>
+            <button class="btn-preset" onclick="setAngleB(60)">对称峰值 B=60°</button>
+            <button class="btn-preset warn" onclick="setAngleB(90)">右边界 B=90°</button>
+          </div>
+        </div>
+        <input type="range" id="param-slider" min="10" max="110" step="1" value="60" oninput="onSliderInput()">
+
+        <div class="radar-box">
+          <div class="radar-top">
+            <span>实时三角形内角与函数值监控仪</span>
+            <span class="status-tag status-acute" id="radar-status">✓ 锐角 △ABC 成立：B ∈ (30°, 90°)</span>
+          </div>
+          <div class="radar-grid" id="radar-grid"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 右侧：第(1)问 + 第(2)问 + 同源变式训练 -->
+    <div class="col-right">
+      <div class="card right-card">
+        <div class="subtabs-bar">
+          <div class="subtabs-group">
+            <button class="subtab active-part1" id="subtab-part1" onclick="switchSubMode('part1')">第(1)问：边角互化求角A</button>
+            <button class="subtab" id="subtab-part2" onclick="switchSubMode('part2')">第(2)问：-cos(A+B)消元与正弦型求值域</button>
+            <button class="subtab" id="subtab-variant" onclick="switchSubMode('variant')">变式讲解：补充 a=√3 求周长与面积范围</button>
+          </div>
+        </div>
+
+        <div class="pills-bar" id="pills-bar"></div>
+        <div class="steps-scroll" id="steps-container"></div>
+
+        <div class="right-footer">
+          <span>提示：每关均附带“关联知识点复习”，选错可看温和启发提示</span>
+          <button class="btn-teacher" onclick="unlockCurrentAll()">教师演示：一键展开本节全部解析</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- 核心知识点复习抽屉弹窗 -->
+  <div class="modal-backdrop" id="review-modal" onclick="if(event.target===this) toggleReviewModal()">
+    <div class="modal-box">
+      <div class="modal-head">
+        <h2>高考解三角形 · 边角互化、正弦型合一变形与锐角范围核心知识点复习</h2>
+        <button class="btn-close" onclick="toggleReviewModal()">×</button>
+      </div>
+      <div class="modal-body" id="review-modal-body">
+        <div class="review-grid">
+          <div class="review-item">
+            <h4>1. 正余弦定理边角互化模板</h4>
+            <p>• 正弦定理：[[frac:a| [[func:sin]] A]] = [[frac:b| [[func:sin]] B]] = [[frac:c| [[func:sin]] C]] = 2R（R 为外接圆半径）<br>
+               • <strong>边化角口诀：</strong>当条件式关于边 a, b, c 为齐次式时，直接将 a → [[func:sin]] A，b → [[func:sin]] B，c → [[func:sin]] C 代入化简；<br>
+               • 三角形内角和诱导：A + B + C = π ⇒ <strong>[[func:sin]](A + C) = [[func:sin]] B</strong>，<strong>[[func:cos]] C = -[[func:cos]](A + B)</strong>，<strong>[[func:sin]] C = [[func:sin]](A + B)</strong>。</p>
+          </div>
+          <div class="review-item">
+            <h4>2. 诱导公式消元 & 正弦型辅助角合一变形（首选）</h4>
+            <p>• <strong>消元首选模板：</strong>利用 [[func:cos]] C = -[[func:cos]](A + B) = -[[func:cos]]([[frac:π|3]] + B)，由两角和余弦展开：<br>
+               &nbsp;&nbsp;[[func:cos]] B + [[func:cos]] C = [[func:cos]] B - ([[frac:1|2]][[func:cos]] B - [[frac:[[sqrt:3]]|2]][[func:sin]] B) = [[frac:[[sqrt:3]]|2]][[func:sin]] B + [[frac:1|2]][[func:cos]] B<br>
+               • <strong>正弦型辅助角公式：</strong>a[[func:sin]] x + b[[func:cos]] x = [[sqrt:a[[sup:2]] + b[[sup:2]]]] [[func:sin]](x + φ)（其中 [[func:tan]] φ = [[frac:b|a]]），故：<br>
+               &nbsp;&nbsp;[[frac:[[sqrt:3]]|2]][[func:sin]] B + [[frac:1|2]][[func:cos]] B = <strong>[[func:sin]](B + [[frac:π|6]])</strong>。</p>
+          </div>
+          <div class="review-item">
+            <h4>3. 锐角三角形隐含不等式组（重中之重）</h4>
+            <p>• <strong>定义：</strong>锐角三角形要求<strong>三个内角全部</strong>大于 0 且小于 [[frac:π|2]]！<br>
+               • 已知 A = [[frac:π|3]]（已为锐角），只需保证剩下两个角 B 和 C = [[frac:2π|3]] - B 同时为锐角：<br>
+               &nbsp;&nbsp;[[cases:0 < B < [[frac:π|2]]|0 < [[frac:2π|3]] - B < [[frac:π|2]]]] ⇒ [[cases:0 < B < [[frac:π|2]]|[[frac:π|6]] < B < [[frac:2π|3]]]] ⇒ <strong>[[frac:π|6]] < B < [[frac:π|2]]</strong>（即 30° < B < 90°）。</p>
+          </div>
+          <div class="review-item">
+            <h4>4. 结合正弦函数图像求值域</h4>
+            <p>• 当 B ∈ ([[frac:π|6]], [[frac:π|2]]) 时，整体角 θ = B + [[frac:π|6]] ∈ ([[frac:π|3]], [[frac:2π|3]])；<br>
+               • 正弦函数 y = [[func:sin]] θ 在 ([[frac:π|3]], [[frac:2π|3]]) 上关于对称轴 θ = [[frac:π|2]]（即 B = [[frac:π|3]]）对称，先增后减：<br>
+               &nbsp;&nbsp;在对称轴 θ = [[frac:π|2]] 处取最大值 <strong>1</strong>（闭区间），在两端点处趋近于 [[func:sin]] [[frac:π|3]] = <strong>[[frac:[[sqrt:3]]|2]]</strong>（开区间），故值域为 <strong>([[frac:[[sqrt:3]]|2]], 1]</strong>。</p>
+          </div>
+        </div>
+
+        <table class="review-table">
+          <thead>
+            <tr>
+              <th>考场三大高频失分雷区</th>
+              <th>错误做法</th>
+              <th>规范防坑策略</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>雷区一：诱导公式 [[func:cos]] C = -[[func:cos]](A + B) 漏负号</td>
+              <td>误写成 [[func:cos]] C = [[func:cos]](A + B)，导致展开符号全反</td>
+              <td>口诀“奇变偶不变，符号看象限”：π - (A + B) 在第二象限余弦为负，务必带负号！</td>
+            </tr>
+            <tr>
+              <td>雷区二：只看角 B 锐角，漏掉角 C 限制</td>
+              <td>直接由 B 为锐角得出 B ∈ (0, [[frac:π|2]])，错算值域为 ([[frac:1|2]], 1]</td>
+              <td>必须同时列 0 < B < [[frac:π|2]] 且 0 < C < [[frac:π|2]]！当 B ≤ [[frac:π|6]] 时，C = [[frac:2π|3]] - B ≥ [[frac:π|2]] 会变成直角或钝角！</td>
+            </tr>
+            <tr>
+              <td>雷区三：开闭区间括号写错</td>
+              <td>把值域写成开区间 ([[frac:[[sqrt:3]]|2]], 1) 或全闭区间</td>
+              <td>对称轴 B = [[frac:π|3]]（等边三角形）在区间内部可取到故右闭 ]；端点 B = [[frac:π|6]], [[frac:π|2]] 对应直角三角形不可取故左开 (！</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /************************************************************************
+     * 1. 单遍扫描词法公式渲染器 (Single-Pass Tokenizer)
+     *    纯 DOM/安全HTML 结构输出，绝无任何反斜杠LaTeX代码或 &nbsp; 源码乱码
+     ************************************************************************/
+    function parseBracketContent(str, startIdx) {
+      let depth = 1;
+      let i = startIdx;
+      while (i < str.length && depth > 0) {
+        if (str[i] === '[' && str[i + 1] === '[') {
+          depth++;
+          i += 2;
+        } else if (str[i] === ']' && str[i + 1] === ']') {
+          depth--;
+          if (depth === 0) {
+            return { content: str.slice(startIdx, i), nextIdx: i + 2 };
+          }
+          i += 2;
+        } else {
+          i++;
+        }
+      }
+      return { content: str.slice(startIdx), nextIdx: str.length };
+    }
+
+    function splitTopLevelPipe(content) {
+      const parts = [];
+      let depth = 0;
+      let last = 0;
+      for (let i = 0; i < content.length; i++) {
+        if (content[i] === '[' && content[i + 1] === '[') {
+          depth++;
+          i++;
+        } else if (content[i] === ']' && content[i + 1] === ']') {
+          depth--;
+          i++;
+        } else if (content[i] === '|' && depth === 0) {
+          parts.push(content.slice(last, i));
+          last = i + 1;
+        }
+      }
+      parts.push(content.slice(last));
+      return parts;
+    }
+
+    function renderFormulaText(input) {
+      if (!input) return "";
+      let out = "";
+      let i = 0;
+      while (i < input.length) {
+        // 1. 匹配自定义结构标记 [[tag:...]]
+        if (input[i] === '[' && input[i + 1] === '[') {
+          const parsed = parseBracketContent(input, i + 2);
+          const colonPos = parsed.content.indexOf(':');
+          if (colonPos !== -1) {
+            const tag = parsed.content.slice(0, colonPos);
+            const body = parsed.content.slice(colonPos + 1);
+            if (tag === 'frac') {
+              const [num, den] = splitTopLevelPipe(body);
+              out += `<span class="m-frac"><span class="m-frac-num">${renderFormulaText(num)}</span><span class="m-frac-den">${renderFormulaText(den || '')}</span></span>`;
+            } else if (tag === 'sqrt') {
+              out += `<span class="m-sqrt"><span class="m-sqrt-sym">√</span><span class="m-sqrt-body">${renderFormulaText(body)}</span></span>`;
+            } else if (tag === 'sup') {
+              out += `<sup class="m-sup">${renderFormulaText(body)}</sup>`;
+            } else if (tag === 'sub') {
+              out += `<sub class="m-sub">${renderFormulaText(body)}</sub>`;
+            } else if (tag === 'func') {
+              out += `<span class="m-func">${body}</span>`;
+            } else if (tag === 'cases') {
+              const rows = splitTopLevelPipe(body);
+              const rowsHtml = rows.map(r => `<div>${renderFormulaText(r)}</div>`).join('');
+              out += `<span class="m-cases"><span class="m-cases-brace">{</span><span class="m-cases-rows">${rowsHtml}</span></span>`;
+            } else if (tag === 'blank1') {
+              out += `<span class="fill-blank" id="blank-1">${renderFormulaText(body)}</span>`;
+            } else if (tag === 'blank2') {
+              out += `<span class="fill-blank" id="blank-2">${renderFormulaText(body)}</span>`;
+            } else {
+              out += renderFormulaText(body);
+            }
+          } else {
+            out += parsed.content;
+          }
+          i = parsed.nextIdx;
+          continue;
+        }
+
+        // 2. 跳过已有 HTML 标签（如 <strong>, <br>）
+        if (input[i] === '<') {
+          const closeTag = input.indexOf('>', i);
+          if (closeTag !== -1) {
+            out += input.slice(i, closeTag + 1);
+            i = closeTag + 1;
+            continue;
+          }
+        }
+
+        // 3. 单个英文字母渲染为数学衬线斜体
+        const ch = input[i];
+        if (/[A-Za-z]/.test(ch)) {
+          out += `<span class="m-var">${ch}</span>`;
+          i++;
+          continue;
+        }
+
+        out += ch;
+        i++;
+      }
+      return out;
+    }
+
+    /************************************************************************
+     * 2. 题库与三标签分步闯关数据
+     ************************************************************************/
+    const PROBLEM_TEXT = `已知锐角 △ABC 中，角 A，B，C 的对边分别为 a，b，c，且满足 (2b - c)[[func:cos]] A - a[[func:cos]] C = 0。<br>
+      (1) 角 A 的大小为 [[blank1: ? ]] ；<br>
+      (2) [[func:cos]] B + [[func:cos]] C 的取值范围为 [[blank2: ? ]] 。`;
+
+    const MODES_DATA = {
+      // ==================== 标签一：第(1)问 边角互化求角A ====================
+      part1: [
+        {
+          title: "第 1 关：正弦定理“边化角”统一三角函数",
+          kp: "复习知识点：正弦定理 [[frac:a| [[func:sin]] A]] = [[frac:b| [[func:sin]] B]] = [[frac:c| [[func:sin]] C]] = 2R。当条件式关于边 a, b, c 为齐次式时，可直接将边替换为对应角的正弦。",
+          question: "在 △ABC 中，已知 (2b - c)[[func:cos]] A - a[[func:cos]] C = 0。观察到每一项关于边 a, b, c 都是一次的（齐次式），利用正弦定理将边化为角后，得到的三角恒等式为？",
+          options: [
+            {
+              text: "(2[[func:sin]] B - [[func:sin]] C)[[func:cos]] A - [[func:sin]] A [[func:cos]] C = 0",
+              correct: true,
+              feedback: "非常标准！设 [[frac:a| [[func:sin]] A]] = [[frac:b| [[func:sin]] B]] = [[frac:c| [[func:sin]] C]] = 2R，代入后约去公因式 2R > 0，立刻得到纯角的三角等式！"
+            },
+            {
+              text: "(2[[func:cos]] B - [[func:cos]] C)[[func:cos]] A - [[func:cos]] A [[func:cos]] C = 0",
+              correct: false,
+              feedback: "正弦定理是把边 a, b, c 替换为正弦 [[func:sin]] A, [[func:sin]] B, [[func:sin]] C（不是余弦哦）！"
+            }
+          ],
+          explanation: `<strong>【正弦定理边化角规范步骤】</strong><br>
+            在 △ABC 中，由正弦定理 [[frac:a| [[func:sin]] A]] = [[frac:b| [[func:sin]] B]] = [[frac:c| [[func:sin]] C]] = 2R（R > 0），<br>
+            将 a = 2R[[func:sin]] A，b = 2R[[func:sin]] B，c = 2R[[func:sin]] C 代入已知等式并约去 2R，得：<br>
+            <strong>(2[[func:sin]] B - [[func:sin]] C)[[func:cos]] A - [[func:sin]] A [[func:cos]] C = 0</strong>。`
+        },
+        {
+          title: "第 2 关：展开移项，逆用两角和正弦公式合并 [[func:sin]](A + C)",
+          kp: "复习知识点：① 两角和正弦公式：[[func:sin]] A [[func:cos]] C + [[func:cos]] A [[func:sin]] C = [[func:sin]](A + C)；② 三角形内角和诱导：A + C = π - B ⇒ [[func:sin]](A + C) = [[func:sin]] B。",
+          question: "将上式展开得 2[[func:sin]] B [[func:cos]] A - ([[func:sin]] C [[func:cos]] A + [[func:sin]] A [[func:cos]] C) = 0。括号内的两项恰好逆用两角和正弦公式合并，进一步利用 A + B + C = π 化简为？",
+          options: [
+            {
+              text: "2[[func:sin]] B [[func:cos]] A - [[func:sin]](A + C) = 0 ⇒ 2[[func:sin]] B [[func:cos]] A - [[func:sin]] B = 0",
+              correct: true,
+              feedback: "漂亮！[[func:sin]] A [[func:cos]] C + [[func:cos]] A [[func:sin]] C = [[func:sin]](A + C) = [[func:sin]](π - B) = [[func:sin]] B，这是解三角形边角互化最核心的固定套路！"
+            },
+            {
+              text: "2[[func:sin]] B [[func:cos]] A + [[func:sin]] B = 0",
+              correct: false,
+              feedback: "注意符号与诱导公式：第一象限与第二象限正弦均为正，[[func:sin]](π - B) = +[[func:sin]] B，前面原有的减号保留，所以是 2[[func:sin]] B [[func:cos]] A - [[func:sin]] B = 0。"
+            }
+          ],
+          explanation: `<strong>【内角和转化细节】</strong><br>
+            展开整理得：2[[func:sin]] B [[func:cos]] A = [[func:sin]] A [[func:cos]] C + [[func:cos]] A [[func:sin]] C = [[func:sin]](A + C)。<br>
+            因为在 △ABC 中 A + B + C = π，所以 [[func:sin]](A + C) = [[func:sin]](π - B) = [[func:sin]] B，即 <strong>2[[func:sin]] B [[func:cos]] A = [[func:sin]] B</strong>。`
+        },
+        {
+          title: "第 3 关：约去 [[func:sin]] B > 0 求出角 A 的大小",
+          kp: "复习知识点：① 三角形内角 B ∈ (0, π)，恒有 [[func:sin]] B > 0，可直接约去不丢根；② 特殊角三角函数值：[[func:cos]] [[frac:π|3]] = [[frac:1|2]]。",
+          question: "由 2[[func:sin]] B [[func:cos]] A = [[func:sin]] B，因为 B ∈ (0, π)，所以 [[func:sin]] B > 0，两边同时除以 [[func:sin]] B 得 [[func:cos]] A = [[frac:1|2]]。又 A ∈ (0, π)，则角 A 的大小为？",
+          options: [
+            {
+              text: "A = [[frac:π|3]]（即 60°）",
+              correct: true,
+              feedback: "第(1)问满分通关！[[func:cos]] A = [[frac:1|2]] 且 A ∈ (0, π)，唯一确定 A = [[frac:π|3]]（60°）！"
+            },
+            {
+              text: "A = [[frac:π|6]]（即 30°）",
+              correct: false,
+              feedback: "别把正弦和余弦记混啦！[[func:sin]] [[frac:π|6]] = [[frac:1|2]]，而 [[func:cos]] [[frac:π|3]] = [[frac:1|2]]，所以 A = [[frac:π|3]]。"
+            }
+          ],
+          explanation: `<strong>【第(1)问完整结论】</strong><br>
+            因为 B ∈ (0, π)，所以 [[func:sin]] B > 0，由 2[[func:sin]] B [[func:cos]] A = [[func:sin]] B 得 [[func:cos]] A = [[frac:1|2]]。<br>
+            又 A ∈ (0, π)，故 <strong>A = [[frac:π|3]]</strong>。`
+        }
+      ],
+
+      // ==================== 标签二：第(2)问 消元与锐角范围求值域 ====================
+      part2: [
+        {
+          title: "第 1 关：【首选消元】利用诱导公式 [[func:cos]] C = -[[func:cos]](A + B) 消去角 C",
+          kp: "复习知识点：在 △ABC 中，C = π - (A + B)，由诱导公式得 <strong>[[func:cos]] C = -[[func:cos]](A + B)</strong>。将已知 A = [[frac:π|3]] 代入即可实现单变量化！",
+          question: "已知 A = [[frac:π|3]]，使用首选消元模式 [[func:cos]] C = -[[func:cos]](A + B) = -[[func:cos]]([[frac:π|3]] + B)，将目标式 [[func:cos]] B + [[func:cos]] C 转化为只含角 B 的表达式为？",
+          options: [
+            {
+              text: "[[func:cos]] B - [[func:cos]]([[frac:π|3]] + B)",
+              correct: true,
+              feedback: "非常规范！利用 [[func:cos]] C = -[[func:cos]](A + B) 直接消元，结构对称整齐，展开后一眼就能看出正弦型辅助角系数！"
+            },
+            {
+              text: "[[func:cos]] B + [[func:cos]]([[frac:π|3]] + B)",
+              correct: false,
+              feedback: "注意诱导公式符号！因为 C = π - (A + B)，第二象限余弦为负，所以 [[func:cos]] C = -[[func:cos]](A + B) = -[[func:cos]]([[frac:π|3]] + B)，中间是减号哦！"
+            }
+          ],
+          explanation: `<strong>【首选消元法（诱导公式模式）】</strong><br>
+            在 △ABC 中，因为 A + B + C = π 且 A = [[frac:π|3]]，所以 [[func:cos]] C = -[[func:cos]](A + B) = -[[func:cos]]([[frac:π|3]] + B)。<br>
+            从而 [[func:cos]] B + [[func:cos]] C = <strong>[[func:cos]] B - [[func:cos]]([[frac:π|3]] + B)</strong>。<br>
+            （注：也可写为 [[func:cos]] B + [[func:cos]]([[frac:2π|3]] - B)，两种消元完全等价，本题推荐用 -[[func:cos]](A + B) 模式）。`
+        },
+        {
+          title: "第 2 关：【正弦型合一变形】展开并化为 y = A[[func:sin]](B + φ) 形式",
+          kp: "复习知识点：① 两角和余弦公式：[[func:cos]]([[frac:π|3]] + B) = [[func:cos]] [[frac:π|3]] [[func:cos]] B - [[func:sin]] [[frac:π|3]] [[func:sin]] B；② 正弦型辅助角公式：a[[func:sin]] B + b[[func:cos]] B = [[sqrt:a[[sup:2]] + b[[sup:2]]]] [[func:sin]](B + φ)。",
+          question: "将 [[func:cos]] B - [[func:cos]]([[frac:π|3]] + B) 按两角和余弦展开合并，再利用正弦型辅助角公式化简为单一正弦函数，结果为？",
+          options: [
+            {
+              text: "[[func:cos]] B - ([[frac:1|2]][[func:cos]] B - [[frac:[[sqrt:3]]|2]][[func:sin]] B) = [[frac:[[sqrt:3]]|2]][[func:sin]] B + [[frac:1|2]][[func:cos]] B = [[func:sin]](B + [[frac:π|6]])",
+              correct: true,
+              feedback: "完美无瑕！负负得正后得到 [[frac:[[sqrt:3]]|2]][[func:sin]] B + [[frac:1|2]][[func:cos]] B，逆用两角和正弦公式 [[func:sin]] B [[func:cos]] [[frac:π|6]] + [[func:cos]] B [[func:sin]] [[frac:π|6]]，一步化为标准正弦型 [[func:sin]](B + [[frac:π|6]])！"
+            },
+            {
+              text: "[[func:cos]] B - [[frac:1|2]][[func:cos]] B - [[frac:[[sqrt:3]]|2]][[func:sin]] B = [[frac:1|2]][[func:cos]] B - [[frac:[[sqrt:3]]|2]][[func:sin]] B = [[func:sin]]([[frac:π|6]] - B)",
+              correct: false,
+              feedback: "去括号时符号出错啦！-[[func:cos]]([[frac:π|3]] + B) = -([[frac:1|2]][[func:cos]] B - [[frac:[[sqrt:3]]|2]][[func:sin]] B) = -[[frac:1|2]][[func:cos]] B + [[frac:[[sqrt:3]]|2]][[func:sin]] B，负负得正哦！"
+            }
+          ],
+          explanation: `<strong>【正弦型辅助角变形完整步骤】</strong><br>
+            [[func:cos]] B - [[func:cos]]([[frac:π|3]] + B)<br>
+            = [[func:cos]] B - ([[func:cos]] [[frac:π|3]] [[func:cos]] B - [[func:sin]] [[frac:π|3]] [[func:sin]] B)<br>
+            = [[func:cos]] B - [[frac:1|2]][[func:cos]] B + [[frac:[[sqrt:3]]|2]][[func:sin]] B<br>
+            = [[frac:[[sqrt:3]]|2]][[func:sin]] B + [[frac:1|2]][[func:cos]] B<br>
+            = [[func:sin]] B [[func:cos]] [[frac:π|6]] + [[func:cos]] B [[func:sin]] [[frac:π|6]] = <strong>[[func:sin]](B + [[frac:π|6]])</strong>。<br>
+            （备选验证法：若用 C = [[frac:2π|3]] - B 展开可得 [[func:cos]](B - [[frac:π|3]])，由诱导公式 [[func:cos]](B - [[frac:π|3]]) = [[func:sin]]([[frac:π|2]] - (B - [[frac:π|3]])) = [[func:sin]]([[frac:5π|6]] - B) = [[func:sin]](B + [[frac:π|6]])，二者完全一致！）`
+        },
+        {
+          title: "第 3 关：【核心易错关】列出锐角三角形完整不等式组求 B 的定义域",
+          kp: "复习知识点：锐角 △ABC 要求<strong>所有三个内角</strong>均在 (0, [[frac:π|2]]) 内，必须同时约束角 B 和角 C = [[frac:2π|3]] - B！",
+          question: "因为 △ABC 是<strong>锐角三角形</strong>，且 A = [[frac:π|3]]，所以角 B 和角 C 都必须大于 0 且小于 [[frac:π|2]]。解不等式组 [[cases:0 < B < [[frac:π|2]]|0 < [[frac:2π|3]] - B < [[frac:π|2]]]]，得到角 B 的精确取值范围为？",
+          options: [
+            {
+              text: "[[frac:π|6]] < B < [[frac:π|2]]，即 B ∈ ([[frac:π|6]], [[frac:π|2]])（30° < B < 90°）",
+              correct: true,
+              feedback: "太严谨了！由 0 < [[frac:2π|3]] - B < [[frac:π|2]] 解得 [[frac:π|6]] < B < [[frac:2π|3]]，与 0 < B < [[frac:π|2]] 取交集，正好得到 B ∈ ([[frac:π|6]], [[frac:π|2]])！"
+            },
+            {
+              text: "0 < B < [[frac:π|2]]，即 B ∈ (0, [[frac:π|2]])",
+              correct: false,
+              feedback: "掉进第一大雷区啦！如果 B = 15° ∈ (0, 90°)，那么 C = 120° - 15° = 105° 就是钝角了！必须把 C = [[frac:2π|3]] - B < [[frac:π|2]] 也算进去！"
+            }
+          ],
+          explanation: `<strong>【锐角三角形定义域推导】</strong><br>
+            因为 △ABC 为锐角三角形，所以 [[cases:0 < B < [[frac:π|2]]|0 < C = [[frac:2π|3]] - B < [[frac:π|2]]]] ⇒ [[cases:0 < B < [[frac:π|2]]|[[frac:π|6]] < B < [[frac:2π|3]]]]，<br>
+            取交集得 <strong>B ∈ ([[frac:π|6]], [[frac:π|2]])</strong>（即 30° < B < 90°）。`
+        },
+        {
+          title: "第 4 关：结合正弦函数图像与端点检验求出最终值域",
+          kp: "复习知识点：① 当 B ∈ ([[frac:π|6]], [[frac:π|2]]) 时，整体角 θ = B + [[frac:π|6]] ∈ ([[frac:π|3]], [[frac:2π|3]])；② 正弦函数在 ([[frac:π|3]], [[frac:2π|3]]) 上先增后减，在 θ = [[frac:π|2]]（即 B = [[frac:π|3]]）处取最大值 1，在两端点处趋近于 [[frac:[[sqrt:3]]|2]]。",
+          question: "对照左侧下半区动态正弦曲线，当 B ∈ ([[frac:π|6]], [[frac:π|2]]) 时，整体角 B + [[frac:π|6]] ∈ ([[frac:π|3]], [[frac:2π|3]])。则 [[func:cos]] B + [[func:cos]] C = [[func:sin]](B + [[frac:π|6]]) 的取值范围为？",
+          options: [
+            {
+              text: "([[frac:[[sqrt:3]]|2]], 1]（对称轴 B = [[frac:π|3]] 在区间内部，故最大值 1 可取到为闭区间；两端点 B = [[frac:π|6]], [[frac:π|2]] 对应直角三角形不可取，故左端点为开区间！）",
+              correct: true,
+              feedback: "满分通关！你把最关键的“左开右闭”细节拿捏得死死的：峰值 B = 60° 对应等边三角形（属于锐角三角形），所以最大值 1 能取到；边界 30° 和 90° 对应直角三角形，所以 [[frac:[[sqrt:3]]|2]] 取不到！"
+            },
+            {
+              text: "([[frac:[[sqrt:3]]|2]], 1)",
+              correct: false,
+              feedback: "再看一眼 B = [[frac:π|3]]（60°）！当 B = 60° 时，B + [[frac:π|6]] = [[frac:π|2]]，此时 [[func:sin]] [[frac:π|2]] = 1，对应等边三角形（合法的锐角三角形），最大值 1 可以取到，所以右边是闭括号 ] 哦！"
+            }
+          ],
+          explanation: `<strong>【第(2)问完整收官】</strong><br>
+            因为 B ∈ ([[frac:π|6]], [[frac:π|2]])，所以 B + [[frac:π|6]] ∈ ([[frac:π|3]], [[frac:2π|3]])。<br>
+            结合正弦函数 y = [[func:sin]] x 图像，当 B + [[frac:π|6]] = [[frac:π|2]]（即 B = [[frac:π|3]]）时，[[func:sin]](B + [[frac:π|6]]) 取得最大值 1；当 B 趋近于 [[frac:π|6]] 或 [[frac:π|2]] 时，函数值趋近于 [[func:sin]] [[frac:π|3]] = [[frac:[[sqrt:3]]|2]]。<br>
+            故 [[func:cos]] B + [[func:cos]] C 的取值范围为 <strong>([[frac:[[sqrt:3]]|2]], 1]</strong>。`
+        }
+      ],
+
+      // ==================== 标签三：变式讲解（补充 a=√3 求周长与面积范围） ====================
+      variant: [
+        {
+          title: "变式第 1 关：利用正弦定理将边 b, c 用角 B, C 的正弦表示",
+          kp: "复习知识点：① 正弦定理 [[frac:a| [[func:sin]] A]] = [[frac:b| [[func:sin]] B]] = [[frac:c| [[func:sin]] C]] = 2R；② 已知 a = [[sqrt:3]]，A = [[frac:π|3]]，先求外接圆直径 2R = [[frac:a| [[func:sin]] A]]。",
+          question: "【变式题干】保持锐角 △ABC 及 A = [[frac:π|3]] 不变，<strong>补充条件：已知 a = [[sqrt:3]]，求 △ABC 的周长 L 与面积 S 的取值范围</strong>。（可点击左侧画板工具栏【补充 a=√3 周长与面积监控】实时观察！）<br>第一步：由正弦定理求得 2R 与边 b, c 的表达式为？",
+          options: [
+            {
+              text: "2R = [[frac:[[sqrt:3]]| [[func:sin]] [[frac:π|3]]]] = 2，故 b = 2[[func:sin]] B，c = 2[[func:sin]] C",
+              correct: true,
+              feedback: "非常漂亮！a = [[sqrt:3]] 恰好与 [[func:sin]] [[frac:π|3]] = [[frac:[[sqrt:3]]|2]] 约分得到整数 2R = 2，计算量瞬间减半！"
+            },
+            {
+              text: "2R = [[sqrt:3]] × [[func:sin]] [[frac:π|3]] = [[frac:3|2]]，故 b = [[frac:3|2]][[func:sin]] B，c = [[frac:3|2]][[func:sin]] C",
+              correct: false,
+              feedback: "公式记反啦！正弦定理是 2R = [[frac:a| [[func:sin]] A]] = [[frac:[[sqrt:3]]| [[frac:[[sqrt:3]]|2]]]] = 2（不是乘以 [[func:sin]] A 哦）。"
+            }
+          ],
+          explanation: `<strong>【正弦定理边化角准备】</strong><br>
+            由正弦定理 [[frac:a| [[func:sin]] A]] = [[frac:b| [[func:sin]] B]] = [[frac:c| [[func:sin]] C]] = 2R，已知 a = [[sqrt:3]]，A = [[frac:π|3]]，<br>
+            得 2R = [[frac:[[sqrt:3]]| [[func:sin]] [[frac:π|3]]]] = [[frac:[[sqrt:3]]| [[frac:[[sqrt:3]]|2]]]] = 2，因此 <strong>b = 2[[func:sin]] B</strong>，<strong>c = 2[[func:sin]] C</strong>。`
+        },
+        {
+          title: "变式第 2 关：【求周长 L 范围】用 [[func:sin]] C = [[func:sin]](A + B) 消元并化为正弦型",
+          kp: "复习知识点：① 诱导公式 [[func:sin]] C = [[func:sin]](A + B) = [[func:sin]]([[frac:π|3]] + B)；② 展开合并后用正弦型辅助角公式化为 A[[func:sin]](B + φ)。",
+          question: "周长 L = a + b + c = [[sqrt:3]] + 2([[func:sin]] B + [[func:sin]] C)。利用首选消元模式 [[func:sin]] C = [[func:sin]]([[frac:π|3]] + B) 展开合并，再利用正弦型辅助角公式化简周长 L，并结合 B ∈ ([[frac:π|6]], [[frac:π|2]]) 求出 L 的取值范围为？",
+          options: [
+            {
+              text: "L = [[sqrt:3]] + 2[[sqrt:3]][[func:sin]](B + [[frac:π|6]])，因 B + [[frac:π|6]] ∈ ([[frac:π|3]], [[frac:2π|3]])，故 L ∈ (3 + [[sqrt:3]], 3[[sqrt:3]]]",
+              correct: true,
+              feedback: "计算无比丝滑！[[func:sin]] B + [[func:sin]]([[frac:π|3]] + B) = [[frac:3|2]][[func:sin]] B + [[frac:[[sqrt:3]]|2]][[func:cos]] B = [[sqrt:3]][[func:sin]](B + [[frac:π|6]])，乘以 2 再加 [[sqrt:3]] 得 L ∈ (3 + [[sqrt:3]], 3[[sqrt:3]]]！"
+            },
+            {
+              text: "L = [[sqrt:3]] + 2[[sqrt:3]][[func:sin]](B + [[frac:π|6]])，故 L ∈ (3 + [[sqrt:3]], 3[[sqrt:3]])",
+              correct: false,
+              feedback: "同样注意对称轴 B = [[frac:π|3]]（等边三角形，三边均为 [[sqrt:3]]，周长为 3[[sqrt:3]]）在定义域 ([[frac:π|6]], [[frac:π|2]]) 内部，最大值 3[[sqrt:3]] 可以取到，所以右边是闭区间 ] 哦！"
+            }
+          ],
+          explanation: `<strong>【周长 L 完整推导】</strong><br>
+            L = a + b + c = [[sqrt:3]] + 2([[func:sin]] B + [[func:sin]]([[frac:π|3]] + B))<br>
+            = [[sqrt:3]] + 2([[func:sin]] B + [[frac:1|2]][[func:sin]] B + [[frac:[[sqrt:3]]|2]][[func:cos]] B)<br>
+            = [[sqrt:3]] + 2([[frac:3|2]][[func:sin]] B + [[frac:[[sqrt:3]]|2]][[func:cos]] B) = [[sqrt:3]] + 2[[sqrt:3]]([[frac:[[sqrt:3]]|2]][[func:sin]] B + [[frac:1|2]][[func:cos]] B) = <strong>[[sqrt:3]] + 2[[sqrt:3]][[func:sin]](B + [[frac:π|6]])</strong>。<br>
+            因为 B ∈ ([[frac:π|6]], [[frac:π|2]])，所以 B + [[frac:π|6]] ∈ ([[frac:π|3]], [[frac:2π|3]])，从而 [[func:sin]](B + [[frac:π|6]]) ∈ ([[frac:[[sqrt:3]]|2]], 1]，<br>
+            故周长 <strong>L ∈ (3 + [[sqrt:3]], 3[[sqrt:3]]]</strong>。`
+        },
+        {
+          title: "变式第 3 关：【求面积 S 范围】三角恒等变换（降幂 + 辅助角化正弦型）",
+          kp: "复习知识点：① 三角形面积公式 S = [[frac:1|2]]bc[[func:sin]] A；② 降幂公式 [[func:sin]][[sup:2]] B = [[frac:1 - [[func:cos]] 2B|2]]，2[[func:sin]] B [[func:cos]] B = [[func:sin]] 2B；③ 正弦型合一变形。",
+          question: "面积 S = [[frac:1|2]]bc[[func:sin]] A = [[frac:1|2]](2[[func:sin]] B)(2[[func:sin]] C)[[func:sin]] [[frac:π|3]] = [[sqrt:3]][[func:sin]] B [[func:sin]]([[frac:π|3]] + B)。展开后利用二倍角降幂公式与正弦型辅助角公式，可将 S 化简为？",
+          options: [
+            {
+              text: "S = [[sqrt:3]][[func:sin]] B([[frac:1|2]][[func:sin]] B + [[frac:[[sqrt:3]]|2]][[func:cos]] B) = [[frac:[[sqrt:3]]|4]](1 - [[func:cos]] 2B) + [[frac:3|4]][[func:sin]] 2B = [[frac:[[sqrt:3]]|2]][[func:sin]](2B - [[frac:π|6]]) + [[frac:[[sqrt:3]]|4]]",
+              correct: true,
+              feedback: "太厉害了！先展开乘积，再用降幂公式 [[func:sin]][[sup:2]] B = [[frac:1 - [[func:cos]] 2B|2]] 降为一次，最后用正弦型辅助角公式化为 [[frac:[[sqrt:3]]|2]][[func:sin]](2B - [[frac:π|6]]) + [[frac:[[sqrt:3]]|4]]，全程纯正弦型通法！"
+            },
+            {
+              text: "S = [[frac:[[sqrt:3]]|2]][[func:sin]](2B + [[frac:π|6]]) + [[frac:[[sqrt:3]]|4]]",
+              correct: false,
+              feedback: "注意 [[func:cos]] 2B 前面是负号！[[frac:3|4]][[func:sin]] 2B - [[frac:[[sqrt:3]]|4]][[func:cos]] 2B = [[frac:[[sqrt:3]]|2]]([[frac:[[sqrt:3]]|2]][[func:sin]] 2B - [[frac:1|2]][[func:cos]] 2B) = [[frac:[[sqrt:3]]|2]][[func:sin]](2B - [[frac:π|6]])，括号里是减号哦！"
+            }
+          ],
+          explanation: `<strong>【面积 S 降幂 + 正弦型合一变形】</strong><br>
+            S = [[frac:1|2]]bc[[func:sin]] A = [[frac:1|2]] × 2[[func:sin]] B × 2[[func:sin]]([[frac:π|3]] + B) × [[frac:[[sqrt:3]]|2]] = [[sqrt:3]][[func:sin]] B([[frac:1|2]][[func:sin]] B + [[frac:[[sqrt:3]]|2]][[func:cos]] B)<br>
+            = [[frac:[[sqrt:3]]|2]][[func:sin]][[sup:2]] B + [[frac:3|4]] · 2[[func:sin]] B [[func:cos]] B = [[frac:[[sqrt:3]]|4]](1 - [[func:cos]] 2B) + [[frac:3|4]][[func:sin]] 2B<br>
+            = [[frac:[[sqrt:3]]|2]]([[frac:[[sqrt:3]]|2]][[func:sin]] 2B - [[frac:1|2]][[func:cos]] 2B) + [[frac:[[sqrt:3]]|4]] = <strong>[[frac:[[sqrt:3]]|2]][[func:sin]](2B - [[frac:π|6]]) + [[frac:[[sqrt:3]]|4]]</strong>。`
+        },
+        {
+          title: "变式第 4 关：结合整体角 2B - [[frac:π|6]] 的范围求出面积 S 的最终值域",
+          kp: "复习知识点：① 当 B ∈ ([[frac:π|6]], [[frac:π|2]]) 时，2B - [[frac:π|6]] ∈ ([[frac:π|6]], [[frac:5π|6]])；② 正弦函数 y = [[func:sin]] x 在 ([[frac:π|6]], [[frac:5π|6]]) 上先增后减，值域为 ([[frac:1|2]], 1]。",
+          question: "已知 S = [[frac:[[sqrt:3]]|2]][[func:sin]](2B - [[frac:π|6]]) + [[frac:[[sqrt:3]]|4]]，且 B ∈ ([[frac:π|6]], [[frac:π|2]])，则整体角 2B - [[frac:π|6]] ∈ ([[frac:π|6]], [[frac:5π|6]])。由此求得 △ABC 面积 S 的取值范围为？",
+          options: [
+            {
+              text: "[[func:sin]](2B - [[frac:π|6]]) ∈ ([[frac:1|2]], 1] ⇒ S ∈ ([[frac:[[sqrt:3]]|2]], [[frac:3[[sqrt:3]]|4]]]",
+              correct: true,
+              feedback: "完美收官！下界 [[frac:[[sqrt:3]]|2]] × [[frac:1|2]] + [[frac:[[sqrt:3]]|4]] = [[frac:[[sqrt:3]]|2]]（开区间），上界（等边三角形时）[[frac:[[sqrt:3]]|2]] × 1 + [[frac:[[sqrt:3]]|4]] = [[frac:3[[sqrt:3]]|4]]（闭区间），周长与面积双双满分拿下！"
+            },
+            {
+              text: "S ∈ ([[frac:[[sqrt:3]]|2]], [[frac:3[[sqrt:3]]|4]])",
+              correct: false,
+              feedback: "别忘了等边三角形（B = [[frac:π|3]]，边长为 [[sqrt:3]]，面积 S = [[frac:[[sqrt:3]]|4]] × ([[sqrt:3]])[[sup:2]] = [[frac:3[[sqrt:3]]|4]]）是锐角三角形，最大值 [[frac:3[[sqrt:3]]|4]] 可以取到（右闭括号 ]）！"
+            }
+          ],
+          explanation: `<strong>【面积 S 最终结论】</strong><br>
+            因为 B ∈ ([[frac:π|6]], [[frac:π|2]])，所以 2B - [[frac:π|6]] ∈ ([[frac:π|6]], [[frac:5π|6]])。<br>
+            结合正弦函数图像，[[func:sin]](2B - [[frac:π|6]]) ∈ ([[frac:1|2]], 1]，<br>
+            代入得 S = [[frac:[[sqrt:3]]|2]][[func:sin]](2B - [[frac:π|6]]) + [[frac:[[sqrt:3]]|4]] ∈ <strong>([[frac:[[sqrt:3]]|2]], [[frac:3[[sqrt:3]]|4]]]</strong>。`
+        }
+      ]
+    };
+
+    /************************************************************************
+     * 3. 双联动动态画板引擎 (Canvas)：上半区外接圆 △ABC + 下半区正弦型函数图像
+     ************************************************************************/
+    let curSubMode = 'part1';
+    let showCircumcircle = true;
+    let showFuncGuide = true;
+    let showVarCalc = false;
+
+    const progressState = {
+      unlocked: { part1: 0, part2: 0, variant: 0 },
+      done: {
+        part1: [false, false, false],
+        part2: [false, false, false, false],
+        variant: [false, false, false, false]
+      }
+    };
+
+    const canvas = document.getElementById('geo-canvas');
+    const ctx = canvas.getContext('2d');
+    const wrap = document.getElementById('canvas-wrap');
+
+    function drawPoint(x, y, color, r = 5, label = "", offset = { x: 8, y: -8 }) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, Math.PI * 2);
+      ctx.fillStyle = color;
+      ctx.fill();
+      ctx.lineWidth = 1.6;
+      ctx.strokeStyle = '#070d19';
+      ctx.stroke();
+
+      if (label) {
+        ctx.font = 'bold 13px "Times New Roman", "PingFang SC", sans-serif';
+        const tw = ctx.measureText(label).width;
+        ctx.fillStyle = 'rgba(10, 16, 29, 0.86)';
+        ctx.fillRect(x + offset.x - 4, y + offset.y - 11, tw + 8, 16);
+        ctx.fillStyle = color;
+        ctx.fillText(label, x + offset.x, y + offset.y + 1);
+      }
+      ctx.restore();
+    }
+
+    function drawAngleArc(vx, vy, p1x, p1y, p2x, p2y, radius, color, label) {
+      let a1 = Math.atan2(p1y - vy, p1x - vx);
+      let a2 = Math.atan2(p2y - vy, p2x - vx);
+      let diff = a2 - a1;
+      while (diff <= -Math.PI) diff += Math.PI * 2;
+      while (diff > Math.PI) diff -= Math.PI * 2;
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1.8;
+      ctx.arc(vx, vy, radius, a1, a1 + diff, diff < 0);
+      ctx.stroke();
+
+      const mid = a1 + diff / 2;
+      const lx = vx + (radius + 15) * Math.cos(mid);
+      const ly = vy + (radius + 15) * Math.sin(mid);
+      ctx.font = 'bold 12px "Times New Roman", "PingFang SC", sans-serif';
+      ctx.fillStyle = color;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(label, lx, ly);
+      ctx.restore();
+    }
+
+    function renderDualCanvas() {
+      const rect = wrap.getBoundingClientRect();
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const w = rect.width;
+      const h = rect.height;
+      if (canvas.width !== Math.round(w * dpr) || canvas.height !== Math.round(h * dpr)) {
+        canvas.width = Math.round(w * dpr);
+        canvas.height = Math.round(h * dpr);
+      }
+
+      ctx.save();
+      ctx.scale(dpr, dpr);
+      ctx.clearRect(0, 0, w, h);
+
+      const degB = parseInt(document.getElementById('param-slider').value, 10);
+      const degA = 60;
+      const degC = 180 - degA - degB; // 120 - degB
+      const radB = (degB * Math.PI) / 180;
+      const radC = (degC * Math.PI) / 180;
+      const radA = Math.PI / 3;
+
+      const isAcute = degB > 30 && degB < 90;
+      const isRight = degB === 30 || degB === 90;
+      const stateColor = isAcute ? '#10b981' : '#f43f5e';
+
+      // 分割上下两区：上半区 54%，下半区 46%
+      const splitY = h * 0.54;
+
+      // 分隔线
+      ctx.save();
+      ctx.strokeStyle = '#1e293b';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(0, splitY);
+      ctx.lineTo(w, splitY);
+      ctx.stroke();
+      ctx.restore();
+
+      /* ================================================================
+       * 上半区：外接圆与动态 △ABC (固定 a = BC = √3，2R = 2，A = 60°)
+       * ================================================================ */
+      const bcLen = Math.sqrt(3);
+      const R = 1.0; // 2R = 2
+      const scaleGeo = Math.min(w * 0.24, splitY * 0.44);
+      const midBC_x = w * 0.5;
+      const baseBC_y = splitY - 34;
+
+      // B(-√3/2, 0), C(√3/2, 0)
+      const halfBC = bcLen * 0.5;
+      const bx = midBC_x - halfBC * scaleGeo;
+      const by = baseBC_y;
+      const cx = midBC_x + halfBC * scaleGeo;
+      const cy = baseBC_y;
+
+      // 外接圆圆心 O(0, R * cos 60° = 0.5)
+      const ox = midBC_x;
+      const oy = baseBC_y - 0.5 * scaleGeo;
+
+      // 由正弦定理求边 c = AB = 2 sin C，b = AC = 2 sin B
+      const sideC = 2 * Math.sin(radC);
+      const sideB = 2 * Math.sin(radB);
+      const mathAx = -halfBC + sideC * Math.cos(radB);
+      const mathAy = sideC * Math.sin(radB);
+      const ax = midBC_x + mathAx * scaleGeo;
+      const ay = baseBC_y - mathAy * scaleGeo;
+
+      // 1. 绘制外接圆与定角轨迹弧
+      if (showCircumcircle) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(ox, oy, R * scaleGeo, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(59, 130, 246, 0.32)';
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([5, 4]);
+        ctx.stroke();
+
+        // 绿色高亮锐角有效弧 (30° < B < 90°)
+        const angAt90 = Math.atan2((baseBC_y - 1.0 * scaleGeo) - oy, bx - ox);
+        const angAt30 = Math.atan2((baseBC_y - 1.0 * scaleGeo) - oy, cx - ox);
+        ctx.beginPath();
+        ctx.setLineDash([]);
+        ctx.strokeStyle = 'rgba(16, 185, 129, 0.55)';
+        ctx.lineWidth = 3;
+        ctx.arc(ox, oy, R * scaleGeo, angAt90, angAt30, false);
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      // 2. 绘制 △ABC 填充与三边
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(ax, ay);
+      ctx.lineTo(bx, by);
+      ctx.lineTo(cx, cy);
+      ctx.closePath();
+      ctx.fillStyle = isAcute ? 'rgba(16, 185, 129, 0.16)' : 'rgba(244, 63, 94, 0.18)';
+      ctx.fill();
+      ctx.strokeStyle = stateColor;
+      ctx.lineWidth = 2.6;
+      ctx.stroke();
+      ctx.restore();
+
+      // 3. 绘制内角弧线与度数标注
+      drawAngleArc(ax, ay, bx, by, cx, cy, 18, '#60a5fa', `60°`);
+      drawAngleArc(bx, by, cx, cy, ax, ay, 20, degB >= 90 ? '#f43f5e' : '#fbbf24', `${degB}°`);
+      drawAngleArc(cx, cy, ax, ay, bx, by, 20, degC >= 90 ? '#f43f5e' : '#34d399', `${degC}°`);
+
+      // 4. 边长标注（当开启“补充 a=√3 周长与面积监控”时显示）
+      if (showVarCalc) {
+        ctx.save();
+        ctx.font = 'bold 12px "Times New Roman", "PingFang SC", sans-serif';
+        ctx.fillStyle = '#93c5fd';
+        ctx.textAlign = 'center';
+        ctx.fillText(`a = √3`, midBC_x, baseBC_y + 15);
+        ctx.fillText(`c=${sideC.toFixed(2)}`, (ax + bx) / 2 - 24, (ay + by) / 2);
+        ctx.fillText(`b=${sideB.toFixed(2)}`, (ax + cx) / 2 + 24, (ay + cy) / 2);
+        ctx.restore();
+      }
+
+      // 5. 顶点标注
+      drawPoint(bx, by, degB >= 90 ? '#f43f5e' : '#e2e8f0', 5, `B (${degB}°)`, { x: -48, y: 16 });
+      drawPoint(cx, cy, degC >= 90 ? '#f43f5e' : '#e2e8f0', 5, `C (${degC}°)`, { x: 8, y: 16 });
+      drawPoint(ax, ay, stateColor, 6, `A (60°)`, { x: 10, y: -6 });
+
+      // 左上角状态提示牌
+      ctx.save();
+      ctx.font = 'bold 13px "PingFang SC", sans-serif';
+      const badgeTxt = isAcute
+        ? `✓ 锐角 △ABC（30° < B < 90°）`
+        : (isRight ? `⚠ 临界直角三角形（越界！非锐角）` : `⚠ 钝角三角形（越界！非锐角）`);
+      const bw = ctx.measureText(badgeTxt).width + 18;
+      ctx.fillStyle = isAcute ? 'rgba(6, 78, 59, 0.85)' : 'rgba(136, 19, 55, 0.88)';
+      ctx.strokeStyle = stateColor;
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.roundRect(14, 12, bw, 28, 7);
+      ctx.fill();
+      ctx.stroke();
+      ctx.fillStyle = isAcute ? '#6ee7b7' : '#fecdd3';
+      ctx.fillText(badgeTxt, 23, 30);
+      ctx.restore();
+
+      /* ================================================================
+       * 下半区：同步正弦型函数曲线 f(B) = cos B - cos(60° + B) = sin(B + 30°)
+       * ================================================================ */
+      const padL = 54, padR = 28, padT = splitY + 26, padB = h - 26;
+      const plotW = w - padL - padR;
+      const plotH = padB - padT;
+
+      // B ∈ [0°, 120°] 映射 x；y ∈ [0.35, 1.12] 映射 y
+      const mapX = (bDeg) => padL + (bDeg / 120) * plotW;
+      const mapY = (val) => padB - ((val - 0.35) / (1.12 - 0.35)) * plotH;
+
+      // 坐标轴与刻度网格
+      ctx.save();
+      ctx.strokeStyle = '#475569';
+      ctx.lineWidth = 1.3;
+      ctx.beginPath();
+      ctx.moveTo(padL, padB);
+      ctx.lineTo(w - padR + 8, padB);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(padL, padB);
+      ctx.lineTo(padL, padT - 8);
+      ctx.stroke();
+
+      ctx.font = '11px "Times New Roman", sans-serif';
+      ctx.fillStyle = '#94a3b8';
+      ctx.textAlign = 'center';
+      [0, 30, 60, 90, 120].forEach(d => {
+        const px = mapX(d);
+        ctx.beginPath();
+        ctx.strokeStyle = 'rgba(51, 65, 85, 0.45)';
+        ctx.moveTo(px, padT);
+        ctx.lineTo(px, padB);
+        ctx.stroke();
+        ctx.fillText(`${d}°`, px, padB + 14);
+      });
+
+      // Y轴关键值标尺：1/2=0.5, √3/2≈0.866, 1
+      ctx.textAlign = 'right';
+      ctx.textBaseline = 'middle';
+      const yTicks = [
+        { v: 0.5, lbl: '1/2' },
+        { v: Math.sqrt(3) / 2, lbl: '√3/2' },
+        { v: 1.0, lbl: '1' }
+      ];
+      yTicks.forEach(t => {
+        const py = mapY(t.v);
+        if (showFuncGuide) {
+          ctx.beginPath();
+          ctx.strokeStyle = 'rgba(148, 163, 184, 0.25)';
+          ctx.setLineDash([4, 4]);
+          ctx.moveTo(padL, py);
+          ctx.lineTo(w - padR, py);
+          ctx.stroke();
+          ctx.setLineDash([]);
+        }
+        ctx.fillStyle = '#cbd5e1';
+        ctx.fillText(t.lbl, padL - 6, py);
+      });
+
+      // 锐角区间背景带 (30°, 90°)
+      ctx.fillStyle = 'rgba(16, 185, 129, 0.08)';
+      ctx.fillRect(mapX(30), padT, mapX(90) - mapX(30), plotH);
+
+      // 绘制两翼钝角无效区间曲线 (红色虚线: 0°~30° 与 90°~120°)
+      ctx.beginPath();
+      ctx.strokeStyle = '#f43f5e';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([5, 4]);
+      for (let d = 0; d <= 30; d += 1) {
+        const val = Math.sin(((d + 30) * Math.PI) / 180);
+        if (d === 0) ctx.moveTo(mapX(d), mapY(val));
+        else ctx.lineTo(mapX(d), mapY(val));
+      }
+      ctx.stroke();
+
+      ctx.beginPath();
+      for (let d = 90; d <= 120; d += 1) {
+        const val = Math.sin(((d + 30) * Math.PI) / 180);
+        if (d === 90) ctx.moveTo(mapX(d), mapY(val));
+        else ctx.lineTo(mapX(d), mapY(val));
+      }
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // 绘制锐角有效区间曲线 (绿色实线: 30°~90°)
+      ctx.beginPath();
+      ctx.strokeStyle = '#10b981';
+      ctx.lineWidth = 3;
+      for (let d = 30; d <= 90; d += 1) {
+        const val = Math.sin(((d + 30) * Math.PI) / 180);
+        if (d === 30) ctx.moveTo(mapX(d), mapY(val));
+        else ctx.lineTo(mapX(d), mapY(val));
+      }
+      ctx.stroke();
+
+      // 空心边界点 (30°, √3/2) 与 (90°, √3/2)
+      [30, 90].forEach(bd => {
+        const bxPos = mapX(bd);
+        const byPos = mapY(Math.sqrt(3) / 2);
+        ctx.beginPath();
+        ctx.arc(bxPos, byPos, 4.5, 0, Math.PI * 2);
+        ctx.fillStyle = '#070d19';
+        ctx.fill();
+        ctx.strokeStyle = '#fbbf24';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      });
+
+      // 当前动点 (B, sin(B + 30°))
+      const curVal = Math.sin(((degB + 30) * Math.PI) / 180);
+      const dotX = mapX(degB);
+      const dotY = mapY(curVal);
+
+      ctx.beginPath();
+      ctx.setLineDash([3, 3]);
+      ctx.strokeStyle = stateColor;
+      ctx.lineWidth = 1.4;
+      ctx.moveTo(dotX, padB);
+      ctx.lineTo(dotX, dotY);
+      ctx.lineTo(padL, dotY);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      drawPoint(dotX, dotY, stateColor, 6, `(${degB}°, ${curVal.toFixed(3)})`, {
+        x: degB > 75 ? -84 : 8,
+        y: -10
+      });
+
+      // 右上角正弦型函数标题说明
+      ctx.font = 'bold 12px "Times New Roman", "PingFang SC", sans-serif';
+      ctx.fillStyle = '#93c5fd';
+      ctx.textAlign = 'right';
+      ctx.fillText('f(B) = cos B - cos(60°+B) = sin(B+30°)', w - padR, padT - 10);
+      ctx.restore();
+
+      ctx.restore();
+    }
+
+    const ro = new ResizeObserver(() => renderDualCanvas());
+    ro.observe(wrap);
+
+    function toggleCircumcircle() {
+      showCircumcircle = !showCircumcircle;
+      const btn = document.getElementById('btn-circle');
+      btn.textContent = showCircumcircle ? '外接圆与定角轨迹：开' : '外接圆与定角轨迹：关';
+      btn.classList.toggle('active-blue', showCircumcircle);
+      renderDualCanvas();
+    }
+
+    function toggleFuncGuide() {
+      showFuncGuide = !showFuncGuide;
+      const btn = document.getElementById('btn-func-guide');
+      btn.textContent = showFuncGuide ? '函数边界参考线：开' : '函数边界参考线：关';
+      btn.classList.toggle('active-emerald', showFuncGuide);
+      renderDualCanvas();
+    }
+
+    function toggleVarCalc() {
+      showVarCalc = !showVarCalc;
+      const btn = document.getElementById('btn-var-calc');
+      btn.textContent = showVarCalc ? '补充 a=√3 周长与面积监控：开' : '补充 a=√3 周长与面积监控：关';
+      btn.classList.toggle('active-blue', showVarCalc);
+      onSliderInput();
+    }
+
+    function resetCanvas() {
+      setAngleB(60);
+    }
+
+    /************************************************************************
+     * 4. 滑块实时监控与闯关引导逻辑
+     ************************************************************************/
+    function onSliderInput() {
+      const degB = parseInt(document.getElementById('param-slider').value, 10);
+      const degC = 120 - degB;
+      const radB = (degB * Math.PI) / 180;
+      const radC = (degC * Math.PI) / 180;
+      const val = Math.sin(((degB + 30) * Math.PI) / 180);
+
+      document.getElementById('param-badge').textContent = `B = ${degB}°`;
+
+      const isAcute = degB > 30 && degB < 90;
+      const card = document.getElementById('telemetry-card');
+      const status = document.getElementById('radar-status');
+      const grid = document.getElementById('radar-grid');
+
+      card.classList.toggle('acute-glow', isAcute);
+      card.classList.toggle('obtuse-glow', !isAcute);
+      status.className = `status-tag ${isAcute ? 'status-acute' : 'status-obtuse'}`;
+      status.textContent = isAcute
+        ? '✓ 锐角 △ABC 成立：B ∈ (30°, 90°)'
+        : `⚠ 越界！角 ${degB >= 90 ? 'B' : 'C'} = ${Math.max(degB, degC)}° ≥ 90°（非锐角）`;
+
+      let exactStr = val.toFixed(4);
+      if (degB === 60) exactStr = '1（最大值）';
+      else if (degB === 30 || degB === 90) exactStr = '√3/2 ≈ 0.8660（开区间边界）';
+
+      let extraHtml = '';
+      if (showVarCalc) {
+        const perim = Math.sqrt(3) + 2 * Math.sin(radB) + 2 * Math.sin(radC);
+        const area = Math.sqrt(3) * Math.sin(radB) * Math.sin(radC);
+        const perimTxt = degB === 60 ? '3√3 ≈ 5.196（最大）' : ((degB === 30 || degB === 90) ? '3+√3 ≈ 4.732（边界）' : perim.toFixed(3));
+        const areaTxt = degB === 60 ? '3√3/4 ≈ 1.299（最大）' : ((degB === 30 || degB === 90) ? '√3/2 ≈ 0.866（边界）' : area.toFixed(3));
+        extraHtml = `
+          <div class="metric-row"><span class="metric-label">变式周长 L (a=√3)：</span><span class="metric-val" style="color:#60a5fa">${perimTxt}</span></div>
+          <div class="metric-row"><span class="metric-label">变式面积 S (a=√3)：</span><span class="metric-val" style="color:#34d399">${areaTxt}</span></div>
+        `;
+      }
+
+      grid.innerHTML = renderFormulaText(`
+        <div class="metric-row"><span class="metric-label">三内角 (A, B, C)：</span><span class="metric-val" style="color:${isAcute ? '#34d399' : '#fda4af'}">60°, ${degB}°, ${degC}°</span></div>
+        <div class="metric-row"><span class="metric-label">正弦型变形 [[func:sin]](B + 30°)：</span><span class="metric-val">[[func:sin]](${degB + 30}°)</span></div>
+        <div class="metric-row"><span class="metric-label">当前函数值 [[func:cos]] B + [[func:cos]] C：</span><span class="metric-val" style="color:#fbbf24">${exactStr}</span></div>
+        ${extraHtml}
+      `);
+
+      renderDualCanvas();
+    }
+
+    function setAngleB(deg) {
+      document.getElementById('param-slider').value = deg;
+      onSliderInput();
+    }
+
+    function switchSubMode(mode) {
+      curSubMode = mode;
+      document.getElementById('subtab-part1').className = `subtab ${mode === 'part1' ? 'active-part1' : ''}`;
+      document.getElementById('subtab-part2').className = `subtab ${mode === 'part2' ? 'active-part2' : ''}`;
+      document.getElementById('subtab-variant').className = `subtab ${mode === 'variant' ? 'active-variant' : ''}`;
+      if (mode === 'variant' && !showVarCalc) {
+        toggleVarCalc();
+      }
+      renderSteps();
+    }
+
+    function renderSteps() {
+      const steps = MODES_DATA[curSubMode];
+      const unlockedMax = progressState.unlocked[curSubMode];
+      const doneArr = progressState.done[curSubMode];
+
+      const pillsBar = document.getElementById('pills-bar');
+      pillsBar.innerHTML = steps.map((_, idx) => {
+        const isDone = doneArr[idx];
+        const isUnlocked = idx <= unlockedMax;
+        const cls = isDone ? 'done' : (isUnlocked ? 'unlocked' : '');
+        const mark = isDone ? '✓ ' : (isUnlocked ? '● ' : '🔒 ');
+        return `<div class="step-pill ${cls}">${mark}第 ${idx + 1} 关</div>`;
+      }).join('');
+
+      const container = document.getElementById('steps-container');
+      container.innerHTML = steps.map((st, sIdx) => {
+        const isDone = doneArr[sIdx];
+        const isUnlocked = sIdx <= unlockedMax;
+
+        if (!isUnlocked) {
+          return `
+            <div class="step-card locked">
+              <span style="font-weight:700;font-size:14px;">🔒 ${renderFormulaText(st.title)}</span>
+              <span style="font-size:12px;">完成上一关后解锁</span>
+            </div>
+          `;
+        }
+
+        const optsHtml = st.options.map((opt, oIdx) => {
+          const isCorrectDone = isDone && opt.correct;
+          return `
+            <button class="opt-btn ${isCorrectDone ? 'correct-selected' : ''}" onclick="chooseOption(${sIdx}, ${oIdx})">
+              <span class="opt-letter">${isCorrectDone ? '✓' : (oIdx === 0 ? 'A' : 'B')}</span>
+              <span>${renderFormulaText(opt.text)}</span>
+            </button>
+          `;
+        }).join('');
+
+        const correctOpt = st.options.find(o => o.correct);
+
+        return `
+          <div class="step-card ${isDone ? 'done' : ''}" id="scard-${sIdx}">
+            <div class="step-top">
+              <div class="step-title">${renderFormulaText(st.title)}</div>
+              <span class="step-status">${isDone ? '已通关' : '请作答'}</span>
+            </div>
+            <div class="kp-tag-box">${renderFormulaText('<strong>关联知识点复习：</strong>' + st.kp)}</div>
+            <div class="step-question">${renderFormulaText(st.question)}</div>
+            <div class="options-list">${optsHtml}</div>
+            <div id="fb-${sIdx}" class="feedback-box ${isDone ? 'feedback-ok' : ''}" style="display:${isDone ? 'block' : 'none'};">
+              ${isDone ? renderFormulaText('<strong>解析点评：</strong>' + correctOpt.feedback) : ''}
+            </div>
+            <div id="exp-${sIdx}" class="explanation-box" style="display:${isDone ? 'block' : 'none'};">
+              ${renderFormulaText(st.explanation)}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      updateGlobalProgress();
+    }
+
+    function fillBlankAnswer(which) {
+      if (which === 1) {
+        const b1 = document.getElementById('blank-1');
+        if (b1) {
+          b1.innerHTML = renderFormulaText('[[frac:π|3]]（或 60°）');
+          b1.style.color = '#34d399';
+          b1.style.borderBottomColor = '#34d399';
+        }
+      } else if (which === 2) {
+        setAngleB(60);
+        const b2 = document.getElementById('blank-2');
+        if (b2) {
+          b2.innerHTML = renderFormulaText('([[frac:[[sqrt:3]]|2]], 1]');
+          b2.style.color = '#34d399';
+          b2.style.borderBottomColor = '#34d399';
+        }
+      }
+    }
+
+    function chooseOption(sIdx, oIdx) {
+      const steps = MODES_DATA[curSubMode];
+      const step = steps[sIdx];
+      const chosen = step.options[oIdx];
+
+      if (chosen.correct) {
+        progressState.done[curSubMode][sIdx] = true;
+        if (progressState.unlocked[curSubMode] <= sIdx && sIdx + 1 < steps.length) {
+          progressState.unlocked[curSubMode] = sIdx + 1;
+        }
+        if (curSubMode === 'part1' && sIdx === steps.length - 1) {
+          fillBlankAnswer(1);
+        }
+        if (curSubMode === 'part2' && sIdx === steps.length - 1) {
+          fillBlankAnswer(2);
+        }
+        renderSteps();
+        setTimeout(() => {
+          const nextEl = document.getElementById(`scard-${sIdx + 1}`);
+          if (nextEl) nextEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 120);
+      } else {
+        const fb = document.getElementById(`fb-${sIdx}`);
+        fb.style.display = 'block';
+        fb.className = 'feedback-box feedback-err';
+        fb.innerHTML = renderFormulaText('<strong>启发提示：</strong>' + chosen.feedback);
+      }
+    }
+
+    function unlockCurrentAll() {
+      const steps = MODES_DATA[curSubMode];
+      progressState.unlocked[curSubMode] = steps.length - 1;
+      progressState.done[curSubMode] = steps.map(() => true);
+      if (curSubMode === 'part1') fillBlankAnswer(1);
+      if (curSubMode === 'part2') fillBlankAnswer(2);
+      renderSteps();
+    }
+
+    function updateGlobalProgress() {
+      let total = 0;
+      let done = 0;
+      Object.values(progressState.done).forEach(arr => {
+        arr.forEach(v => { total++; if (v) done++; });
+      });
+      document.getElementById('progress-text').textContent = `${done} / ${total}`;
+      document.getElementById('progress-fill').style.width = `${Math.round((done / total) * 100)}%`;
+    }
+
+    function toggleReviewModal() {
+      document.getElementById('review-modal').classList.toggle('open');
+    }
+
+    window.onload = function () {
+      document.getElementById('prob-text').innerHTML = renderFormulaText(PROBLEM_TEXT);
+      const revBody = document.getElementById('review-modal-body');
+      revBody.innerHTML = renderFormulaText(revBody.innerHTML);
+
+      onSliderInput();
+      renderSteps();
+    };
+  </script>
+</body>
+</html>
