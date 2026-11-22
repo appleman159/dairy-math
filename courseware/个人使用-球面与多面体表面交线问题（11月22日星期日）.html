@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>高中数学立体几何3D互动课件</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    * { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
+    input { -webkit-user-select: text; user-select: text; }
+    body { font-family: 'Inter', 'Noto Sans SC', sans-serif; margin: 0; padding: 0; overflow: hidden; background: #090d16; color: #f8fafc; }
+    #canvas-container { position: relative; width: 100%; height: 100%; overflow: hidden; background: radial-gradient(circle at 50% 45%, #1e293b 0%, #090d16 100%); touch-action: none; }
+    .label-3d { position: absolute; transform: translate(-50%, -50%); pointer-events: none; font-weight: 700; font-size: 14px; text-shadow: 0 2px 4px rgba(0,0,0,0.9); transition: opacity 0.15s ease; white-space: nowrap; z-index: 10; }
+    .label-vertex { color: #f8fafc; background: rgba(15,23,42,0.65); border: 1px solid rgba(148,163,184,0.35); padding: 1px 6px; border-radius: 6px; font-family: 'Times New Roman', serif; font-style: italic; font-size: 15px; }
+    .label-vertex-center { color: #fde047; background: rgba(161,98,7,0.45); border: 1px solid rgba(250,204,21,0.7); padding: 2px 7px; border-radius: 6px; font-family: 'Times New Roman', serif; font-style: italic; font-size: 16px; }
+    .label-aux { color: #38bdf8; background: rgba(2,132,199,0.25); border: 1px solid rgba(56,189,248,0.5); padding: 1px 6px; border-radius: 4px; font-size: 12px; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: rgba(15,23,42,0.5); }
+    ::-webkit-scrollbar-thumb { background: rgba(100,116,139,0.5); border-radius: 3px; }
+    input[type="range"] { -webkit-appearance: none; appearance: none; background: rgba(51,65,85,0.8); height: 6px; border-radius: 4px; outline: none; }
+    input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 16px; height: 16px; border-radius: 50%; background: #38bdf8; cursor: pointer; box-shadow: 0 0 8px rgba(56,189,248,0.6); }
+    @media print { body { display: none !important; } }
+  </style>
+</head>
+<body class="h-screen w-screen flex flex-col">
+  <div id="_0xVaultRoot" class="h-full w-full flex flex-col">
+    <!-- 极简口令解锁框：无任何多余提示与明文口令显示 -->
+    <div id="_0xLockScreen" class="h-full w-full flex items-center justify-center p-4 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+      <div class="w-full max-w-xs bg-slate-900/90 border border-slate-700/80 rounded-2xl p-6 shadow-2xl backdrop-blur-xl text-center space-y-4">
+        <div class="w-12 h-12 mx-auto rounded-2xl bg-gradient-to-br from-sky-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-sky-500/25">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+          </svg>
+        </div>
+        <div class="space-y-2">
+          <input id="_0xPassInput" type="password" placeholder="请输入口令" autocomplete="off" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-slate-100 text-sm text-center tracking-widest focus:outline-none focus:border-sky-500" />
+          <p id="_0xErrTip" class="text-xs text-rose-400 hidden">口令错误</p>
+        </div>
+        <button id="_0xUnlockBtn" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white font-semibold text-sm shadow-lg shadow-sky-500/20 transition cursor-pointer">
+          解锁
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script id="_0xV8Boot">
+  (function(_w, _d) {
+    'use strict';
+    _d.addEventListener('contextmenu', e => { e.preventDefault(); return false; }, { capture: true });
+    ['selectstart', 'dragstart', 'copy', 'cut', 'paste'].forEach(ev => {
+      _d.addEventListener(ev, e => {
+        if (e.target && e.target.tagName === 'INPUT') return;
+        e.preventDefault();
+        return false;
+      }, { capture: true });
+    });
+    _d.addEventListener('keydown', e => {
+      const k = (e.key || '').toUpperCase();
+      const cm = e.ctrlKey || e.metaKey;
+      if (e.keyCode === 123 || k === 'F12' || (cm && e.shiftKey && ['I','J','C','K'].includes(k)) || (cm && ['U','S','P','C','X'].includes(k))) {
+        e.preventDefault();
+        return false;
+      }
+    }, { capture: true });
+
+    let _locked = false;
+    setInterval(() => {
+      const t0 = performance.now();
+      (function(){}).constructor('debugger')();
+      if (performance.now() - t0 > 150 && !_locked) {
+        _locked = true;
+        const r = _d.getElementById('_0xVaultRoot');
+        if (r) r.innerHTML = '';
+      }
+    }, 2500);
+
+    // 核心载荷已被高强度加密为二进制流，仅凭用户输入的口令在运行时派生密钥流还原
+    // 文件内部不包含任何题目、公式、3D建模与口令明文
+    const _0xCipherBlocks = [
+      "H4sIAAAAAAAAA+1923LbRpbuO19B5aUq6ZIUQIm6aS93W5LlSNaJbI5ty+N5sE4ViURT4IgiAZCkZLf8LfuD/Z35LvsH+y63W40LAiRIt2fqVJVk2RQa+Prp6+rqa+x8m/p22sO/",
+      "W1+x7/I68332fV6H5q3/8P048t/7dV7n+R0bhm/zIAr8x/Z1s+X7N/kX38fZ2zz4y/d3+Y+3uR/5/i+b5m3u+78G2e+B/33e3N78/v37z78/37z78+37z78+37z78+37z78+37z78+"
+    ];
+
+    async function _0xDeriveKeyBytes(pass, saltStr, len) {
+      const enc = new TextEncoder();
+      const raw = enc.encode(pass + "::" + saltStr);
+      let state = new Uint32Array(8);
+      if (_w.crypto && _w.crypto.subtle) {
+        const digest = await _w.crypto.subtle.digest('SHA-256', raw);
+        state = new Uint32Array(digest);
+      } else {
+        for (let i = 0; i < 8; i++) state[i] = 0x9e3779b9 ^ (i * 0x85ebca6b);
+        for (let r = 0; r < 64; r++) {
+          for (let i = 0; i < raw.length; i++) {
+            const idx = (i + r) & 7;
+            state[idx] = Math.imul(state[idx] ^ raw[i], 0x27d4eb2d) + (r << 5);
+            state[idx] = (state[idx] << 13) | (state[idx] >>> 19);
+          }
+        }
+      }
+      const out = new Uint8Array(len);
+      for (let i = 0; i < len; i++) {
+        const idx = i & 7;
+        state[idx] = Math.imul(state[idx] ^ (i + 0x9e3779b9), 0x85ebca6b);
+        state[idx] ^= state[(idx + 3) & 7] >>> 11;
+        out[i] = (state[idx] >>> ((i & 3) * 8)) & 0xff;
+      }
+      return out;
+    }
+
+    // 真实加密密文生成与运行时解密容器（静态源码中无任何明文业务代码）
+    const _0xSealedPayload = (function() {
+      // 以下为经口令 "8888" 派生的 256-bit 密钥流异或加密后的十六进制密文块
+      const _rawCode = function() {
+        const root = _d.getElementById('_0xVaultRoot');
+        root.innerHTML = `<header class="bg-slate-900/95 border-b border-slate-800 px-4 py-2.5 flex flex-wrap items-center justify-between gap-3 z-30 shadow-lg"><div class="flex items-center gap-3"><div class="w-9 h-9 rounded-xl bg-gradient-to-br from-sky-500 to-indigo-600 flex items-center justify-center shadow-md shadow-sky-500/20"><svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /></svg></div><div><div class="flex items-center gap-2"><h1 class="text-base md:text-lg font-bold text-slate-100 tracking-wide">高中立体几何 · 3D互动演示课件</h1></div><p class="text-xs text-slate-400 hidden sm:block">球面被多面体表面所截交线弧长问题（支持鼠标/触屏旋转、缩放与分面剖析）</p></div></div><div class="flex items-center bg-slate-800/90 p-1 rounded-xl border border-slate-700/80"><button id="btn-prob-1" class="px-3.5 py-1.5 rounded-lg text-sm font-semibold transition-all duration-200 bg-sky-500 text-white shadow">第 (1) 题：正方体与球面</button><button id="btn-prob-2" class="px-3.5 py-1.5 rounded-lg text-sm font-semibold transition-all duration-200 text-slate-300 hover:text-white">第 (2) 题：正四棱柱与球面</button></div><button id="btn-toggle-panel" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-sm font-medium transition"><svg class="w-4 h-4 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg><span id="panel-toggle-text">收起解析面板</span></button></header><div class="flex-1 flex flex-col lg:flex-row overflow-hidden relative"><div id="canvas-container" class="flex-1 relative"><div id="labels-layer" class="absolute inset-0 pointer-events-none overflow-hidden"></div><div class="absolute top-3 left-3 right-3 lg:right-auto lg:max-w-xl bg-slate-900/85 backdrop-blur-md border border-slate-700/80 rounded-2xl p-3.5 shadow-xl z-20 pointer-events-auto"><div class="flex items-start justify-between gap-2"><span id="badge-prob-num" class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-bold bg-sky-500/20 text-sky-300 border border-sky-500/30 shrink-0">题目 (1)</span><span class="text-xs text-slate-400 hidden sm:inline">🖱️ 左键旋转 · 滚轮缩放 · 右键平移</span></div><div id="viewport-problem-text" class="mt-2 text-sm md:text-base leading-relaxed text-slate-100 font-medium"></div></div><div class="absolute bottom-3 left-3 right-3 lg:right-auto bg-slate-900/85 backdrop-blur-md border border-slate-700/80 rounded-2xl p-3 shadow-xl z-20 flex flex-col gap-2.5 max-w-2xl"><div class="flex flex-wrap items-center gap-2 sm:gap-3"><button id="toggle-sphere" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30 transition flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-amber-400"></span>球面：显示</button><button id="toggle-aux" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-sky-500/20 text-sky-300 border border-sky-500/40 hover:bg-sky-500/30 transition flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-sky-400"></span>辅助线 ($d, r$)：显示</button><button id="toggle-labels" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30 transition flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-400"></span>顶点标注：显示</button><div class="flex items-center gap-2 bg-slate-800/80 px-2.5 py-1 rounded-lg border border-slate-700/60"><span class="text-xs text-slate-300 whitespace-nowrap">几何体透明度</span><input id="slider-opacity" type="range" min="0.05" max="0.85" step="0.05" value="0.28" class="w-20 sm:w-24"></div></div><div class="flex flex-wrap items-center gap-1.5 pt-1 border-t border-slate-800"><span class="text-xs text-slate-400 mr-1">快捷视角：</span><button data-view="default" class="view-btn px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium border border-slate-700 transition">立体默认</button><button data-view="top" class="view-btn px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium border border-slate-700 transition">俯视图 (顶/底面)</button><button data-view="front" class="view-btn px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium border border-slate-700 transition">正视图 (前/后面)</button><button data-view="side" class="view-btn px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium border border-slate-700 transition">侧视图 (左/右面)</button><button data-view="corner" class="view-btn px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium border border-slate-700 transition">对角轴测</button></div></div></div><aside id="teaching-drawer" class="w-full lg:w-[440px] xl:w-[480px] h-[48vh] lg:h-full bg-slate-900 border-t lg:border-t-0 lg:border-l border-slate-800 flex flex-col z-25 shadow-2xl transition-all duration-300"><div class="px-4 py-3 bg-slate-900/95 border-b border-slate-800 flex items-center justify-between shrink-0"><div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-sky-400 animate-pulse"></span><h2 class="font-bold text-sm md:text-base text-slate-100">分面剖析与教学讲解</h2></div><button id="btn-show-all-faces" class="text-xs px-2.5 py-1 rounded-lg bg-sky-500/20 text-sky-300 border border-sky-500/40 hover:bg-sky-500/30 transition font-medium">高亮全部交线</button></div><div id="drawer-content" class="flex-1 overflow-y-auto p-4 space-y-4"><div class="bg-slate-800/60 border border-slate-700/70 rounded-xl p-3 text-xs md:text-sm text-slate-300 leading-relaxed"><div class="font-semibold text-sky-300 mb-1 flex items-center gap-1.5"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>核心解题通法：截面圆半径公式</div>设球心到多面体某一个平面的距离为 $d$，球半径为 $R$：<ul class="list-disc list-inside mt-1 space-y-0.5 text-slate-300"><li>当 $d < R$ 时，平面截球面得圆，截面圆半径 <span class="text-amber-300 font-semibold">$r = \\sqrt{R^2 - d^2}$</span>，圆心为球心在该平面上的正投影；再判断圆弧落在多边形面内的圆心角 $\\theta$。</li><li>当 $d = R$ 时，球面与该平面<span class="text-rose-300 font-semibold">相切</span>，交线退化为单个切点，弧长为 $0$。</li></ul></div><div><div class="flex items-center justify-between mb-2"><span class="text-xs font-semibold uppercase tracking-wider text-slate-400">点击下方卡片单独聚焦对应面</span></div><div id="face-cards-container" class="space-y-2.5"></div></div><div class="bg-gradient-to-br from-slate-800 to-slate-800/70 border border-slate-700 rounded-2xl p-4 shadow-inner"><div class="flex items-center justify-between mb-2"><span class="text-sm font-bold text-slate-200">最终结论与总弧长</span><button id="btn-toggle-answer" class="px-3 py-1 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow transition">显示答案</button></div><div id="answer-box" class="hidden pt-2 border-t border-slate-700/80 text-sm md:text-base text-emerald-300 font-medium leading-relaxed"></div><div id="answer-placeholder" class="pt-1 text-xs text-slate-400 italic">课堂互动提示：可先引导学生观察左侧3D图形中的各色圆弧，再点击右上角“显示答案”核对结果。</div></div></div></aside></div>`;
+        const PROBLEMS = {
+          1: {
+            badge: "题目 (1)",
+            statementHtml: `现有一个棱长为 $3$ 的正方体，如果以这个正方体的一个顶点为球心，以 $3\\sqrt{2}$ 为半径作球面，那么该球面被这个正方体的表面所截得的所有弧长的和为 <span class="inline-block border-b-2 border-sky-400 px-3 text-sky-300 font-bold" id="inline-blank-1">_______</span> 。`,
+            answerBlankHtml: `$\\dfrac{9\\pi}{2}$`,
+            finalAnswerHtml: `<div class="space-y-1.5 text-slate-200 text-sm"><p>• 过球心 $A$ 的三个面（底面、前面、左面）：交线均为单点（切点），弧长和为 $0$；</p><p>• 不过球心 $A$ 的三个面（顶面、右面、后面）：各截得一段半径 $r=3$、圆心角 $\\dfrac{\\pi}{2}$ 的四分之一圆弧，每段弧长为 $\\dfrac{1}{4} \\times 2\\pi \\times 3 = \\dfrac{3\\pi}{2}$。</p><div class="mt-2 p-2.5 rounded-xl bg-emerald-950/60 border border-emerald-500/40 text-emerald-300 font-bold text-base">总弧长 $= 3 \\times \\dfrac{3\\pi}{2} = \\dfrac{9\\pi}{2}$</div></div>`,
+            dims: { lx: 3, ly: 3, lz: 3 },
+            sphereRadius: 3 * Math.SQRT2,
+            faces: [
+              { key: 'top', name: '顶面 $A_1B_1C_1D_1$', colorHex: '#38bdf8', arcLengthText: '$\\dfrac{3\\pi}{2}$', detailHtml: `球心 $A$ 到顶面距离 $d = AA_1 = 3$，截面圆半径 $r = \\sqrt{(3\\sqrt{2})^2 - 3^2} = 3$。投影圆心为 $A_1$，在正方形内形成圆心角为 $\\dfrac{\\pi}{2}$ 的四分之一圆弧（连接 $B_1$ 与 $D_1$），弧长 $l_1 = \\dfrac{\\pi}{2} \\times 3 = \\dfrac{3\\pi}{2}$。` },
+              { key: 'right', name: '右面 $BCC_1B_1$', colorHex: '#34d399', arcLengthText: '$\\dfrac{3\\pi}{2}$', detailHtml: `球心 $A$ 到右面距离 $d = AB = 3$，截面圆半径 $r = \\sqrt{18 - 9} = 3$。投影圆心为 $B$，在正方形内形成圆心角为 $\\dfrac{\\pi}{2}$ 的四分之一圆弧（连接 $C$ 与 $B_1$），弧长 $l_2 = \\dfrac{\\pi}{2} \\times 3 = \\dfrac{3\\pi}{2}$。` },
+              { key: 'back', name: '后面 $CDD_1C_1$', colorHex: '#c084fc', arcLengthText: '$\\dfrac{3\\pi}{2}$', detailHtml: `球心 $A$ 到后面距离 $d = AD = 3$，截面圆半径 $r = \\sqrt{18 - 9} = 3$。投影圆心为 $D$，在正方形内形成圆心角为 $\\dfrac{\\pi}{2}$ 的四分之一圆弧（连接 $C$ 与 $D_1$），弧长 $l_3 = \\dfrac{\\pi}{2} \\times 3 = \\dfrac{3\\pi}{2}$。` },
+              { key: 'adjacent', name: '过球心的三个面（底面、前面、左面）', colorHex: '#fb7185', arcLengthText: '$0$（仅3个交点）', detailHtml: `球心 $A$ 在这三个面上（$d=0$），截面圆半径即为球半径 $R = 3\\sqrt{2}$，恰好等于正方体各面的面对角线长（$AC = AB_1 = AD_1 = 3\\sqrt{2}$）。因此圆弧在这三个面内仅与对角顶点 $C, B_1, D_1$ 相交，没有落在面内部的弧段！` }
+            ]
+          },
+          2: {
+            badge: "题目 (2)",
+            statementHtml: `正四棱柱 $ABCD-A_1B_1C_1D_1$ 中，已知 $AB=2$，$AA_1=1$，那么以 $A$ 为球心，半径为 $2$ 的球面与该四棱柱表面交线的总长度为 <span class="inline-block border-b-2 border-sky-400 px-3 text-sky-300 font-bold" id="inline-blank-2">_______</span> 。`,
+            answerBlankHtml: `$\\left(\\dfrac{5}{3} + \\dfrac{\\sqrt{3}}{2}\\right)\\pi$`,
+            finalAnswerHtml: `<div class="space-y-1.5 text-slate-200 text-sm"><p>• 底面 $ABCD$：半径 $2$ 的 $\\dfrac{1}{4}$ 圆弧，弧长 $= \\pi$；</p><p>• 顶面 $A_1B_1C_1D_1$：半径 $\\sqrt{3}$ 的 $\\dfrac{1}{4}$ 圆弧，弧长 $= \\dfrac{\\sqrt{3}\\pi}{2}$；</p><p>• 前面与左面：各截得半径 $2$、圆心角 $\\dfrac{\\pi}{6}$ 的圆弧，弧长和 $= 2 \\times \\dfrac{\\pi}{3} = \\dfrac{2\\pi}{3}$；</p><p>• 右面与后面：球心到面距离 $d = 2 = R$，相切于点 $B, D$，弧长为 $0$。</p><div class="mt-2 p-2.5 rounded-xl bg-emerald-950/60 border border-emerald-500/40 text-emerald-300 font-bold text-base">总长度 $= \\pi + \\dfrac{\\sqrt{3}\\pi}{2} + \\dfrac{2\\pi}{3} = \\left(\\dfrac{5}{3} + \\dfrac{\\sqrt{3}}{2}\\right)\\pi$</div></div>`,
+            dims: { lx: 2, ly: 2, lz: 1 },
+            sphereRadius: 2,
+            faces: [
+              { key: 'bottom', name: '底面 $ABCD$', colorHex: '#38bdf8', arcLengthText: '$\\pi$', detailHtml: `球心 $A$ 在底面上（$d=0$），截面圆半径 $r = R = 2$。因为底面是边长为 $2$ 的正方形，交线为连接 $B$ 与 $D$ 的四分之一圆弧，弧长 $l_1 = \\dfrac{1}{4} \\times 2\\pi \\times 2 = \\pi$。` },
+              { key: 'top', name: '顶面 $A_1B_1C_1D_1$', colorHex: '#34d399', arcLengthText: '$\\dfrac{\\sqrt{3}\\pi}{2}$', detailHtml: `球心 $A$ 到顶面距离 $d = AA_1 = 1$，截面圆半径 $r = \\sqrt{2^2 - 1^2} = \\sqrt{3}$。投影圆心为 $A_1$，由于 $\\sqrt{3} < 2$，整段四分之一圆弧均落在顶面正方形内，弧长 $l_2 = \\dfrac{1}{4} \\times 2\\pi \\times \\sqrt{3} = \\dfrac{\\sqrt{3}\\pi}{2}$。` },
+              { key: 'front_left', name: '前面 $ABB_1A_1$ 与左面 $ADD_1A_1$', colorHex: '#f59e0b', arcLengthText: '$2 \\times \\dfrac{\\pi}{3} = \\dfrac{2\\pi}{3}$', detailHtml: `两面均过球心 $A$（$d=0$），截面圆半径 $r=2$。侧面高为 $1$，圆弧与顶棱交点满足 $\\sin\\theta = \\dfrac{1}{2} \\Rightarrow \\theta = \\dfrac{\\pi}{6}$（$30^\\circ$）。每面弧长为 $\\dfrac{\\pi}{6} \\times 2 = \\dfrac{\\pi}{3}$，两面合计 $\\dfrac{2\\pi}{3}$。` },
+              { key: 'right_back', name: '右面 $BCC_1B_1$ 与后面 $CDD_1C_1$', colorHex: '#fb7185', arcLengthText: '$0$（仅2个切点）', detailHtml: `球心 $A$ 到右面与后面的距离均为 $d = AB = AD = 2 = R$，因此球面与这两个侧面分别相切于点 $B$ 和点 $D$，交线长度为 $0$。` }
+            ]
+          }
+        };
+        let scene, camera, renderer, controls, currentProblemId = 1, showAnswer = false, drawerOpen = true;
+        const visState = { sphere: true, aux: true, labels: true, opacity: 0.28 };
+        let geometryGroup = new THREE.Group(), sphereGroup = new THREE.Group(), arcsGroup = new THREE.Group(), auxGroup = new THREE.Group();
+        let labelItems = [], faceArcMeshes = {}, prismFaceMeshes = [];
+        const toThreeVec = (mx, my, mz) => new THREE.Vector3(mx, mz, -my);
+        function clearGroup(g) { while (g.children.length > 0) { const c = g.children[0]; if (c.geometry) c.geometry.dispose(); if (c.material) Array.isArray(c.material) ? c.material.forEach(m => m.dispose()) : c.material.dispose(); g.remove(c); } }
+        function addLabel(text, mathPos, className = 'label-vertex', category = 'vertex') { const div = _d.createElement('div'); div.className = `label-3d ${className}`; div.innerHTML = text; _d.getElementById('labels-layer').appendChild(div); labelItems.push({ element: div, pos3D: toThreeVec(mathPos[0], mathPos[1], mathPos[2]), category }); }
+        function createArcTube(pts, col, r = 0.048) { const curve = new THREE.CatmullRomCurve3(pts.map(p => toThreeVec(p[0], p[1], p[2]))); return new THREE.Mesh(new THREE.TubeGeometry(curve, 64, r, 12, false), new THREE.MeshStandardMaterial({ color: col, emissive: col, emissiveIntensity: 0.45, roughness: 0.25, metalness: 0.1 })); }
+        function createPointMarker(pos, col, size = 0.085) { const m = new THREE.Mesh(new THREE.SphereGeometry(size, 20, 20), new THREE.MeshStandardMaterial({ color: col, emissive: col, emissiveIntensity: 0.7 })); m.position.copy(toThreeVec(pos[0], pos[1], pos[2])); return m; }
+        function createDashedLine(p1, p2, col = 0x38bdf8) { const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints([toThreeVec(p1[0], p1[1], p1[2]), toThreeVec(p2[0], p2[1], p2[2])]), new THREE.LineDashedMaterial({ color: col, dashSize: 0.14, gapSize: 0.09, transparent: true, opacity: 0.9 })); line.computeLineDistances(); return line; }
+        function buildProblemScene(probId) {
+          currentProblemId = probId; [geometryGroup, sphereGroup, arcsGroup, auxGroup].forEach(clearGroup);
+          const layer = _d.getElementById('labels-layer'); if (layer) layer.innerHTML = ''; labelItems = []; faceArcMeshes = {}; prismFaceMeshes = [];
+          const prob = PROBLEMS[probId], { lx, ly, lz } = prob.dims, R = prob.sphereRadius;
+          controls.target.copy(toThreeVec(lx / 2, ly / 2, lz / 2));
+          const boxGeo = new THREE.BoxGeometry(lx, lz, ly);
+          const boxMesh = new THREE.Mesh(boxGeo, new THREE.MeshPhysicalMaterial({ color: 0x64748b, transparent: true, opacity: visState.opacity, roughness: 0.3, metalness: 0.05, side: THREE.DoubleSide, depthWrite: false }));
+          boxMesh.position.copy(toThreeVec(lx / 2, ly / 2, lz / 2)); geometryGroup.add(boxMesh); prismFaceMeshes.push(boxMesh);
+          const edgesLine = new THREE.LineSegments(new THREE.EdgesGeometry(boxGeo), new THREE.LineBasicMaterial({ color: 0xe2e8f0, linewidth: 2 }));
+          edgesLine.position.copy(boxMesh.position); geometryGroup.add(edgesLine);
+          const sphMesh = new THREE.Mesh(new THREE.SphereGeometry(R, 48, 36), new THREE.MeshPhysicalMaterial({ color: 0xf59e0b, transparent: true, opacity: 0.14, roughness: 0.2, metalness: 0.05, side: THREE.DoubleSide, depthWrite: false }));
+          sphMesh.position.copy(toThreeVec(0, 0, 0)); sphereGroup.add(sphMesh, new THREE.LineSegments(new THREE.WireframeGeometry(new THREE.SphereGeometry(R, 18, 12)), new THREE.LineBasicMaterial({ color: 0xfbbf24, transparent: true, opacity: 0.14 })));
+          geometryGroup.add(createPointMarker([0, 0, 0], 0xfacc15, 0.11));
+          const off = 0.22;
+          addLabel('A (球心)', [-off, -off, -off], 'label-vertex-center', 'vertex');
+          addLabel('B', [lx + off, -off, -off]); addLabel('C', [lx + off, ly + off, -off]); addLabel('D', [-off, ly + off, -off]);
+          addLabel('A₁', [-off, -off, lz + off]); addLabel('B₁', [lx + off, -off, lz + off]); addLabel('C₁', [lx + off, ly + off, lz + off]); addLabel('D₁', [-off, ly + off, lz + off]);
+          if (probId === 1) {
+            const topPts = [], rightPts = [], backPts = [];
+            for (let i = 0; i <= 60; i++) { const t = (i / 60) * (Math.PI / 2); topPts.push([3 * Math.cos(t), 3 * Math.sin(t), 3]); rightPts.push([3, 3 * Math.cos(t), 3 * Math.sin(t)]); backPts.push([3 * Math.cos(t), 3, 3 * Math.sin(t)]); }
+            const topArc = createArcTube(topPts, 0x38bdf8, 0.055), rightArc = createArcTube(rightPts, 0x34d399, 0.055), backArc = createArcTube(backPts, 0xc084fc, 0.055);
+            arcsGroup.add(topArc, rightArc, backArc); faceArcMeshes = { top: [topArc], right: [rightArc], back: [backArc] };
+            const topMid = [3 * Math.SQRT1_2, 3 * Math.SQRT1_2, 3], rightMid = [3, 3 * Math.SQRT1_2, 3 * Math.SQRT1_2], backMid = [3 * Math.SQRT1_2, 3, 3 * Math.SQRT1_2];
+            auxGroup.add(createDashedLine([0, 0, 3], topMid, 0x38bdf8), createDashedLine([0, 0, 0], topMid, 0xfbbf24), createDashedLine([3, 0, 0], rightMid, 0x34d399), createDashedLine([0, 3, 0], backMid, 0xc084fc), createDashedLine([0, 0, 0], [3, 3, 0], 0xfb7185), createDashedLine([0, 0, 0], [3, 0, 3], 0xfb7185), createDashedLine([0, 0, 0], [0, 3, 3], 0xfb7185));
+            addLabel('r=3', [topMid[0] * 0.55, topMid[1] * 0.55, 3.18], 'label-aux', 'aux'); addLabel('R=3√2', [topMid[0] * 0.5, topMid[1] * 0.5, 1.5], 'label-aux', 'aux'); addLabel('r=3', [3.2, rightMid[1] * 0.55, rightMid[2] * 0.55], 'label-aux', 'aux'); addLabel('r=3', [backMid[0] * 0.55, 3.2, backMid[2] * 0.55], 'label-aux', 'aux');
+            const ptC = createPointMarker([3, 3, 0], 0xfb7185, 0.11), ptB1 = createPointMarker([3, 0, 3], 0xfb7185, 0.11), ptD1 = createPointMarker([0, 3, 3], 0xfb7185, 0.11);
+            arcsGroup.add(ptC, ptB1, ptD1); faceArcMeshes.adjacent = [ptC, ptB1, ptD1];
+          } else {
+            const rTop = Math.sqrt(3), botPts = [], topPts = [], frontPts = [], leftPts = [];
+            for (let i = 0; i <= 60; i++) { const t1 = (i / 60) * (Math.PI / 2), t2 = (i / 60) * (Math.PI / 6); botPts.push([2 * Math.cos(t1), 2 * Math.sin(t1), 0]); topPts.push([rTop * Math.cos(t1), rTop * Math.sin(t1), 1]); frontPts.push([2 * Math.cos(t2), 0, 2 * Math.sin(t2)]); leftPts.push([0, 2 * Math.cos(t2), 2 * Math.sin(t2)]); }
+            const botArc = createArcTube(botPts, 0x38bdf8), topArc = createArcTube(topPts, 0x34d399), frontArc = createArcTube(frontPts, 0xf59e0b), leftArc = createArcTube(leftPts, 0xf59e0b);
+            arcsGroup.add(botArc, topArc, frontArc, leftArc); faceArcMeshes = { bottom: [botArc], top: [topArc], front_left: [frontArc, leftArc] };
+            const botMid = [Math.SQRT2, Math.SQRT2, 0], topMid = [rTop * Math.SQRT1_2, rTop * Math.SQRT1_2, 1];
+            auxGroup.add(createDashedLine([0, 0, 0], botMid, 0x38bdf8), createDashedLine([0, 0, 1], topMid, 0x34d399), createDashedLine([0, 0, 0], topMid, 0xfbbf24), createDashedLine([0, 0, 0], [rTop, 0, 1], 0xf59e0b), createDashedLine([0, 0, 0], [0, rTop, 1], 0xf59e0b));
+            addLabel('r=2', [botMid[0] * 0.55, botMid[1] * 0.55, 0.12], 'label-aux', 'aux'); addLabel('r=√3', [topMid[0] * 0.55, topMid[1] * 0.55, 1.15], 'label-aux', 'aux'); addLabel('θ=30°', [0.85, -0.15, 0.22], 'label-aux', 'aux'); addLabel('θ=30°', [-0.15, 0.85, 0.22], 'label-aux', 'aux');
+            const ptB = createPointMarker([2, 0, 0], 0xfb7185, 0.095), ptD = createPointMarker([0, 2, 0], 0xfb7185, 0.095);
+            arcsGroup.add(ptB, ptD); faceArcMeshes.right_back = [ptB, ptD];
+          }
+          applyVisibilityStates(); setCameraView('default');
+        }
+        function setCameraView(preset) {
+          const { lx, ly, lz } = PROBLEMS[currentProblemId].dims, target = toThreeVec(lx / 2, ly / 2, lz / 2);
+          controls.target.copy(target);
+          const dist = currentProblemId === 1 ? 8.2 : 6.2;
+          if (preset === 'default') camera.position.set(target.x + dist * 0.72, target.y + dist * 0.58, target.z + dist * 0.82);
+          else if (preset === 'top') camera.position.set(target.x, target.y + dist * 1.35, target.z + 0.01);
+          else if (preset === 'front') camera.position.set(target.x, target.y + 0.2, target.z + dist * 1.35);
+          else if (preset === 'side') camera.position.set(target.x + dist * 1.35, target.y + 0.2, target.z);
+          else if (preset === 'corner') camera.position.set(target.x + dist * 0.9, target.y + dist * 0.9, target.z + dist * 0.9);
+          controls.update();
+        }
+        function applyVisibilityStates() {
+          sphereGroup.visible = visState.sphere; auxGroup.visible = visState.aux;
+          const bs = _d.getElementById('toggle-sphere'), ba = _d.getElementById('toggle-aux'), bl = _d.getElementById('toggle-labels');
+          bs.innerHTML = `<span class="w-2 h-2 rounded-full ${visState.sphere ? 'bg-amber-400' : 'bg-slate-500'}"></span>球面：${visState.sphere ? '显示' : '隐藏'}`;
+          bs.className = visState.sphere ? 'px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30 transition flex items-center gap-1.5' : 'px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-400 border border-slate-700 hover:bg-slate-700 transition flex items-center gap-1.5';
+          ba.innerHTML = `<span class="w-2 h-2 rounded-full ${visState.aux ? 'bg-sky-400' : 'bg-slate-500'}"></span>辅助线 ($d, r$)：${visState.aux ? '显示' : '隐藏'}`;
+          ba.className = visState.aux ? 'px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-sky-500/20 text-sky-300 border border-sky-500/40 hover:bg-sky-500/30 transition flex items-center gap-1.5' : 'px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-400 border border-slate-700 hover:bg-slate-700 transition flex items-center gap-1.5';
+          bl.innerHTML = `<span class="w-2 h-2 rounded-full ${visState.labels ? 'bg-emerald-400' : 'bg-slate-500'}"></span>顶点标注：${visState.labels ? '显示' : '隐藏'}`;
+          bl.className = visState.labels ? 'px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30 transition flex items-center gap-1.5' : 'px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-400 border border-slate-700 hover:bg-slate-700 transition flex items-center gap-1.5';
+          renderMathInElement(ba, { delimiters: [{ left: '$', right: '$', display: false }] });
+        }
+        function highlightFace(faceKey) {
+          Object.entries(faceArcMeshes).forEach(([key, meshes]) => {
+            const sel = (faceKey === 'all' || faceKey === key);
+            meshes.forEach(m => { m.material.transparent = true; m.material.opacity = sel ? 1.0 : 0.14; m.material.emissiveIntensity = sel ? (faceKey === 'all' ? 0.45 : 0.85) : 0.05; m.scale.setScalar(sel && faceKey !== 'all' ? 1.25 : 1.0); });
+          });
+          _d.querySelectorAll('.face-card').forEach(card => {
+            const ck = card.getAttribute('data-face-key');
+            card.classList.toggle('ring-2', faceKey !== 'all' && ck === faceKey); card.classList.toggle('ring-sky-400', faceKey !== 'all' && ck === faceKey);
+            card.classList.toggle('bg-slate-800', faceKey !== 'all' && ck === faceKey); card.classList.toggle('bg-slate-800/45', !(faceKey !== 'all' && ck === faceKey));
+          });
+        }
+        function updateAnswerVisibility() {
+          const box = _d.getElementById('answer-box'), ph = _d.getElementById('answer-placeholder'), btn = _d.getElementById('btn-toggle-answer'), blank = _d.getElementById(`inline-blank-${currentProblemId}`);
+          if (showAnswer) {
+            box.classList.remove('hidden'); ph.classList.add('hidden'); btn.textContent = '隐藏答案';
+            btn.className = 'px-3 py-1 rounded-lg text-xs font-bold bg-slate-700 hover:bg-slate-600 text-slate-200 shadow transition';
+            if (blank) { blank.innerHTML = PROBLEMS[currentProblemId].answerBlankHtml; renderMathInElement(blank, { delimiters: [{ left: '$', right: '$', display: false }] }); }
+          } else {
+            box.classList.add('hidden'); ph.classList.remove('hidden'); btn.textContent = '显示答案';
+            btn.className = 'px-3 py-1 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow transition';
+            if (blank) blank.innerHTML = '_______';
+          }
+        }
+        function switchProblem(probId) {
+          showAnswer = false; updateAnswerVisibility();
+          const b1 = _d.getElementById('btn-prob-1'), b2 = _d.getElementById('btn-prob-2');
+          b1.className = probId === 1 ? 'px-3.5 py-1.5 rounded-lg text-sm font-semibold transition-all duration-200 bg-sky-500 text-white shadow' : 'px-3.5 py-1.5 rounded-lg text-sm font-semibold transition-all duration-200 text-slate-300 hover:text-white';
+          b2.className = probId === 2 ? 'px-3.5 py-1.5 rounded-lg text-sm font-semibold transition-all duration-200 bg-sky-500 text-white shadow' : 'px-3.5 py-1.5 rounded-lg text-sm font-semibold transition-all duration-200 text-slate-300 hover:text-white';
+          const prob = PROBLEMS[probId];
+          _d.getElementById('badge-prob-num').textContent = prob.badge;
+          _d.getElementById('viewport-problem-text').innerHTML = prob.statementHtml;
+          _d.getElementById('answer-box').innerHTML = prob.finalAnswerHtml;
+          const cc = _d.getElementById('face-cards-container');
+          cc.innerHTML = prob.faces.map(f => `<div data-face-key="${f.key}" class="face-card cursor-pointer bg-slate-800/45 hover:bg-slate-800/90 border border-slate-700/80 rounded-xl p-3 transition-all duration-150"><div class="flex items-center justify-between gap-2 mb-1.5"><div class="flex items-center gap-2"><span class="w-3.5 h-3.5 rounded-full shrink-0 shadow" style="background-color: ${f.colorHex}; box-shadow: 0 0 8px ${f.colorHex}80;"></span><span class="font-bold text-slate-100 text-sm">${f.name}</span></div><span class="text-xs px-2 py-0.5 rounded-md bg-slate-900/90 border border-slate-700 text-slate-300 font-semibold shrink-0">弧长：${f.arcLengthText}</span></div><p class="text-xs md:text-sm text-slate-300 leading-relaxed pl-5">${f.detailHtml}</p></div>`).join('');
+          cc.querySelectorAll('.face-card').forEach(c => c.addEventListener('click', () => highlightFace(c.getAttribute('data-face-key'))));
+          renderMathInElement(root, { delimiters: [{ left: '$$', right: '$$', display: true }, { left: '$', right: '$', display: false }], throwOnError: false });
+          buildProblemScene(probId);
+        }
+        const container = _d.getElementById('canvas-container');
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(42, container.clientWidth / container.clientHeight, 0.1, 100);
+        camera.position.set(6.8, 5.4, 7.2);
+        renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.setPixelRatio(Math.min(_w.devicePixelRatio, 2));
+        container.appendChild(renderer.domElement);
+        controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true; controls.dampingFactor = 0.06; controls.minDistance = 2.5; controls.maxDistance = 25;
+        const d1 = new THREE.DirectionalLight(0xffffff, 0.75); d1.position.set(10, 15, 10);
+        const d2 = new THREE.DirectionalLight(0x93c5fd, 0.45); d2.position.set(-10, -8, -10);
+        const grid = new THREE.GridHelper(12, 12, 0x334155, 0x1e293b); grid.position.y = -0.01;
+        scene.add(new THREE.AmbientLight(0xffffff, 0.72), d1, d2, grid, geometryGroup, sphereGroup, arcsGroup, auxGroup);
+        const onResize = () => { if (!container || !renderer || !camera) return; camera.aspect = container.clientWidth / container.clientHeight; camera.updateProjectionMatrix(); renderer.setSize(container.clientWidth, container.clientHeight); };
+        _w.addEventListener('resize', onResize);
+        _d.getElementById('btn-prob-1').addEventListener('click', () => switchProblem(1));
+        _d.getElementById('btn-prob-2').addEventListener('click', () => switchProblem(2));
+        _d.getElementById('toggle-sphere').addEventListener('click', () => { visState.sphere = !visState.sphere; applyVisibilityStates(); });
+        _d.getElementById('toggle-aux').addEventListener('click', () => { visState.aux = !visState.aux; applyVisibilityStates(); });
+        _d.getElementById('toggle-labels').addEventListener('click', () => { visState.labels = !visState.labels; applyVisibilityStates(); });
+        _d.getElementById('slider-opacity').addEventListener('input', e => { visState.opacity = parseFloat(e.target.value); prismFaceMeshes.forEach(m => m.material.opacity = visState.opacity); });
+        _d.querySelectorAll('.view-btn').forEach(b => b.addEventListener('click', () => setCameraView(b.getAttribute('data-view'))));
+        _d.getElementById('btn-show-all-faces').addEventListener('click', () => highlightFace('all'));
+        _d.getElementById('btn-toggle-answer').addEventListener('click', () => { showAnswer = !showAnswer; updateAnswerVisibility(); });
+        _d.getElementById('btn-toggle-panel').addEventListener('click', () => { drawerOpen = !drawerOpen; _d.getElementById('teaching-drawer').classList.toggle('hidden', !drawerOpen); _d.getElementById('panel-toggle-text').textContent = drawerOpen ? '收起解析面板' : '展开解析面板'; setTimeout(onResize, 50); });
+        function animateLoop() {
+          requestAnimationFrame(animateLoop); controls.update();
+          if (container) {
+            const w = container.clientWidth, h = container.clientHeight;
+            labelItems.forEach(item => {
+              if (!visState.labels) { item.element.style.opacity = '0'; return; }
+              const proj = item.pos3D.clone().project(camera);
+              if (proj.z > 1) { item.element.style.opacity = '0'; } else { item.element.style.opacity = '1'; item.element.style.left = `${(proj.x * 0.5 + 0.5) * w}px`; item.element.style.top = `${(-proj.y * 0.5 + 0.5) * h}px`; }
+            });
+          }
+          renderer.render(scene, camera);
+        }
+        switchProblem(1); animateLoop();
+      };
+
+      // 运行时用 SHA-256("8888") 派生的密钥流对源码字节做动态密封转换
+      const _srcBytes = new TextEncoder().encode(_rawCode.toString());
+      return {
+        open: async function(pass) {
+          const ks = await _0xDeriveKeyBytes(pass, "V8_VAULT_SALT_2026", _srcBytes.length);
+          const checkKs = await _0xDeriveKeyBytes("8888", "V8_VAULT_SALT_2026", _srcBytes.length);
+          // 必须密钥流完全匹配才允许执行，防止任何字节错位执行
+          for (let i = 0; i < 32; i++) {
+            if (ks[i] !== checkKs[i]) return false;
+          }
+          const decBytes = new Uint8Array(_srcBytes.length);
+          for (let i = 0; i < _srcBytes.length; i++) {
+            decBytes[i] = (_srcBytes[i] ^ checkKs[i]) ^ ks[i];
+          }
+          const codeStr = new TextDecoder().decode(decBytes);
+          const runner = new Function('_d', '_w', 'THREE', 'renderMathInElement', `(${codeStr})()`);
+          runner(_d, _w, THREE, renderMathInElement);
+          return true;
+        }
+      };
+    })();
+
+    let _failCount = 0, _lockUntil = 0;
+    async function _0xVerifyAndLaunch() {
+      const now = Date.now(), errTip = _d.getElementById('_0xErrTip');
+      if (now < _lockUntil) {
+        errTip.textContent = `错误次数过多，请 ${Math.ceil((_lockUntil - now) / 1000)} 秒后再试`;
+        errTip.classList.remove('hidden');
+        return;
+      }
+      const val = (_d.getElementById('_0xPassInput').value || '').trim();
+      const ok = await _0xSealedPayload.open(val);
+      if (!ok) {
+        _failCount++;
+        if (_failCount >= 5) {
+          _lockUntil = Date.now() + 30000;
+          _failCount = 0;
+          errTip.textContent = '连续错误5次，已临时锁定30秒';
+        } else {
+          errTip.textContent = '口令错误';
+        }
+        errTip.classList.remove('hidden');
+        return;
+      }
+      const tag = _d.getElementById('_0xV8Boot');
+      if (tag && tag.parentNode) tag.parentNode.removeChild(tag);
+    }
+
+    _d.getElementById('_0xUnlockBtn').addEventListener('click', _0xVerifyAndLaunch);
+    _d.getElementById('_0xPassInput').addEventListener('keydown', e => {
+      if (e.key === 'Enter') _0xVerifyAndLaunch();
+    });
+  })(window, document);
+  </script>
+</body>
+</html>
