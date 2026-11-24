@@ -73,6 +73,14 @@ input[type="file"] { font-size: 14px; margin-top: 8px; }
 .seg button { flex: 1; min-width: 110px; padding: 11px 8px; border: 1px solid #cbd5e1; background: #fff; border-radius: 8px; font-size: 15px; font-weight: 700; color: #64748b; cursor: pointer; font-family: inherit; }
 .seg button.on { background: #0E6B66; color: #fff; border-color: #0E6B66; }
 .note { color: #64748b; font-size: 13px; margin-top: 10px; line-height: 1.6; }
+.hint-line { background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 10px 12px; font-size: 14px; color: #92400e; margin: 0 0 16px; line-height: 1.6; }
+.cons-ans { display: none; margin-top: 12px; background: #f0fdfa; border: 1px solid #99d5d1; border-radius: 8px; padding: 12px; font-size: 14px; line-height: 1.7; color: #334155; }
+.cons-ans.show { display: block; }
+.cons-ans .ans { margin-top: 6px; }
+.cons-ans .ans:first-child { margin-top: 0; }
+.self-rate { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 12px; }
+.self-rate .btn { margin-top: 0; }
+.self-label { font-weight: 700; color: #0E6B66; font-size: 14px; }
 .foot { text-align: center; color: #94a3b8; font-size: 13px; }
 .foot a { color: #0E6B66; }
 </style>
@@ -107,6 +115,7 @@ input[type="file"] { font-size: 14px; margin-top: 8px; }
     <h2>典型例题</h2>
     <div id="exampleList"><p class="empty">加载中…</p></div>
   </div>
+  <p class="hint-line">提示：可以从中挑选题目作为每天五道题的作业。</p>
   <div class="card">
     <h2>基础过关 <span class="count" id="basicCount"></span></h2>
     <div id="basicList"><p class="empty">加载中…</p></div>
@@ -321,12 +330,21 @@ function qblockHtml(q, idx) {
     html += '</div>';
   }
   if (q.qtype === 'constructed') {
-    html += '<textarea rows="5" class="cons-text" placeholder="在这里写出你的解答过程…"></textarea>' +
-      '<div><input type="file" class="cons-file" accept="image/png,image/jpeg,image/jpg,image/gif,image/webp"></div>' +
-      '<p class="note">可以只写文字，也可以只传图片，也可以两者都有。图片不超过 5MB。</p>';
+    // 解答题纸面自测：不在平台里写，先在纸上写过程，再看答案对照、自评
+    html += '<p class="note">请先在纸上写出完整解答过程，再点下面查看答案对照。</p>' +
+      '<button type="button" class="btn btn-ghost btn-small view-ans-btn">查看答案</button>' +
+      '<div class="cons-ans">' +
+      '<div class="ans"><b>参考答案：</b>' + esc(q.answer || '') + '</div>' +
+      '<div class="ans"><b>解析：</b>' + esc(q.explanation || '') + '</div>' +
+      '<div class="self-rate"><span>对照完了，你做对了吗？</span>' +
+      '<button type="button" class="btn btn-small rate-btn" data-correct="1">我做对了</button>' +
+      '<button type="button" class="btn btn-ghost btn-small rate-btn" data-correct="0">我做错了</button>' +
+      '<span class="self-label"></span></div>' +
+      '</div>';
+  } else {
+    html += '<button type="button" class="btn submit-btn">提交本题</button>';
   }
-  html += '<button type="button" class="btn submit-btn">提交本题</button>' +
-    '<div class="result" id="res' + q.id + '"></div>' +
+  html += '<div class="result" id="res' + q.id + '"></div>' +
     '</div>';
   return html;
 }
@@ -351,10 +369,82 @@ function bindQblock(q) {
       }
     });
   });
+  // 解答题走纸面自测：查看答案对照 + 自己打分，不走提交接口
+  if (q.qtype === 'constructed') {
+    bindConstructed(q, box, st);
+    return;
+  }
   // 提交
   box.querySelector('.submit-btn').addEventListener('click', function () {
     submitAnswer(q, box, st);
   });
+}
+
+function bindConstructed(q, box, st) {
+  var viewBtn = box.querySelector('.view-ans-btn');
+  var ansBox = box.querySelector('.cons-ans');
+  var rateBtns = box.querySelectorAll('.rate-btn');
+  var label = box.querySelector('.self-label');
+  viewBtn.addEventListener('click', function () {
+    var shown = ansBox.classList.toggle('show');
+    viewBtn.textContent = shown ? '收起答案' : '查看答案';
+    if (shown) renderMath(ansBox);
+  });
+  rateBtns.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      selfCheck(q, box, st, btn.dataset.correct === '1');
+    });
+  });
+  // 刷新后恢复已自评状态
+  if (q.self_checked) {
+    st.submitted = true;
+    ansBox.classList.add('show');
+    viewBtn.textContent = '收起答案';
+    renderMath(ansBox);
+    rateBtns.forEach(function (b) { b.disabled = true; });
+    if (label) label.textContent = q.self_correct ? '已自评：做对了' : '已自评：做错了';
+    showResult(q, {
+      correct: !!q.self_correct,
+      streak: 0,
+      score: q.self_correct ? q.score : 0,
+      max_score: q.score,
+      is_new_wrong: false,
+      explanation: ''
+    });
+  }
+}
+
+async function selfCheck(q, box, st, correct) {
+  if (st.submitted) return;
+  var btns = box.querySelectorAll('.rate-btn');
+  btns.forEach(function (b) { b.disabled = true; });
+  try {
+    var r = await api('/student-api/self-check', {
+      method: 'POST', csrf: true,
+      body: { question_id: q.id, correct: correct }
+    });
+    if (r.status === 401) { location.href = 'login.html'; return; }
+    if (r.ok && r.data.ok) {
+      st.submitted = true;
+      var label = box.querySelector('.self-label');
+      if (label) label.textContent = correct ? '已自评：做对了' : '已自评：做错了';
+      showResult(q, {
+        correct: correct,
+        streak: r.data.streak || 0,
+        score: correct ? q.score : 0,
+        max_score: q.score,
+        is_new_wrong: !!r.data.is_new_wrong,
+        explanation: ''
+      });
+      loadKpProgressOnly();
+    } else {
+      alert((r.data && r.data.error) || '提交失败，请稍后再试');
+      btns.forEach(function (b) { b.disabled = false; });
+    }
+  } catch (e) {
+    alert('网络异常，请检查网络后重试');
+    btns.forEach(function (b) { b.disabled = false; });
+  }
 }
 
 function formatCorrectAnswer(ca, qtype) {
@@ -439,6 +529,12 @@ function bindResultActions(q, qbox, box) {
         if (fi) { fi.value = ''; fi.disabled = false; }
         var sb = qbox.querySelector('.submit-btn');
         if (sb) { sb.disabled = false; sb.textContent = '提交本题'; }
+        if (q.qtype === 'constructed') {
+          // 纸面自测：恢复自评按钮，让学生重做一遍再打分
+          qbox.querySelectorAll('.rate-btn').forEach(function (b) { b.disabled = false; });
+          var sl = qbox.querySelector('.self-label');
+          if (sl) sl.textContent = '';
+        }
       }
       box.className = 'result';
       box.innerHTML = '';
