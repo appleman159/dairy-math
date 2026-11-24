@@ -525,7 +525,12 @@ async function showProgress(kpId) {
     body.innerHTML = '<tr><td colspan="8" class="empty">进度加载失败，请刷新页面重试</td></tr>';
     return;
   }
-  var rows = r.data.progress || r.data.students || [];
+  var prog = r.data.progress || [];
+  var rows = [];
+  if (Array.isArray(prog)) {
+    prog.forEach(function (p) { (p.students || []).forEach(function (s) { rows.push(s); }); });
+  }
+  if (!rows.length && r.data.students) rows = r.data.students;
   if (!rows.length) {
     body.innerHTML = '<tr><td colspan="8" class="empty">暂无学生数据</td></tr>';
     return;
