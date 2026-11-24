@@ -33,12 +33,22 @@ body { margin: 0; font-family: -apple-system, "PingFang SC", "Microsoft YaHei", 
 .badge.lv1 { background: #fee2e2; color: #991b1b; }
 .badge.lv2 { background: #fef3c7; color: #92400e; }
 .badge.lv3 { background: #dcfce7; color: #166534; }
-.kp-item { border-top: 1px solid #f1f5f9; padding: 12px 0; }
-.kp-item:first-of-type { border-top: none; }
-.kp-item .t { font-weight: 700; font-size: 15px; color: #0f172a; }
-.kp-item .t a { color: #0E6B66; text-decoration: none; }
-.kp-item .d { color: #475569; font-size: 14px; margin-top: 4px; line-height: 1.6; }
-.kp-item .m { color: #94a3b8; font-size: 13px; margin-top: 4px; }
+.stats { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 12px; }
+.stat { flex: 1; min-width: 120px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px 8px; text-align: center; }
+.stat .num { font-size: 26px; font-weight: 800; color: #0E6B66; line-height: 1.2; }
+.stat .lab { font-size: 13px; color: #64748b; margin-top: 4px; }
+.prog { height: 10px; background: #e2e8f0; border-radius: 999px; overflow: hidden; margin-top: 10px; }
+.prog .fill { height: 100%; background: #0E6B66; border-radius: 999px; }
+.prog-text { font-size: 13px; color: #475569; margin-top: 6px; }
+.kp-card { border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px; margin-bottom: 12px; }
+.kp-card:last-child { margin-bottom: 0; }
+.kp-card .t { font-weight: 700; font-size: 15px; color: #0f172a; }
+.kp-card .t a { color: #0E6B66; text-decoration: none; }
+.kp-card .d { color: #475569; font-size: 14px; margin-top: 4px; line-height: 1.6; }
+.kp-card .m { color: #94a3b8; font-size: 13px; margin-top: 4px; }
+.badge.done { background: #dcfce7; color: #166534; }
+.wrong-summary { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px 14px; margin-bottom: 4px; }
+.wrong-summary .m { color: #475569; font-size: 14px; }
 .foot { text-align: center; color: #94a3b8; font-size: 13px; }
 .foot a { color: #0E6B66; }
 .wrong-link { display: block; text-decoration: none; color: inherit; cursor: pointer; border-top: 1px solid #f1f5f9; padding: 12px 0; }
@@ -66,16 +76,26 @@ body { margin: 0; font-family: -apple-system, "PingFang SC", "Microsoft YaHei", 
     <p class="meta"><span id="classLine"></span><span id="userLine"></span></p>
   </div>
   <div class="card">
-    <h2>考点学习</h2>
+    <h2>我的学习情况</h2>
+    <div class="stats">
+      <div class="stat"><div class="num" id="statAnswered">—</div><div class="lab">累计答题</div></div>
+      <div class="stat"><div class="num" id="statCorrect">—</div><div class="lab">累计答对</div></div>
+      <div class="stat"><div class="num" id="statKpDone">—</div><div class="lab">已完成考点</div></div>
+      <div class="stat"><div class="num" id="statPending">—</div><div class="lab">待订正错题</div></div>
+    </div>
+  </div>
+  <div class="card">
+    <h2>继续学习</h2>
     <div id="kpList"><p class="empty">加载中…</p></div>
+  </div>
+  <div class="card">
+    <h2>我的错题 <span class="count" id="wrongCount"></span></h2>
+    <div id="wrongSummary"><p class="empty">加载中…</p></div>
+    <div id="wrongList"><p class="empty">加载中…</p></div>
   </div>
   <div class="card">
     <h2>我的任务 <span class="count" id="taskCount"></span></h2>
     <div id="taskList"><p class="empty">加载中…</p></div>
-  </div>
-  <div class="card">
-    <h2>我的错题 <span class="count" id="wrongCount"></span></h2>
-    <div id="wrongList"><p class="empty">加载中…</p></div>
   </div>
   <div class="card">
     <h2>我的答题记录 <span class="count" id="recordCount"></span></h2>
@@ -127,9 +147,47 @@ function plainTitle(s, n) {
   return t.length > n ? t.slice(0, n) + '…' : t;
 }
 
-function renderWrong(list) {
+var kpPoints = null;
+var wrongSum = null;
+
+function updateStats() {
+  if (kpPoints) {
+    var totalAns = 0, totalCor = 0, done = 0;
+    kpPoints.forEach(function (p) {
+      totalAns += p.answered || 0;
+      totalCor += p.correct_count || 0;
+      if ((p.total_questions || 0) > 0 && (p.answered || 0) === p.total_questions) done++;
+    });
+    document.getElementById('statAnswered').textContent = totalAns;
+    document.getElementById('statCorrect').textContent = totalCor;
+    document.getElementById('statKpDone').textContent = done + '/' + kpPoints.length;
+  }
+  if (wrongSum) {
+    document.getElementById('statPending').textContent = wrongSum.pending || 0;
+  }
+}
+
+function renderWrongSummary(summary) {
+  var box = document.getElementById('wrongSummary');
+  if (!summary || (summary.total || 0) === 0) {
+    box.innerHTML = '<p class="empty">还没有错题记录</p>';
+    return;
+  }
+  var pending = summary.pending || 0;
+  var resolved = summary.resolved || 0;
+  var total = summary.total || 0;
+  var pct = total ? Math.round(100 * resolved / total) : 0;
+  box.innerHTML = '<div class="wrong-summary">' +
+    '<div class="m">待订正 ' + pending + ' 道 · 已订正 ' + resolved + ' 道</div>' +
+    '<div class="prog"><div class="fill" style="width:' + pct + '%"></div></div>' +
+    '<div class="prog-text">订正进度 ' + resolved + '/' + total + ' · ' + pct + '%</div>' +
+    '<div class="m">最近错题请点下面查看详情</div></div>';
+}
+
+function renderWrong(list, summary) {
   var box = document.getElementById('wrongList');
   document.getElementById('wrongCount').textContent = list.length ? '（' + list.length + '）' : '';
+  renderWrongSummary(summary);
   if (!list.length) { box.innerHTML = '<p class="empty">暂无错题，继续保持</p>'; return; }
   box.innerHTML = list.map(function (w) {
     var title = plainTitle(w.content || w.title || w.question || '', 45) || ('错题 #' + (w.question_id || w.id || ''));
@@ -163,16 +221,27 @@ var MASTERY = ['未开始', '待加强', '基本掌握', '已掌握'];
 
 function renderKps(points) {
   var box = document.getElementById('kpList');
+  kpPoints = points || [];
+  updateStats();
   if (!points.length) { box.innerHTML = '<p class="empty">暂无考点</p>'; return; }
   box.innerHTML = points.map(function (p) {
     var level = p.mastery_level == null ? 0 : p.mastery_level;
     var total = p.total_questions || 0;
     var ans = p.answered || 0;
-    var html = '<div class="kp-item"><div class="t"><a href="learn.html?kp=' + p.id + '">' + esc(p.title || '考点') + '</a></div>';
+    var pct = total ? Math.round(100 * ans / total) : 0;
+    var done = total > 0 && ans === total;
+    var badge = done
+      ? '<span class="badge done">已完成</span>'
+      : '<span class="badge lv' + level + '">' + MASTERY[level] + '</span>';
+    var html = '<div class="kp-card"><div class="t"><a href="learn.html?kp=' + p.id + '">' + esc(p.title || '考点') + '</a> ' + badge + '</div>';
     if (p.description || p.intro) html += '<div class="d">' + esc(p.description || p.intro) + '</div>';
-    html += '<div class="m">' + (total ? '已答 ' + ans + ' / 共 ' + total + ' 题 · ' : '') +
-      '系统判定：<span class="badge lv' + level + '">' + MASTERY[level] + '</span></div></div>';
-    return html;
+    html += '<div class="prog"><div class="fill" style="width:' + pct + '%"></div></div>' +
+      '<div class="prog-text">' + ans + '/' + total + '题 · ' + pct + '%</div>';
+    if ((p.basic_total || 0) > 0 || (p.advanced_total || 0) > 0) {
+      html += '<div class="m">基础过关 ' + (p.basic_answered || 0) + '/' + (p.basic_total || 0) +
+        ' · 能力提升 ' + (p.advanced_answered || 0) + '/' + (p.advanced_total || 0) + '</div>';
+    }
+    return html + '</div>';
   }).join('');
 }
 
@@ -193,8 +262,14 @@ async function loadAll() {
 
   var w = await api('/student-api/student/wrong-questions', {});
   if (w.status === 401) { location.href = 'login.html'; return; }
-  if (w.ok && w.data.ok) renderWrong(w.data.wrong_questions || []);
-  else document.getElementById('wrongList').innerHTML = '<p class="empty">错题加载失败，请刷新页面重试</p>';
+  if (w.ok && w.data.ok) {
+    wrongSum = w.data.summary || null;
+    updateStats();
+    renderWrong(w.data.wrong_questions || [], wrongSum);
+  } else {
+    document.getElementById('wrongSummary').innerHTML = '<p class="empty">错题加载失败，请刷新页面重试</p>';
+    document.getElementById('wrongList').innerHTML = '<p class="empty">错题加载失败，请刷新页面重试</p>';
+  }
 
   var r = await api('/student-api/student/records', {});
   if (r.status === 401) { location.href = 'login.html'; return; }

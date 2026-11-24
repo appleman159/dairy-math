@@ -67,6 +67,8 @@ input[type="file"] { font-size: 14px; margin-top: 8px; }
 .result.wrong { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
 .result.pending { background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; }
 .result .ans { margin-top: 6px; color: #334155; }
+.res-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+.res-actions .btn { margin-top: 0; }
 .seg { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
 .seg button { flex: 1; min-width: 110px; padding: 11px 8px; border: 1px solid #cbd5e1; background: #fff; border-radius: 8px; font-size: 15px; font-weight: 700; color: #64748b; cursor: pointer; font-family: inherit; }
 .seg button.on { background: #0E6B66; color: #fff; border-color: #0E6B66; }
@@ -374,25 +376,78 @@ function formatCorrectAnswer(ca, qtype) {
 
 function showResult(q, res) {
   var box = document.getElementById('res' + q.id);
+  var qbox = document.getElementById('qb' + q.id);
   var html = '';
   if (res.correct === null || res.correct === undefined) {
     box.className = 'result show pending';
     html = '<b>已提交，待老师批改。</b>得分将在老师批改后显示。';
   } else if (res.correct) {
     box.className = 'result show right';
-    html = '<b>回答正确！</b>得分 ' + res.score + ' / ' + res.max_score + ' 分';
+    var streak = res.streak || 0;
+    var cheer = '不错，继续保持';
+    if (streak >= 3) cheer = '连续答对 ' + streak + ' 次，越做越顺';
+    else if (streak === 2) cheer = '连续答对 2 次，状态很好';
+    html = '<b>回答正确</b> ' + esc(cheer) + '<br>得分 ' + res.score + ' / ' + res.max_score + ' 分';
+    if (streak >= 1) html += '<br>当前连续答对 ' + streak + ' 次';
+    html += '<div class="res-actions"><button type="button" class="btn btn-small" data-act="next">下一题 →</button></div>';
   } else {
     box.className = 'result show wrong';
-    html = '<b>答错了，再想想。</b>得分 ' + res.score + ' / ' + res.max_score + ' 分';
-  }
-  if (res.correct_answer != null && res.correct_answer !== '' && q.qtype !== 'constructed') {
-    html += '<div class="ans">正确答案：' + esc(formatCorrectAnswer(res.correct_answer, q.qtype)) + '</div>';
-  }
-  if (res.explanation) {
-    html += '<div class="ans">解析：' + esc(res.explanation) + '</div>';
+    html = '<b>这道题还需要再练习</b><br>得分 ' + res.score + ' / ' + res.max_score + ' 分';
+    if (res.correct_answer != null && res.correct_answer !== '' && q.qtype !== 'constructed') {
+      html += '<div class="ans">正确答案：' + esc(formatCorrectAnswer(res.correct_answer, q.qtype)) + '</div>';
+    }
+    if (res.explanation) {
+      html += '<div class="ans">解析：' + esc(res.explanation) + '</div>';
+    }
+    if (res.is_new_wrong) html += '<div class="ans">已加入错题本</div>';
+    else html += '<div class="ans">这道题已在错题本中</div>';
+    html += '<div class="res-actions">' +
+      '<button type="button" class="btn btn-ghost btn-small" data-act="retry">再做一次</button>' +
+      '<button type="button" class="btn btn-small" data-act="wrongbook">去错题本看看</button></div>';
   }
   box.innerHTML = html;
   renderMath(box);
+  bindResultActions(q, qbox, box);
+}
+
+function bindResultActions(q, qbox, box) {
+  var nextBtn = box.querySelector('[data-act="next"]');
+  if (nextBtn && qbox) {
+    var blocks = document.querySelectorAll('.qblock');
+    var idx = -1;
+    for (var i = 0; i < blocks.length; i++) {
+      if (blocks[i] === qbox) { idx = i; break; }
+    }
+    var nextBlock = (idx >= 0 && idx + 1 < blocks.length) ? blocks[idx + 1] : null;
+    if (!nextBlock) nextBtn.textContent = '回首页看看进度';
+    nextBtn.addEventListener('click', function () {
+      if (nextBlock) nextBlock.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      else location.href = 'student.html';
+    });
+  }
+  var retryBtn = box.querySelector('[data-act="retry"]');
+  if (retryBtn) {
+    retryBtn.addEventListener('click', function () {
+      var st = qstate[q.id];
+      if (st) { st.selected = {}; st.submitted = false; }
+      if (qbox) {
+        qbox.querySelectorAll('.opt').forEach(function (b) { b.classList.remove('sel'); b.disabled = false; });
+        qbox.querySelectorAll('.fill-in').forEach(function (inp) { inp.value = ''; inp.disabled = false; });
+        var ta = qbox.querySelector('.cons-text');
+        if (ta) { ta.value = ''; ta.disabled = false; }
+        var fi = qbox.querySelector('.cons-file');
+        if (fi) { fi.value = ''; fi.disabled = false; }
+        var sb = qbox.querySelector('.submit-btn');
+        if (sb) { sb.disabled = false; sb.textContent = '提交本题'; }
+      }
+      box.className = 'result';
+      box.innerHTML = '';
+    });
+  }
+  var wbBtn = box.querySelector('[data-act="wrongbook"]');
+  if (wbBtn) {
+    wbBtn.addEventListener('click', function () { location.href = 'student.html'; });
+  }
 }
 
 function readFileAsDataURL(file) {
