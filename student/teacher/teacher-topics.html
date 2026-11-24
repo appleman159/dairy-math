@@ -29,6 +29,13 @@ body { margin: 0; font-family: -apple-system, "PingFang SC", "Microsoft YaHei", 
 .kp-item .d { color: #475569; font-size: 14px; margin-top: 4px; line-height: 1.6; }
 .kp-item .m { color: #94a3b8; font-size: 13px; margin-top: 4px; }
 .kp-item.sel { background: #f0fdfa; border-radius: 8px; padding: 12px; }
+.kitem { border-top: 1px solid #f1f5f9; padding: 12px 0; }
+.kitem:first-of-type { border-top: none; }
+.kitem .t { font-weight: 700; font-size: 15px; color: #0f172a; }
+.kitem .d { color: #475569; font-size: 14px; margin-top: 4px; line-height: 1.7; }
+.kitem .d p { margin: 4px 0; }
+.ex-solution { display: none; margin-top: 8px; background: #f0fdfa; border: 1px solid #99d5d1; border-radius: 8px; padding: 12px; line-height: 1.7; font-size: 14px; color: #334155; }
+.ex-solution.show { display: block; }
 .btn { display: inline-block; border: none; border-radius: 8px; padding: 10px 18px; font-size: 15px; font-weight: 700; cursor: pointer; background: #0E6B66; color: #fff; }
 .btn:hover { background: #0a5651; }
 .btn:disabled { opacity: .55; cursor: not-allowed; }
@@ -87,6 +94,11 @@ td .rowbtns { display: flex; gap: 8px; white-space: nowrap; }
     <h2>考点列表</h2>
     <p class="sub">三个试点考点。点「管理题目」进入该考点的题目管理，「查看进度」看学生学习情况。</p>
     <div id="kpList"><p class="empty">加载中…</p></div>
+  </div>
+
+  <div class="card" id="kpViewCard" hidden>
+    <h2 id="kpViewTitle">知识点</h2>
+    <div id="kpViewBody"></div>
   </div>
 
   <div class="card" id="qCard" hidden>
@@ -274,6 +286,7 @@ async function loadKps() {
       '<div class="btn-row">' +
       '<button class="btn btn-small" type="button" data-manage="' + p.id + '">管理题目</button>' +
       '<button class="btn btn-small btn-ghost" type="button" data-progress="' + p.id + '">查看进度</button>' +
+      '<button class="btn btn-small btn-ghost" type="button" data-kpview="' + p.id + '">查看知识点</button>' +
       '</div></div>';
   }).join('');
   renderMath(box);
@@ -283,6 +296,59 @@ async function loadKps() {
   box.querySelectorAll('[data-progress]').forEach(function (b) {
     b.addEventListener('click', function () { showProgress(parseInt(b.dataset.progress, 10)); });
   });
+  box.querySelectorAll('[data-kpview]').forEach(function (b) {
+    b.addEventListener('click', function () { showKpDetail(parseInt(b.dataset.kpview, 10)); });
+  });
+}
+
+async function showKpDetail(kpId) {
+  var card = document.getElementById('kpViewCard');
+  var kp = kpById(kpId);
+  card.hidden = false;
+  document.getElementById('kpViewTitle').textContent = '知识点 · ' + (kp ? (kp.title || '') : '');
+  var body = document.getElementById('kpViewBody');
+  body.innerHTML = '<p class="empty">加载中…</p>';
+  var r = await api('/student-api/teacher/knowledge-points/' + kpId, {});
+  if (r.status === 401) { location.href = '../login.html'; return; }
+  if (!r.ok || !r.data.ok || !r.data.point) {
+    body.innerHTML = '<p class="empty">知识点加载失败，请刷新页面重试</p>';
+    return;
+  }
+  var p = r.data.point;
+  var html = '';
+  if (p.intro) html += '<p class="sub">' + esc(p.intro) + '</p>';
+  html += '<h3 style="font-size:15px;margin:16px 0 4px;">知识清单</h3>';
+  var kl = p.knowledge || [];
+  if (!kl.length) {
+    html += '<p class="empty">暂无知识清单</p>';
+  } else {
+    html += kl.map(function (k) {
+      return '<div class="kitem"><div class="t">' + esc(k.title || '') + '</div>' +
+        '<div class="d">' + esc(k.body || '') + '</div></div>';
+    }).join('');
+  }
+  html += '<h3 style="font-size:15px;margin:16px 0 4px;">典型例题</h3>';
+  var exs = p.examples || [];
+  if (!exs.length) {
+    html += '<p class="empty">暂无典型例题</p>';
+  } else {
+    html += exs.map(function (ex, i) {
+      return '<div class="kitem"><div class="t">' + esc(ex.title || ('例题 ' + (i + 1))) + '</div>' +
+        '<div class="d">' + esc(ex.problem || '') + '</div>' +
+        '<button class="btn btn-ghost btn-small" type="button" data-kpsol="kpsol' + i + '">查看解答</button>' +
+        '<div class="ex-solution" id="kpsol' + i + '">' + esc(ex.solution || '') + '</div></div>';
+    }).join('');
+  }
+  body.innerHTML = html;
+  renderMath(body);
+  body.querySelectorAll('[data-kpsol]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var solBox = document.getElementById(b.dataset.kpsol);
+      var shown = solBox.classList.toggle('show');
+      b.textContent = shown ? '收起解答' : '查看解答';
+    });
+  });
+  card.scrollIntoView({ behavior: 'smooth' });
 }
 
 function kpById(id) {
