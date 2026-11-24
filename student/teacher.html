@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>教师管理 · 学生数学复习平台</title>
+<style>
+* { box-sizing: border-box; }
+body { margin: 0; font-family: -apple-system, "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif; background: #f1f5f9; color: #1e293b; }
+.topbar { background: #0E6B66; color: #fff; padding: 14px 16px; }
+.topbar .inner { max-width: 960px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.topbar h1 { font-size: 18px; margin: 0; }
+.topbar .actions { display: flex; gap: 16px; align-items: center; }
+.topbar a { color: #fff; font-size: 14px; text-decoration: none; }
+.linkbtn { background: none; border: none; color: #fff; font-size: 14px; cursor: pointer; padding: 0; font-family: inherit; }
+.container { max-width: 960px; margin: 0 auto; padding: 24px 16px 40px; }
+.card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+.card h2 { font-size: 18px; margin: 0 0 4px; color: #0f172a; }
+.sub { color: #64748b; font-size: 14px; margin: 0 0 12px; }
+.welcome { font-size: 20px; font-weight: 700; color: #0f172a; margin: 0 0 6px; }
+.meta { color: #64748b; font-size: 14px; margin: 0; }
+label { display: block; font-size: 14px; font-weight: 700; margin: 12px 0 6px; }
+input, select { width: 100%; padding: 10px 12px; font-size: 15px; border: 1px solid #cbd5e1; border-radius: 8px; background: #fff; }
+input:focus, select:focus { outline: 2px solid #99d5d1; border-color: #0E6B66; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }
+@media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }
+.btn { display: inline-block; border: none; border-radius: 8px; padding: 10px 18px; font-size: 15px; font-weight: 700; cursor: pointer; background: #0E6B66; color: #fff; }
+.btn:hover { background: #0a5651; }
+.btn:disabled { opacity: .55; cursor: not-allowed; }
+.btn-small { padding: 6px 12px; font-size: 13px; }
+.btn-ghost { background: #fff; color: #0E6B66; border: 1px solid #0E6B66; }
+.btn-danger { background: #C62828; }
+.btn-danger:hover { background: #a01e1e; }
+.btn-block { display: block; width: 100%; margin-top: 18px; }
+.err { display: none; background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; border-radius: 8px; padding: 10px 12px; font-size: 14px; margin-top: 14px; }
+.err.show { display: block; }
+.okmsg { display: none; background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; border-radius: 8px; padding: 10px 12px; font-size: 14px; margin-top: 14px; }
+.okmsg.show { display: block; }
+.empty { color: #94a3b8; font-size: 14px; padding: 8px 0; }
+.table-wrap { overflow-x: auto; margin-top: 8px; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 640px; }
+th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid #e2e8f0; white-space: nowrap; }
+th { color: #64748b; font-size: 13px; }
+td .rowbtns { display: flex; gap: 8px; }
+.badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+.badge.ok { background: #dcfce7; color: #166534; }
+.badge.off { background: #fee2e2; color: #991b1b; }
+.badge.warn { background: #fef3c7; color: #92400e; }
+.class-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.chip { background: #f0fdfa; border: 1px solid #99d5d1; color: #0f172a; border-radius: 999px; padding: 6px 12px; font-size: 14px; }
+.modal { position: fixed; inset: 0; background: rgba(15, 23, 42, .55); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 50; }
+.modal[hidden] { display: none; }
+.modal-card { background: #fff; border-radius: 12px; padding: 20px; width: 100%; max-width: 420px; }
+.modal-card h3 { margin: 0 0 4px; font-size: 18px; }
+.modal-card p { color: #64748b; font-size: 14px; margin: 0 0 6px; }
+.modal-btns { display: flex; gap: 10px; margin-top: 18px; }
+.modal-btns .btn { flex: 1; }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="inner">
+    <h1>学生数学复习平台 · 教师管理</h1>
+    <div class="actions">
+      <a href="change-password.html">修改密码</a>
+      <button class="linkbtn" id="logoutBtn" type="button">退出登录</button>
+    </div>
+  </div>
+</div>
+<main class="container">
+  <div class="err" id="err"></div>
+  <div class="card">
+    <p class="welcome" id="welcome">你好，老师</p>
+    <p class="meta" id="userLine"></p>
+  </div>
+
+  <div class="card">
+    <h2>学生管理</h2>
+    <p class="sub">共 <span id="studentCount">0</span> 名学生 · 重置密码后请把新密码告诉学生本人</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>姓名</th><th>用户名</th><th>班级</th><th>状态</th><th>初始密码</th><th>操作</th></tr>
+        </thead>
+        <tbody id="studentBody">
+          <tr><td colspan="6" class="empty">加载中…</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="err" id="listErr"></div>
+    <div class="okmsg" id="listOk"></div>
+  </div>
+
+  <div class="card">
+    <h2>新建学生</h2>
+    <p class="sub">学生首次登录后需要修改初始密码</p>
+    <form id="newStudentForm">
+      <div class="form-grid">
+        <div>
+          <label for="nsUsername">用户名</label>
+          <input id="nsUsername" type="text" autocomplete="off" placeholder="如：zhangsan" required>
+        </div>
+        <div>
+          <label for="nsName">姓名</label>
+          <input id="nsName" type="text" autocomplete="off" placeholder="学生姓名" required>
+        </div>
+        <div>
+          <label for="nsPassword">初始密码</label>
+          <input id="nsPassword" type="password" autocomplete="new-password" placeholder="至少 6 位" required>
+        </div>
+        <div>
+          <label for="nsClass">班级</label>
+          <select id="nsClass" required></select>
+        </div>
+      </div>
+      <div class="err" id="nsErr"></div>
+      <div class="okmsg" id="nsOk"></div>
+      <button class="btn btn-block" type="submit" id="nsSubmit">创建学生账号</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2>班级管理</h2>
+    <p class="sub">已有班级</p>
+    <div class="class-chips" id="classChips"><span class="empty">加载中…</span></div>
+    <form id="newClassForm">
+      <div class="form-grid">
+        <div>
+          <label for="ncName">班级名</label>
+          <input id="ncName" type="text" autocomplete="off" placeholder="如：高二8班" required>
+        </div>
+        <div>
+          <label for="ncGrade">年级</label>
+          <input id="ncGrade" type="text" autocomplete="off" placeholder="如：高二" required>
+        </div>
+      </div>
+      <div class="err" id="ncErr"></div>
+      <div class="okmsg" id="ncOk"></div>
+      <button class="btn btn-block" type="submit" id="ncSubmit">新建班级</button>
+    </form>
+  </div>
+</main>
+
+<div class="modal" id="resetModal" hidden>
+  <div class="modal-card">
+    <h3>重置密码</h3>
+    <p id="resetTarget"></p>
+    <label for="resetPwd">新密码</label>
+    <input id="resetPwd" type="password" autocomplete="new-password" placeholder="至少 6 位">
+    <label for="resetPwd2">再次输入新密码</label>
+    <input id="resetPwd2" type="password" autocomplete="new-password" placeholder="请再输入一次">
+    <div class="err" id="resetErr"></div>
+    <div class="modal-btns">
+      <button class="btn" id="resetConfirm" type="button">确定重置</button>
+      <button class="btn btn-ghost" id="resetCancel" type="button">取消</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var me = null;
+var classes = [];
+var resetStudentId = null;
+
+function esc(s) {
+  return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+function showBox(id, msg) {
+  var e = document.getElementById(id);
+  e.textContent = msg;
+  e.classList.add('show');
+}
+function hideBox(id) {
+  document.getElementById(id).classList.remove('show');
+}
+function showErr(msg) { showBox('err', msg); }
+
+async function api(path, opts) {
+  opts = opts || {};
+  var headers = { 'Content-Type': 'application/json' };
+  if (opts.csrf) headers['X-CSRF-Token'] = sessionStorage.getItem('csrf_token') || '';
+  var res = await fetch(path, {
+    method: opts.method || 'GET',
+    credentials: 'include',
+    headers: headers,
+    body: opts.body ? JSON.stringify(opts.body) : undefined
+  });
+  var data = null;
+  try { data = await res.json(); } catch (e) {}
+  // 写操作因 CSRF token 过期返回 403 时，刷新一次 token 再重试
+  if (res.status === 403 && opts.csrf && !opts._retried) {
+    try {
+      var meRes = await fetch('/student-api/me', { credentials: 'include' });
+      var meData = await meRes.json();
+      if (meRes.ok && meData.user && meData.user.csrf_token) {
+        sessionStorage.setItem('csrf_token', meData.user.csrf_token);
+        opts._retried = true;
+        return api(path, opts);
+      }
+    } catch (e) {}
+  }
+  return { status: res.status, ok: res.ok, data: data || {} };
+}
+
+function classNameOf(id) {
+  for (var i = 0; i < classes.length; i++) {
+    if (String(classes[i].id) === String(id)) return classes[i].name;
+  }
+  return '';
+}
+
+function renderStudents(list) {
+  document.getElementById('studentCount').textContent = list.length;
+  var body = document.getElementById('studentBody');
+  if (!list.length) {
+    body.innerHTML = '<tr><td colspan="6" class="empty">暂无学生，请先新建班级再创建学生账号</td></tr>';
+    return;
+  }
+  body.innerHTML = list.map(function (s) {
+    var status = (s.is_active === 1 || s.is_active === true)
+      ? '<span class="badge ok">正常</span>'
+      : '<span class="badge off">已停用</span>';
+    var pwd = (s.must_change_password === 1 || s.must_change_password === true)
+      ? '<span class="badge warn">需修改</span>'
+      : '<span class="badge ok">已修改</span>';
+    var toggleLabel = (s.is_active === 1 || s.is_active === true) ? '停用' : '启用';
+    var toggleVal = (s.is_active === 1 || s.is_active === true) ? 0 : 1;
+    return '<tr><td>' + esc(s.name || '') + '</td><td>' + esc(s.username || '') + '</td>' +
+      '<td>' + esc(s.class_name || classNameOf(s.class_id) || '') + '</td>' +
+      '<td>' + status + '</td><td>' + pwd + '</td>' +
+      '<td><div class="rowbtns">' +
+      '<button class="btn btn-small btn-ghost" type="button" data-reset="' + s.id + '" data-name="' + esc(s.name || s.username) + '">重置密码</button>' +
+      '<button class="btn btn-small ' + (toggleVal === 0 ? 'btn-danger' : '') + '" type="button" data-toggle="' + s.id + '" data-val="' + toggleVal + '">' + toggleLabel + '</button>' +
+      '</div></td></tr>';
+  }).join('');
+  body.querySelectorAll('[data-reset]').forEach(function (b) {
+    b.addEventListener('click', function () { openReset(b.dataset.reset, b.dataset.name); });
+  });
+  body.querySelectorAll('[data-toggle]').forEach(function (b) {
+    b.addEventListener('click', function () { setActive(b.dataset.toggle, parseInt(b.dataset.val, 10)); });
+  });
+}
+
+function renderClasses() {
+  var chips = document.getElementById('classChips');
+  if (!classes.length) {
+    chips.innerHTML = '<span class="empty">暂无班级，请先在下方新建班级</span>';
+  } else {
+    chips.innerHTML = classes.map(function (c) {
+      return '<span class="chip">' + esc(c.name) + (c.grade ? ' · ' + esc(c.grade) : '') + '</span>';
+    }).join('');
+  }
+  var sel = document.getElementById('nsClass');
+  sel.innerHTML = classes.map(function (c) {
+    return '<option value="' + esc(c.id) + '">' + esc(c.name) + '</option>';
+  }).join('');
+  document.getElementById('nsSubmit').disabled = !classes.length;
+}
+
+async function loadStudents() {
+  var r = await api('/student-api/teacher/students', {});
+  if (r.status === 401) { location.href = 'login.html'; return; }
+  if (r.status === 403) { showErr('没有教师权限，请用教师账号登录'); return; }
+  if (r.ok && r.data.ok) renderStudents(r.data.students || []);
+  else showBox('listErr', (r.data && r.data.error) || '学生列表加载失败，请刷新页面重试');
+}
+
+async function loadClasses() {
+  var r = await api('/student-api/teacher/classes', {});
+  if (r.status === 401) { location.href = 'login.html'; return; }
+  if (r.ok && r.data.ok) {
+    classes = r.data.classes || [];
+    renderClasses();
+  } else {
+    showBox('listErr', (r.data && r.data.error) || '班级列表加载失败，请刷新页面重试');
+  }
+}
+
+async function setActive(id, val) {
+  hideBox('listErr');
+  hideBox('listOk');
+  try {
+    var r = await api('/student-api/teacher/students/' + id + '/set-active', {
+      method: 'POST', csrf: true, body: { is_active: val }
+    });
+    if (r.status === 401) { location.href = 'login.html'; return; }
+    if (r.ok && r.data.ok) {
+      showBox('listOk', val === 0 ? '账号已停用' : '账号已启用');
+      loadStudents();
+    } else {
+      showBox('listErr', (r.data && r.data.error) || '操作失败，请稍后再试');
+    }
+  } catch (e) {
+    showBox('listErr', '网络异常，请检查网络后重试');
+  }
+}
+
+function openReset(id, name) {
+  resetStudentId = id;
+  document.getElementById('resetTarget').textContent = '为「' + name + '」设置新密码，重置后该学生的旧密码立即失效';
+  document.getElementById('resetPwd').value = '';
+  document.getElementById('resetPwd2').value = '';
+  hideBox('resetErr');
+  document.getElementById('resetModal').hidden = false;
+  document.getElementById('resetPwd').focus();
+}
+function closeReset() {
+  document.getElementById('resetModal').hidden = true;
+  resetStudentId = null;
+}
+document.getElementById('resetCancel').addEventListener('click', closeReset);
+document.getElementById('resetModal').addEventListener('click', function (e) {
+  if (e.target === this) closeReset();
+});
+document.getElementById('resetConfirm').addEventListener('click', async function () {
+  var p1 = document.getElementById('resetPwd').value;
+  var p2 = document.getElementById('resetPwd2').value;
+  if (p1.length < 6) { showBox('resetErr', '新密码至少 6 位'); return; }
+  if (p1 !== p2) { showBox('resetErr', '两次输入的新密码不一致'); return; }
+  hideBox('resetErr');
+  try {
+    var r = await api('/student-api/teacher/students/' + resetStudentId + '/reset-password', {
+      method: 'POST', csrf: true, body: { new_password: p1 }
+    });
+    if (r.status === 401) { location.href = 'login.html'; return; }
+    if (r.ok && r.data.ok) {
+      closeReset();
+      showBox('listOk', '密码已重置，请把新密码告诉该学生');
+      loadStudents();
+    } else {
+      showBox('resetErr', (r.data && r.data.error) || '重置失败，请稍后再试');
+    }
+  } catch (e) {
+    showBox('resetErr', '网络异常，请检查网络后重试');
+  }
+});
+
+document.getElementById('newStudentForm').addEventListener('submit', async function (e) {
+  e.preventDefault();
+  hideBox('nsErr');
+  hideBox('nsOk');
+  var username = document.getElementById('nsUsername').value.trim();
+  var name = document.getElementById('nsName').value.trim();
+  var password = document.getElementById('nsPassword').value;
+  var classId = document.getElementById('nsClass').value;
+  if (!username || !name || !password || !classId) { showBox('nsErr', '请把四项都填好'); return; }
+  if (password.length < 6) { showBox('nsErr', '初始密码至少 6 位'); return; }
+  var cid = parseInt(classId, 10);
+  if (isNaN(cid)) cid = classId;
+  var btn = document.getElementById('nsSubmit');
+  btn.disabled = true;
+  btn.textContent = '创建中…';
+  try {
+    var r = await api('/student-api/teacher/students', {
+      method: 'POST', csrf: true,
+      body: { username: username, password: password, name: name, class_id: cid }
+    });
+    if (r.status === 401) { location.href = 'login.html'; return; }
+    if (r.ok && r.data.ok) {
+      showBox('nsOk', '学生账号已创建：' + username + '，请把初始密码告诉该学生');
+      document.getElementById('newStudentForm').reset();
+      loadStudents();
+    } else {
+      var msg = (r.data && r.data.error) || '';
+      if (r.status === 409) msg = msg || '用户名已存在，请换一个用户名';
+      else msg = msg || '创建失败，请稍后再试';
+      showBox('nsErr', msg);
+    }
+  } catch (err) {
+    showBox('nsErr', '网络异常，请检查网络后重试');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '创建学生账号';
+  }
+});
+
+document.getElementById('newClassForm').addEventListener('submit', async function (e) {
+  e.preventDefault();
+  hideBox('ncErr');
+  hideBox('ncOk');
+  var name = document.getElementById('ncName').value.trim();
+  var grade = document.getElementById('ncGrade').value.trim();
+  if (!name || !grade) { showBox('ncErr', '请填写班级名和年级'); return; }
+  var btn = document.getElementById('ncSubmit');
+  btn.disabled = true;
+  btn.textContent = '新建中…';
+  try {
+    var r = await api('/student-api/teacher/classes', {
+      method: 'POST', csrf: true, body: { name: name, grade: grade }
+    });
+    if (r.status === 401) { location.href = 'login.html'; return; }
+    if (r.ok && r.data.ok) {
+      showBox('ncOk', '班级已新建：' + name);
+      document.getElementById('newClassForm').reset();
+      await loadClasses();
+    } else {
+      showBox('ncErr', (r.data && r.data.error) || '新建班级失败，请稍后再试');
+    }
+  } catch (err) {
+    showBox('ncErr', '网络异常，请检查网络后重试');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '新建班级';
+  }
+});
+
+document.getElementById('logoutBtn').addEventListener('click', async function () {
+  try {
+    await api('/student-api/logout', { method: 'POST', csrf: true });
+  } catch (e) { /* 退出失败也照常回登录页 */ }
+  sessionStorage.removeItem('csrf_token');
+  location.href = 'login.html';
+});
+
+async function init() {
+  try {
+    var r = await api('/student-api/me', {});
+    if (r.status === 401) { location.href = 'login.html'; return; }
+    if (!r.ok || !r.data.ok || !r.data.user) { showErr('获取登录信息失败，请刷新页面重试'); return; }
+    me = r.data.user;
+    if (me.csrf_token) sessionStorage.setItem('csrf_token', me.csrf_token);
+    if (me.must_change_password === 1 || me.must_change_password === true) {
+      location.href = 'change-password.html';
+      return;
+    }
+    if (me.role !== 'teacher') { location.href = 'student.html'; return; }
+    document.getElementById('welcome').textContent = '你好，' + (me.name || me.username) + '老师';
+    document.getElementById('userLine').textContent = '用户名：' + me.username;
+    await loadClasses();
+    loadStudents();
+  } catch (e) {
+    showErr('网络异常，请检查网络后刷新页面');
+  }
+}
+
+init();
+</script>
+</body>
+</html>

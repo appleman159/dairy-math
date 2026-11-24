@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>登录 · 学生数学复习平台</title>
+<style>
+* { box-sizing: border-box; }
+body { margin: 0; font-family: -apple-system, "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif; background: #f1f5f9; color: #1e293b; }
+.topbar { background: #0E6B66; color: #fff; padding: 14px 16px; }
+.topbar .inner { max-width: 960px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+.topbar h1 { font-size: 18px; margin: 0; }
+.topbar a { color: #fff; font-size: 14px; text-decoration: none; }
+.container { max-width: 520px; margin: 0 auto; padding: 24px 16px 40px; }
+.card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px 20px; }
+h2 { font-size: 22px; margin: 0 0 4px; color: #0f172a; }
+.sub { color: #64748b; font-size: 14px; margin: 0 0 18px; }
+.seg { display: flex; gap: 8px; margin-bottom: 6px; }
+.seg button { flex: 1; padding: 11px; border: 1px solid #cbd5e1; background: #fff; border-radius: 8px; font-size: 16px; font-weight: 700; color: #64748b; cursor: pointer; }
+.seg button.on { background: #0E6B66; color: #fff; border-color: #0E6B66; }
+label { display: block; font-size: 14px; font-weight: 700; margin: 14px 0 6px; }
+input { width: 100%; padding: 11px 12px; font-size: 16px; border: 1px solid #cbd5e1; border-radius: 8px; background: #fff; }
+input:focus { outline: 2px solid #99d5d1; border-color: #0E6B66; }
+.btn { display: block; width: 100%; border: none; border-radius: 8px; padding: 12px; font-size: 16px; font-weight: 700; cursor: pointer; background: #0E6B66; color: #fff; margin-top: 20px; }
+.btn:hover { background: #0a5651; }
+.btn:disabled { opacity: .55; cursor: not-allowed; }
+.err { display: none; background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; border-radius: 8px; padding: 10px 12px; font-size: 14px; margin-top: 14px; }
+.err.show { display: block; }
+.hint { color: #94a3b8; font-size: 13px; text-align: center; margin: 16px 0 0; }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="inner">
+    <h1>学生数学复习平台</h1>
+    <a href="home.html">首页</a>
+  </div>
+</div>
+<main class="container">
+  <div class="card">
+    <h2>登录</h2>
+    <p class="sub">请输入账号和密码，账号由老师统一发放</p>
+    <div class="seg" id="roleSeg">
+      <button type="button" data-role="student" class="on">我是学生</button>
+      <button type="button" data-role="teacher">我是教师</button>
+    </div>
+    <form id="loginForm">
+      <label for="username">用户名</label>
+      <input id="username" type="text" autocomplete="username" placeholder="请输入用户名" required>
+      <label for="password">密码</label>
+      <input id="password" type="password" autocomplete="current-password" placeholder="请输入密码" required>
+      <div class="err" id="err"></div>
+      <button class="btn" type="submit" id="submitBtn">登录</button>
+    </form>
+    <p class="hint">忘记密码请联系老师重置</p>
+  </div>
+</main>
+<script>
+var role = 'student';
+
+function showErr(msg) {
+  var e = document.getElementById('err');
+  e.textContent = msg;
+  e.classList.add('show');
+}
+function hideErr() {
+  document.getElementById('err').classList.remove('show');
+}
+
+async function api(path, opts) {
+  opts = opts || {};
+  var headers = { 'Content-Type': 'application/json' };
+  if (opts.csrf) headers['X-CSRF-Token'] = sessionStorage.getItem('csrf_token') || '';
+  var res = await fetch(path, {
+    method: opts.method || 'GET',
+    credentials: 'include',
+    headers: headers,
+    body: opts.body ? JSON.stringify(opts.body) : undefined
+  });
+  var data = null;
+  try { data = await res.json(); } catch (e) {}
+  return { status: res.status, ok: res.ok, data: data || {} };
+}
+
+function goAfterLogin(user) {
+  if (user.must_change_password === 1 || user.must_change_password === true) {
+    location.href = 'change-password.html';
+  } else if (user.role === 'teacher') {
+    location.href = 'teacher.html';
+  } else {
+    location.href = 'student.html';
+  }
+}
+
+document.querySelectorAll('#roleSeg button').forEach(function (b) {
+  b.addEventListener('click', function () {
+    role = b.dataset.role;
+    document.querySelectorAll('#roleSeg button').forEach(function (x) {
+      x.classList.toggle('on', x === b);
+    });
+  });
+});
+
+document.getElementById('loginForm').addEventListener('submit', async function (e) {
+  e.preventDefault();
+  hideErr();
+  var u = document.getElementById('username').value.trim();
+  var p = document.getElementById('password').value;
+  if (!u || !p) { showErr('请填写用户名和密码'); return; }
+  var btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.textContent = '登录中…';
+  try {
+    var r = await api('/student-api/login', {
+      method: 'POST',
+      body: { username: u, password: p, role: role }
+    });
+    if (r.ok && r.data.ok && r.data.user) {
+      if (r.data.user.csrf_token) sessionStorage.setItem('csrf_token', r.data.user.csrf_token);
+      goAfterLogin(r.data.user);
+    } else {
+      var msg = (r.data && r.data.error) || '';
+      if (r.status === 401) msg = msg || '用户名或密码错误，请重新输入';
+      else if (r.status === 403) msg = msg || '账号已被停用，请联系老师';
+      else if (r.status === 429) msg = msg || '失败次数太多，请稍后再试';
+      else msg = msg || '登录失败，请稍后再试';
+      showErr(msg);
+    }
+  } catch (err) {
+    showErr('网络异常，请检查网络后重试');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '登录';
+  }
+});
+
+// 已登录则直接跳到对应首页
+(async function () {
+  try {
+    var r = await api('/student-api/me', {});
+    if (r.ok && r.data.ok && r.data.user) {
+      if (r.data.user.csrf_token) sessionStorage.setItem('csrf_token', r.data.user.csrf_token);
+      goAfterLogin(r.data.user);
+    }
+  } catch (e) { /* 未登录，留在登录页 */ }
+})();
+</script>
+</body>
+</html>

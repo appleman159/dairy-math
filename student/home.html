@@ -1,50 +1,103 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>学生数学复习平台</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: "PingFang SC", "Microsoft YaHei", sans-serif; background: #f4f6f8; color: #1d1d1f; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 48px 16px; }
-  .card { background: #fff; border-radius: 16px; box-shadow: 0 2px 16px rgba(0,0,0,.08); max-width: 560px; width: 100%; padding: 36px 32px; text-align: center; }
-  h1 { font-size: 26px; margin-bottom: 10px; }
-  p.sub { color: #666; font-size: 15px; line-height: 1.8; margin-bottom: 24px; }
-  .status { display: inline-block; padding: 8px 18px; border-radius: 999px; font-size: 14px; font-weight: 600; background: #fef3c7; color: #92400e; }
-  .status.ok { background: #dcfce7; color: #166534; }
-  .status.bad { background: #fee2e2; color: #991b1b; }
-  .links { margin-top: 28px; font-size: 14px; color: #888; line-height: 2; }
-  .links a { color: #2563eb; text-decoration: none; }
+* { box-sizing: border-box; }
+body { margin: 0; font-family: -apple-system, "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif; background: #f1f5f9; color: #1e293b; }
+.topbar { background: #0E6B66; color: #fff; padding: 14px 16px; }
+.topbar .inner { max-width: 960px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+.topbar h1 { font-size: 18px; margin: 0; }
+.topbar a { color: #fff; font-size: 14px; text-decoration: none; }
+.container { max-width: 640px; margin: 0 auto; padding: 40px 16px; text-align: center; }
+.hero { font-size: 28px; font-weight: 700; color: #0f172a; margin: 0 0 12px; }
+.lead { color: #475569; font-size: 16px; line-height: 1.8; margin: 0 0 24px; }
+.btn { display: inline-block; border: none; border-radius: 8px; padding: 13px 36px; font-size: 17px; font-weight: 700; cursor: pointer; background: #0E6B66; color: #fff; text-decoration: none; }
+.btn:hover { background: #0a5651; }
+.features { display: flex; gap: 12px; margin: 32px 0; flex-wrap: wrap; justify-content: center; }
+.feat { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; flex: 1; min-width: 150px; }
+.feat .t { font-weight: 700; font-size: 15px; color: #0f172a; margin-bottom: 6px; }
+.feat .d { color: #64748b; font-size: 13px; line-height: 1.6; }
+.status { margin-top: 28px; font-size: 13px; color: #94a3b8; }
+.status .ok { color: #1E7D32; font-weight: 700; }
+.status .bad { color: #C62828; font-weight: 700; }
 </style>
 </head>
 <body>
-<div class="card">
-  <h1>📊 学生数学复习平台</h1>
-  <p class="sub">这里是班级数学复习平台的首页。<br>登录、专题复习、在线答题、错题本等功能正在建设中，敬请期待。</p>
-  <div class="status" id="status">正在连接后端…</div>
-  <div class="links">
-    <a href="/">← 返回班级资源站首页</a><br>
-    <span>第一阶段：基础框架已搭建</span>
+<div class="topbar">
+  <div class="inner">
+    <h1>学生数学复习平台</h1>
+    <a href="login.html">登录</a>
   </div>
 </div>
+<main class="container">
+  <p class="hero">学生数学复习平台</p>
+  <p class="lead">在这里做任务、看自己的错题、查答题记录<br>老师布置的任务和你的学习情况，都在这里</p>
+  <a class="btn" href="login.html">去登录</a>
+  <div class="features">
+    <div class="feat">
+      <div class="t">我的任务</div>
+      <div class="d">老师布置的练习和任务，按时完成</div>
+    </div>
+    <div class="feat">
+      <div class="t">我的错题</div>
+      <div class="d">做错的题自动收进错题本，随时复习</div>
+    </div>
+    <div class="feat">
+      <div class="t">答题记录</div>
+      <div class="d">每次答题的情况都能查到</div>
+    </div>
+  </div>
+  <p class="status" id="statusLine">正在检查后端连接…</p>
+</main>
 <script>
-fetch('/student-api/health')
-  .then(function (r) { return r.json(); })
-  .then(function (d) {
-    var el = document.getElementById('status');
-    if (d && d.ok) {
-      el.textContent = '后端连接正常（' + (d.service || 'student') + ' v' + (d.version || '') + '）';
-      el.className = 'status ok';
-    } else {
-      el.textContent = '后端返回异常';
-      el.className = 'status bad';
-    }
-  })
-  .catch(function () {
-    var el = document.getElementById('status');
-    el.textContent = '后端连接失败';
-    el.className = 'status bad';
+async function api(path, opts) {
+  opts = opts || {};
+  var res = await fetch(path, {
+    method: opts.method || 'GET',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: opts.body ? JSON.stringify(opts.body) : undefined
   });
+  var data = null;
+  try { data = await res.json(); } catch (e) {}
+  return { status: res.status, ok: res.ok, data: data || {} };
+}
+
+// 已登录直接跳到对应首页
+(async function () {
+  try {
+    var r = await api('/student-api/me', {});
+    if (r.ok && r.data.ok && r.data.user) {
+      var user = r.data.user;
+      if (user.csrf_token) sessionStorage.setItem('csrf_token', user.csrf_token);
+      if (user.must_change_password === 1 || user.must_change_password === true) {
+        location.href = 'change-password.html';
+      } else {
+        location.href = user.role === 'teacher' ? 'teacher.html' : 'student.html';
+      }
+      return;
+    }
+  } catch (e) { /* 未登录，显示欢迎页 */ }
+})();
+
+// 后端状态行
+(async function () {
+  var el = document.getElementById('statusLine');
+  try {
+    var r = await api('/student-api/health', {});
+    if (r.ok && r.data.ok) {
+      var v = r.data.version ? '（student v' + r.data.version + '）' : '';
+      el.innerHTML = '<span class="ok">后端连接正常</span>' + v;
+    } else {
+      el.innerHTML = '<span class="bad">后端连接异常，请稍后再试</span>';
+    }
+  } catch (e) {
+    el.innerHTML = '<span class="bad">后端连接异常，请稍后再试</span>';
+  }
+})();
 </script>
 </body>
 </html>

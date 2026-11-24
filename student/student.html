@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>我的首页 · 学生数学复习平台</title>
+<style>
+* { box-sizing: border-box; }
+body { margin: 0; font-family: -apple-system, "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif; background: #f1f5f9; color: #1e293b; }
+.topbar { background: #0E6B66; color: #fff; padding: 14px 16px; }
+.topbar .inner { max-width: 960px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.topbar h1 { font-size: 18px; margin: 0; }
+.topbar .actions { display: flex; gap: 16px; align-items: center; }
+.topbar a { color: #fff; font-size: 14px; text-decoration: none; }
+.linkbtn { background: none; border: none; color: #fff; font-size: 14px; cursor: pointer; padding: 0; font-family: inherit; }
+.container { max-width: 720px; margin: 0 auto; padding: 24px 16px 40px; }
+.card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+.card h2 { font-size: 18px; margin: 0 0 4px; color: #0f172a; }
+.card h2 .count { color: #0E6B66; font-size: 15px; }
+.welcome { font-size: 20px; font-weight: 700; color: #0f172a; margin: 0 0 6px; }
+.meta { color: #64748b; font-size: 14px; margin: 0; }
+.meta span { margin-right: 16px; }
+.empty { color: #94a3b8; font-size: 14px; padding: 8px 0; }
+.item { border-top: 1px solid #f1f5f9; padding: 12px 0; }
+.item:first-of-type { border-top: none; }
+.item .t { font-weight: 700; font-size: 15px; color: #0f172a; }
+.item .d { color: #475569; font-size: 14px; margin-top: 4px; line-height: 1.6; }
+.item .m { color: #94a3b8; font-size: 13px; margin-top: 4px; }
+.err { display: none; background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; border-radius: 8px; padding: 10px 12px; font-size: 14px; margin-bottom: 16px; }
+.err.show { display: block; }
+.foot { text-align: center; color: #94a3b8; font-size: 13px; }
+.foot a { color: #0E6B66; }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="inner">
+    <h1>学生数学复习平台</h1>
+    <div class="actions">
+      <a href="change-password.html">修改密码</a>
+      <button class="linkbtn" id="logoutBtn" type="button">退出登录</button>
+    </div>
+  </div>
+</div>
+<main class="container">
+  <div class="err" id="err"></div>
+  <div class="card">
+    <p class="welcome" id="welcome">你好</p>
+    <p class="meta"><span id="classLine"></span><span id="userLine"></span></p>
+  </div>
+  <div class="card">
+    <h2>我的任务 <span class="count" id="taskCount"></span></h2>
+    <div id="taskList"><p class="empty">加载中…</p></div>
+  </div>
+  <div class="card">
+    <h2>我的错题 <span class="count" id="wrongCount"></span></h2>
+    <div id="wrongList"><p class="empty">加载中…</p></div>
+  </div>
+  <div class="card">
+    <h2>我的答题记录 <span class="count" id="recordCount"></span></h2>
+    <div id="recordList"><p class="empty">加载中…</p></div>
+  </div>
+  <p class="foot">有问题请联系老师 · <a href="change-password.html">修改密码</a></p>
+</main>
+<script>
+var me = null;
+
+function showErr(msg) {
+  var e = document.getElementById('err');
+  e.textContent = msg;
+  e.classList.add('show');
+}
+function esc(s) {
+  return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+async function api(path, opts) {
+  opts = opts || {};
+  var headers = { 'Content-Type': 'application/json' };
+  if (opts.csrf) headers['X-CSRF-Token'] = sessionStorage.getItem('csrf_token') || '';
+  var res = await fetch(path, {
+    method: opts.method || 'GET',
+    credentials: 'include',
+    headers: headers,
+    body: opts.body ? JSON.stringify(opts.body) : undefined
+  });
+  var data = null;
+  try { data = await res.json(); } catch (e) {}
+  return { status: res.status, ok: res.ok, data: data || {} };
+}
+
+function renderTasks(tasks) {
+  var box = document.getElementById('taskList');
+  document.getElementById('taskCount').textContent = tasks.length ? '（' + tasks.length + '）' : '';
+  if (!tasks.length) { box.innerHTML = '<p class="empty">暂无任务</p>'; return; }
+  box.innerHTML = tasks.map(function (t) {
+    var html = '<div class="item"><div class="t">' + esc(t.title || '任务') + '</div>';
+    if (t.description) html += '<div class="d">' + esc(t.description) + '</div>';
+    if (t.due_at) html += '<div class="m">截止：' + esc(t.due_at) + '</div>';
+    return html + '</div>';
+  }).join('');
+}
+
+function renderWrong(list) {
+  var box = document.getElementById('wrongList');
+  document.getElementById('wrongCount').textContent = list.length ? '（' + list.length + '）' : '';
+  if (!list.length) { box.innerHTML = '<p class="empty">暂无错题，继续保持</p>'; return; }
+  box.innerHTML = list.map(function (w) {
+    var title = w.title || w.question || w.question_text || ('错题 #' + (w.question_id || w.id || ''));
+    var html = '<div class="item"><div class="t">' + esc(title) + '</div>';
+    if (w.topic || w.knowledge_point) html += '<div class="m">考点：' + esc(w.topic || w.knowledge_point) + '</div>';
+    return html + '</div>';
+  }).join('');
+}
+
+function renderRecords(list) {
+  var box = document.getElementById('recordList');
+  document.getElementById('recordCount').textContent = list.length ? '（' + list.length + '）' : '';
+  if (!list.length) { box.innerHTML = '<p class="empty">暂无答题记录</p>'; return; }
+  box.innerHTML = list.map(function (r) {
+    var title = r.title || r.task_title || ('记录 #' + (r.id || ''));
+    var html = '<div class="item"><div class="t">' + esc(title) + '</div>';
+    var meta = [];
+    if (r.score != null) meta.push('得分：' + esc(r.score));
+    if (r.created_at) meta.push(esc(r.created_at));
+    if (meta.length) html += '<div class="m">' + meta.join(' · ') + '</div>';
+    return html + '</div>';
+  }).join('');
+}
+
+async function loadAll() {
+  var t = await api('/student-api/student/tasks', {});
+  if (t.status === 401) { location.href = 'login.html'; return; }
+  if (t.ok && t.data.ok) renderTasks(t.data.tasks || []);
+  else document.getElementById('taskList').innerHTML = '<p class="empty">任务加载失败，请刷新页面重试</p>';
+
+  var w = await api('/student-api/student/wrong-questions', {});
+  if (w.status === 401) { location.href = 'login.html'; return; }
+  if (w.ok && w.data.ok) renderWrong(w.data.wrong_questions || []);
+  else document.getElementById('wrongList').innerHTML = '<p class="empty">错题加载失败，请刷新页面重试</p>';
+
+  var r = await api('/student-api/student/records', {});
+  if (r.status === 401) { location.href = 'login.html'; return; }
+  if (r.ok && r.data.ok) renderRecords(r.data.records || []);
+  else document.getElementById('recordList').innerHTML = '<p class="empty">答题记录加载失败，请刷新页面重试</p>';
+}
+
+async function init() {
+  try {
+    var r = await api('/student-api/me', {});
+    if (r.status === 401) { location.href = 'login.html'; return; }
+    if (!r.ok || !r.data.ok || !r.data.user) { showErr('获取登录信息失败，请刷新页面重试'); return; }
+    me = r.data.user;
+    if (me.csrf_token) sessionStorage.setItem('csrf_token', me.csrf_token);
+    if (me.must_change_password === 1 || me.must_change_password === true) {
+      location.href = 'change-password.html';
+      return;
+    }
+    if (me.role === 'teacher') { location.href = 'teacher.html'; return; }
+    if (me.role !== 'student') { location.href = 'login.html'; return; }
+    document.getElementById('welcome').textContent = '你好，' + (me.name || me.username);
+    document.getElementById('classLine').textContent = me.class_name ? '班级：' + me.class_name : '';
+    document.getElementById('userLine').textContent = '用户名：' + me.username;
+    loadAll();
+  } catch (e) {
+    showErr('网络异常，请检查网络后刷新页面');
+  }
+}
+
+document.getElementById('logoutBtn').addEventListener('click', async function () {
+  try {
+    await api('/student-api/logout', { method: 'POST', csrf: true });
+  } catch (e) { /* 退出失败也照常回登录页 */ }
+  sessionStorage.removeItem('csrf_token');
+  location.href = 'login.html';
+});
+
+init();
+</script>
+</body>
+</html>
