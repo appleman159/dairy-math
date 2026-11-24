@@ -479,6 +479,12 @@ function showResult(q, res) {
     else if (streak === 2) cheer = '连续答对 2 次，状态很好';
     html = '<b>回答正确</b> ' + esc(cheer) + '<br>得分 ' + res.score + ' / ' + res.max_score + ' 分';
     if (streak >= 1) html += '<br>当前连续答对 ' + streak + ' 次';
+    if (res.correct_answer != null && res.correct_answer !== '' && q.qtype !== 'constructed') {
+      html += '<div class="ans">正确答案：' + esc(formatCorrectAnswer(res.correct_answer, q.qtype)) + '</div>';
+    }
+    if (res.explanation) {
+      html += '<div class="ans">解析：' + esc(res.explanation) + '</div>';
+    }
     html += '<div class="res-actions"><button type="button" class="btn btn-small" data-act="next">下一题 →</button></div>';
   } else {
     box.className = 'result show wrong';
