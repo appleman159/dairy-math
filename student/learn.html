@@ -253,7 +253,7 @@ async function loadKp() {
     return;
   }
   var p = r.data.point;
-  document.getElementById('kpTitle').textContent = p.title || '考点';
+  document.getElementById('kpTitle').textContent = (p.sort_order != null ? '考点 ' + p.sort_order + ' · ' : '') + (p.title || '考点');
   setHtml('kpIntro', p.intro ? esc(p.intro) : '<p class="empty">暂无简介</p>');
   renderKnowledge(p.knowledge || []);
   renderExamples(p.examples || []);
