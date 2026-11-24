@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>考点学习 · 学生数学复习平台</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<style>
+* { box-sizing: border-box; }
+body { margin: 0; font-family: -apple-system, "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif; background: #f1f5f9; color: #1e293b; }
+.topbar { background: #0E6B66; color: #fff; padding: 14px 16px; }
+.topbar .inner { max-width: 960px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.topbar h1 { font-size: 18px; margin: 0; }
+.topbar .actions { display: flex; gap: 16px; align-items: center; }
+.topbar a { color: #fff; font-size: 14px; text-decoration: none; }
+.linkbtn { background: none; border: none; color: #fff; font-size: 14px; cursor: pointer; padding: 0; font-family: inherit; }
+.container { max-width: 720px; margin: 0 auto; padding: 24px 16px 40px; }
+.card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+.card h2 { font-size: 18px; margin: 0 0 4px; color: #0f172a; }
+.card h2 .count { color: #0E6B66; font-size: 15px; }
+.sub { color: #64748b; font-size: 14px; margin: 0 0 12px; line-height: 1.6; }
+.sec-title { font-size: 20px; font-weight: 700; color: #0f172a; margin: 0 0 6px; }
+.meta { color: #64748b; font-size: 14px; margin: 0; }
+.meta span { margin-right: 16px; }
+.badge { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+.badge.lv0 { background: #f1f5f9; color: #64748b; }
+.badge.lv1 { background: #fee2e2; color: #991b1b; }
+.badge.lv2 { background: #fef3c7; color: #92400e; }
+.badge.lv3 { background: #dcfce7; color: #166534; }
+.empty { color: #94a3b8; font-size: 14px; padding: 8px 0; }
+.err { display: none; background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; border-radius: 8px; padding: 10px 12px; font-size: 14px; margin-bottom: 16px; }
+.err.show { display: block; }
+.okmsg { display: none; background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; border-radius: 8px; padding: 10px 12px; font-size: 14px; margin-top: 10px; }
+.okmsg.show { display: block; }
+.kitem { border-top: 1px solid #f1f5f9; padding: 12px 0; }
+.kitem:first-of-type { border-top: none; }
+.kitem .t { font-weight: 700; font-size: 15px; color: #0f172a; }
+.kitem .d { color: #475569; font-size: 14px; margin-top: 4px; line-height: 1.7; }
+.kitem .d p { margin: 4px 0; }
+.ex-solution { display: none; margin-top: 8px; background: #f0fdfa; border: 1px solid #99d5d1; border-radius: 8px; padding: 12px; line-height: 1.7; font-size: 14px; color: #334155; }
+.ex-solution.show { display: block; }
+.qblock { border-top: 1px solid #f1f5f9; padding: 14px 0; }
+.qblock:first-of-type { border-top: none; }
+.qblock .q { font-size: 15px; line-height: 1.7; color: #0f172a; }
+.qblock .q img.qimg { max-width: 100%; display: block; margin: 8px 0; border: 1px solid #e2e8f0; border-radius: 8px; }
+.qtag { display: inline-block; font-size: 12px; font-weight: 700; color: #0E6B66; background: #f0fdfa; border: 1px solid #99d5d1; border-radius: 999px; padding: 1px 8px; margin-right: 6px; }
+.opts { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+.opt { display: block; width: 100%; text-align: left; padding: 10px 12px; font-size: 15px; border: 1px solid #cbd5e1; border-radius: 8px; background: #fff; cursor: pointer; font-family: inherit; line-height: 1.6; }
+.opt:hover { border-color: #0E6B66; }
+.opt.sel { border-color: #0E6B66; background: #f0fdfa; }
+.opt:disabled { cursor: default; opacity: .75; }
+.opt .key { display: inline-block; min-width: 22px; height: 22px; line-height: 22px; text-align: center; border: 1px solid #cbd5e1; border-radius: 50%; font-size: 13px; font-weight: 700; margin-right: 8px; }
+.opt.sel .key { background: #0E6B66; color: #fff; border-color: #0E6B66; }
+.fill-in { width: 120px; padding: 6px 8px; font-size: 15px; border: 1px solid #cbd5e1; border-radius: 6px; margin: 0 2px; font-family: inherit; }
+.fill-in:focus { outline: 2px solid #99d5d1; border-color: #0E6B66; }
+textarea { width: 100%; padding: 10px 12px; font-size: 15px; border: 1px solid #cbd5e1; border-radius: 8px; font-family: inherit; line-height: 1.6; resize: vertical; }
+textarea:focus { outline: 2px solid #99d5d1; border-color: #0E6B66; }
+input[type="file"] { font-size: 14px; margin-top: 8px; }
+.btn { display: inline-block; border: none; border-radius: 8px; padding: 10px 18px; font-size: 15px; font-weight: 700; cursor: pointer; background: #0E6B66; color: #fff; margin-top: 12px; }
+.btn:hover { background: #0a5651; }
+.btn:disabled { opacity: .55; cursor: not-allowed; }
+.btn-ghost { background: #fff; color: #0E6B66; border: 1px solid #0E6B66; }
+.btn-small { padding: 6px 12px; font-size: 13px; }
+.result { display: none; margin-top: 12px; border-radius: 8px; padding: 12px; font-size: 14px; line-height: 1.7; }
+.result.show { display: block; }
+.result.right { background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; }
+.result.wrong { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
+.result.pending { background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; }
+.result .ans { margin-top: 6px; color: #334155; }
+.seg { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+.seg button { flex: 1; min-width: 110px; padding: 11px 8px; border: 1px solid #cbd5e1; background: #fff; border-radius: 8px; font-size: 15px; font-weight: 700; color: #64748b; cursor: pointer; font-family: inherit; }
+.seg button.on { background: #0E6B66; color: #fff; border-color: #0E6B66; }
+.note { color: #64748b; font-size: 13px; margin-top: 10px; line-height: 1.6; }
+.foot { text-align: center; color: #94a3b8; font-size: 13px; }
+.foot a { color: #0E6B66; }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="inner">
+    <h1>学生数学复习平台</h1>
+    <div class="actions">
+      <a href="student.html">我的首页</a>
+      <a href="change-password.html">修改密码</a>
+      <button class="linkbtn" id="logoutBtn" type="button">退出登录</button>
+    </div>
+  </div>
+</div>
+<main class="container">
+  <div class="err" id="err"></div>
+  <div class="card">
+    <p class="sec-title" id="kpTitle">加载中…</p>
+    <p class="meta"><span id="kpProgress"></span><span id="kpMastery"></span></p>
+  </div>
+  <div class="card">
+    <h2>考点简介</h2>
+    <div class="sub" id="kpIntro"><p class="empty">加载中…</p></div>
+  </div>
+  <div class="card">
+    <h2>知识清单</h2>
+    <div id="knowledgeList"><p class="empty">加载中…</p></div>
+  </div>
+  <div class="card">
+    <h2>典型例题</h2>
+    <div id="exampleList"><p class="empty">加载中…</p></div>
+  </div>
+  <div class="card">
+    <h2>基础过关 <span class="count" id="basicCount"></span></h2>
+    <div id="basicList"><p class="empty">加载中…</p></div>
+  </div>
+  <div class="card">
+    <h2>能力提升 <span class="count" id="advCount"></span></h2>
+    <div id="advList"><p class="empty">加载中…</p></div>
+  </div>
+  <div class="card">
+    <h2>自我评价</h2>
+    <p class="sub">系统判定等级：<span id="sysLevel"></span>（根据你的实际答题正确率计算）</p>
+    <div class="seg" id="evalSeg">
+      <button type="button" data-level="1">1 完全没掌握</button>
+      <button type="button" data-level="2">2 部分掌握</button>
+      <button type="button" data-level="3">3 基本掌握</button>
+      <button type="button" data-level="4">4 完全掌握</button>
+    </div>
+    <label for="evalComment" style="display:block;font-size:14px;font-weight:700;margin:12px 0 6px;">留言（可选）</label>
+    <textarea id="evalComment" rows="2" placeholder="比如：哪一步还不清楚，想再练什么…"></textarea>
+    <button class="btn" type="button" id="evalSubmit">提交自我评价</button>
+    <div class="okmsg" id="evalOk"></div>
+    <div class="err" id="evalErr" style="margin-top:10px;"></div>
+    <p class="note">这是你的自我感觉，仅供你和老师参考，不影响系统判定。系统判定只看你的实际答题情况。</p>
+  </div>
+  <p class="foot"><a href="student.html">← 返回我的首页</a></p>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script>
+var kpId = null;
+var me = null;
+var evalLevel = 0;
+var qstate = {}; // questionId -> {selected: Set, submitted: bool}
+
+var MASTERY = ['未开始', '待加强', '基本掌握', '已掌握'];
+
+function qs(name) {
+  var m = location.search.match(new RegExp('[?&]' + name + '=([^&]*)'));
+  return m ? decodeURIComponent(m[1]) : null;
+}
+function esc(s) {
+  return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+function showErr(msg) {
+  var e = document.getElementById('err');
+  e.textContent = msg;
+  e.classList.add('show');
+}
+function renderMath(el) {
+  if (window.renderMathInElement) {
+    try {
+      renderMathInElement(el, {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '$', right: '$', display: false }
+        ],
+        throwOnError: false
+      });
+    } catch (e) {}
+  }
+}
+function setHtml(id, html) {
+  var el = document.getElementById(id);
+  el.innerHTML = html;
+  renderMath(el);
+}
+
+async function api(path, opts) {
+  opts = opts || {};
+  var headers = { 'Content-Type': 'application/json' };
+  if (opts.csrf) headers['X-CSRF-Token'] = sessionStorage.getItem('csrf_token') || '';
+  var res = await fetch(path, {
+    method: opts.method || 'GET',
+    credentials: 'include',
+    headers: headers,
+    body: opts.body ? JSON.stringify(opts.body) : undefined
+  });
+  var data = null;
+  try { data = await res.json(); } catch (e) {}
+  if (res.status === 403 && opts.csrf && !opts._retried) {
+    try {
+      var meRes = await fetch('/student-api/me', { credentials: 'include' });
+      var meData = await meRes.json();
+      if (meRes.ok && meData.user && meData.user.csrf_token) {
+        sessionStorage.setItem('csrf_token', meData.user.csrf_token);
+        opts._retried = true;
+        return api(path, opts);
+      }
+    } catch (e) {}
+  }
+  return { status: res.status, ok: res.ok, data: data || {} };
+}
+
+function masteryBadge(level) {
+  level = level == null ? 0 : level;
+  return '<span class="badge lv' + level + '">' + MASTERY[level] + '</span>';
+}
+
+function renderKnowledge(list) {
+  if (!list || !list.length) {
+    setHtml('knowledgeList', '<p class="empty">暂无知识清单</p>');
+    return;
+  }
+  setHtml('knowledgeList', list.map(function (k) {
+    return '<div class="kitem"><div class="t">' + esc(k.title || '') + '</div>' +
+      '<div class="d">' + esc(k.body || '') + '</div></div>';
+  }).join(''));
+}
+
+function renderExamples(list) {
+  if (!list || !list.length) {
+    setHtml('exampleList', '<p class="empty">暂无典型例题</p>');
+    return;
+  }
+  setHtml('exampleList', list.map(function (ex, i) {
+    return '<div class="kitem"><div class="t">' + esc(ex.title || ('例题 ' + (i + 1))) + '</div>' +
+      '<div class="d">' + esc(ex.problem || '') + '</div>' +
+      '<button class="btn btn-ghost btn-small" type="button" data-sol="sol' + i + '">查看解答</button>' +
+      '<div class="ex-solution" id="sol' + i + '">' + esc(ex.solution || '') + '</div></div>';
+  }).join(''));
+  document.querySelectorAll('#exampleList [data-sol]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var box = document.getElementById(b.dataset.sol);
+      var shown = box.classList.toggle('show');
+      b.textContent = shown ? '收起解答' : '查看解答';
+    });
+  });
+}
+
+async function loadKp() {
+  var r = await api('/student-api/knowledge-points/' + kpId, {});
+  if (r.status === 401) { location.href = 'login.html'; return; }
+  if (!r.ok || !r.data.ok || !r.data.point) {
+    showErr((r.data && r.data.error) || '考点加载失败，请刷新页面重试');
+    return;
+  }
+  var p = r.data.point;
+  document.getElementById('kpTitle').textContent = p.title || '考点';
+  setHtml('kpIntro', p.intro ? esc(p.intro) : '<p class="empty">暂无简介</p>');
+  renderKnowledge(p.knowledge || []);
+  renderExamples(p.examples || []);
+  // 进度与系统判定等级从列表接口取
+  var lr = await api('/student-api/knowledge-points', {});
+  if (lr.ok && lr.data.ok) {
+    var found = null;
+    (lr.data.points || []).forEach(function (x) {
+      if (String(x.id) === String(kpId)) found = x;
+    });
+    if (found) {
+      var total = found.total_questions || 0;
+      var ans = found.answered || 0;
+      document.getElementById('kpProgress').textContent = total ? ('已答 ' + ans + ' / 共 ' + total + ' 题') : '';
+      document.getElementById('kpMastery').innerHTML = '系统判定：' + masteryBadge(found.mastery_level);
+      document.getElementById('sysLevel').innerHTML = masteryBadge(found.mastery_level);
+      if (found.self_level) {
+        evalLevel = found.self_level;
+        markEvalSeg(evalLevel);
+      }
+    }
+  }
+  // 已有的自我评价留言
+  var er = await api('/student-api/student/self-evaluations', {});
+  if (er.ok && er.data.ok) {
+    (er.data.evaluations || []).forEach(function (ev) {
+      if (String(ev.knowledge_point_id) === String(kpId)) {
+        if (ev.level) { evalLevel = ev.level; markEvalSeg(ev.level); }
+        if (ev.comment) document.getElementById('evalComment').value = ev.comment;
+      }
+    });
+  }
+}
+
+function markEvalSeg(level) {
+  document.querySelectorAll('#evalSeg button').forEach(function (b) {
+    b.classList.toggle('on', parseInt(b.dataset.level, 10) === level);
+  });
+}
+
+var QTYPE_NAME = { single: '单选题', multiple: '多选题', fill: '填空题', constructed: '解答题', image: '图片题' };
+
+function fillInputsHtml(content) {
+  // 题干里的 ___（三个或以上连续下划线）对应一个输入框
+  var parts = esc(content).split(/_{3,}/);
+  var html = '';
+  for (var i = 0; i < parts.length; i++) {
+    html += parts[i];
+    if (i < parts.length - 1) {
+      html += '<input type="text" class="fill-in" data-blank="' + i + '" autocomplete="off">';
+    }
+  }
+  return html;
+}
+
+function qblockHtml(q, idx) {
+  var tag = QTYPE_NAME[q.qtype] || q.qtype;
+  var html = '<div class="qblock" id="qb' + q.id + '" data-qtype="' + esc(q.qtype) + '" data-qid="' + q.id + '">' +
+    '<div class="q"><span class="qtag">' + esc(tag) + '</span><span class="qtag">' + esc(q.score) + ' 分</span>';
+  if (q.qtype === 'fill') {
+    html += fillInputsHtml(q.content || '');
+  } else {
+    html += esc(q.content || '');
+  }
+  html += '</div>';
+  if (q.image_url) {
+    html += '<div class="q"><img class="qimg" src="' + esc(q.image_url) + '" alt="题目图"></div>';
+  }
+  if ((q.qtype === 'single' || q.qtype === 'multiple' || q.qtype === 'image') && q.options && q.options.length) {
+    html += '<div class="opts">';
+    q.options.forEach(function (o) {
+      html += '<button type="button" class="opt" data-key="' + esc(o.key) + '"><span class="key">' + esc(o.key) + '</span>' + esc(o.text || '') + '</button>';
+    });
+    html += '</div>';
+  }
+  if (q.qtype === 'constructed') {
+    html += '<textarea rows="5" class="cons-text" placeholder="在这里写出你的解答过程…"></textarea>' +
+      '<div><input type="file" class="cons-file" accept="image/png,image/jpeg,image/jpg,image/gif,image/webp"></div>' +
+      '<p class="note">可以只写文字，也可以只传图片，也可以两者都有。图片不超过 5MB。</p>';
+  }
+  html += '<button type="button" class="btn submit-btn">提交本题</button>' +
+    '<div class="result" id="res' + q.id + '"></div>' +
+    '</div>';
+  return html;
+}
+
+function bindQblock(q) {
+  var box = document.getElementById('qb' + q.id);
+  if (!box) return;
+  var st = qstate[q.id] = { selected: {}, submitted: false };
+  // 选项点选
+  box.querySelectorAll('.opt').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      if (st.submitted) return;
+      var key = btn.dataset.key;
+      if (q.qtype === 'multiple') {
+        if (st.selected[key]) { delete st.selected[key]; btn.classList.remove('sel'); }
+        else { st.selected[key] = true; btn.classList.add('sel'); }
+      } else {
+        st.selected = {};
+        st.selected[key] = true;
+        box.querySelectorAll('.opt').forEach(function (b) { b.classList.remove('sel'); });
+        btn.classList.add('sel');
+      }
+    });
+  });
+  // 提交
+  box.querySelector('.submit-btn').addEventListener('click', function () {
+    submitAnswer(q, box, st);
+  });
+}
+
+function formatCorrectAnswer(ca, qtype) {
+  if (ca == null) return '';
+  if (qtype === 'fill') {
+    try {
+      var arr = typeof ca === 'string' ? JSON.parse(ca) : ca;
+      if (Array.isArray(arr)) {
+        return arr.map(function (alts, i) {
+          var list = Array.isArray(alts) ? alts : [alts];
+          return '第 ' + (i + 1) + ' 空：' + list.join(' 或 ');
+        }).join('；');
+      }
+    } catch (e) {}
+    return String(ca);
+  }
+  return String(ca);
+}
+
+function showResult(q, res) {
+  var box = document.getElementById('res' + q.id);
+  var html = '';
+  if (res.correct === null || res.correct === undefined) {
+    box.className = 'result show pending';
+    html = '<b>已提交，待老师批改。</b>得分将在老师批改后显示。';
+  } else if (res.correct) {
+    box.className = 'result show right';
+    html = '<b>回答正确！</b>得分 ' + res.score + ' / ' + res.max_score + ' 分';
+  } else {
+    box.className = 'result show wrong';
+    html = '<b>答错了，再想想。</b>得分 ' + res.score + ' / ' + res.max_score + ' 分';
+  }
+  if (res.correct_answer != null && res.correct_answer !== '' && q.qtype !== 'constructed') {
+    html += '<div class="ans">正确答案：' + esc(formatCorrectAnswer(res.correct_answer, q.qtype)) + '</div>';
+  }
+  if (res.explanation) {
+    html += '<div class="ans">解析：' + esc(res.explanation) + '</div>';
+  }
+  box.innerHTML = html;
+  renderMath(box);
+}
+
+function readFileAsDataURL(file) {
+  return new Promise(function (resolve, reject) {
+    var reader = new FileReader();
+    reader.onload = function () { resolve(reader.result); };
+    reader.onerror = function () { reject(new Error('读取图片失败')); };
+    reader.readAsDataURL(file);
+  });
+}
+
+async function submitAnswer(q, box, st) {
+  if (st.submitted) return;
+  var body = { question_id: q.id };
+  if (q.qtype === 'single' || q.qtype === 'image') {
+    var keys = Object.keys(st.selected);
+    if (!keys.length) { alert('请先选择一个选项'); return; }
+    body.answer = keys[0];
+  } else if (q.qtype === 'multiple') {
+    var mkeys = Object.keys(st.selected).sort();
+    if (!mkeys.length) { alert('请先选择至少一个选项'); return; }
+    body.answer = mkeys.join('');
+  } else if (q.qtype === 'fill') {
+    var vals = [];
+    box.querySelectorAll('.fill-in').forEach(function (inp) { vals.push(inp.value); });
+    body.answer = vals;
+  } else if (q.qtype === 'constructed') {
+    var text = box.querySelector('.cons-text').value.trim();
+    var file = box.querySelector('.cons-file').files[0];
+    if (!text && !file) { alert('请写出解答文字或上传图片'); return; }
+    body.answer = text;
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) { alert('图片不能超过 5MB'); return; }
+      try {
+        body.image_data = await readFileAsDataURL(file);
+        body.image_name = file.name;
+      } catch (e) {
+        alert('读取图片失败，请换一张图片再试');
+        return;
+      }
+    }
+  }
+  var btn = box.querySelector('.submit-btn');
+  btn.disabled = true;
+  btn.textContent = '提交中…';
+  try {
+    var r = await api('/student-api/answer', { method: 'POST', csrf: true, body: body });
+    if (r.status === 401) { location.href = 'login.html'; return; }
+    if (r.ok && r.data.ok) {
+      st.submitted = true;
+      box.querySelectorAll('.opt, .fill-in, .cons-text, .cons-file').forEach(function (el) { el.disabled = true; });
+      btn.textContent = '已提交';
+      showResult(q, r.data);
+      loadKpProgressOnly();
+    } else {
+      alert((r.data && r.data.error) || '提交失败，请稍后再试');
+      btn.disabled = false;
+      btn.textContent = '提交本题';
+    }
+  } catch (e) {
+    alert('网络异常，请检查网络后重试');
+    btn.disabled = false;
+    btn.textContent = '提交本题';
+  }
+}
+
+async function loadKpProgressOnly() {
+  var lr = await api('/student-api/knowledge-points', {});
+  if (lr.ok && lr.data.ok) {
+    (lr.data.points || []).forEach(function (x) {
+      if (String(x.id) === String(kpId)) {
+        var total = x.total_questions || 0;
+        var ans = x.answered || 0;
+        document.getElementById('kpProgress').textContent = total ? ('已答 ' + ans + ' / 共 ' + total + ' 题') : '';
+        document.getElementById('kpMastery').innerHTML = '系统判定：' + masteryBadge(x.mastery_level);
+        document.getElementById('sysLevel').innerHTML = masteryBadge(x.mastery_level);
+      }
+    });
+  }
+}
+
+async function loadQuestions(category, listId, countId) {
+  var r = await api('/student-api/knowledge-points/' + kpId + '/questions?category=' + category, {});
+  var box = document.getElementById(listId);
+  if (r.status === 401) { location.href = 'login.html'; return; }
+  if (!r.ok || !r.data.ok) {
+    box.innerHTML = '<p class="empty">题目加载失败，请刷新页面重试</p>';
+    return;
+  }
+  var qs = r.data.questions || [];
+  document.getElementById(countId).textContent = qs.length ? '（' + qs.length + ' 题）' : '';
+  if (!qs.length) {
+    box.innerHTML = '<p class="empty">暂无题目</p>';
+    return;
+  }
+  box.innerHTML = qs.map(function (q, i) { return qblockHtml(q, i); }).join('');
+  qs.forEach(bindQblock);
+  renderMath(box);
+}
+
+document.querySelectorAll('#evalSeg button').forEach(function (b) {
+  b.addEventListener('click', function () {
+    evalLevel = parseInt(b.dataset.level, 10);
+    markEvalSeg(evalLevel);
+  });
+});
+
+document.getElementById('evalSubmit').addEventListener('click', async function () {
+  var okBox = document.getElementById('evalOk');
+  var errBox = document.getElementById('evalErr');
+  okBox.classList.remove('show');
+  errBox.classList.remove('show');
+  if (!evalLevel) { errBox.textContent = '请先选一个掌握程度'; errBox.classList.add('show'); return; }
+  var comment = document.getElementById('evalComment').value.trim();
+  var btn = document.getElementById('evalSubmit');
+  btn.disabled = true;
+  btn.textContent = '提交中…';
+  try {
+    var r = await api('/student-api/self-evaluation', {
+      method: 'POST', csrf: true,
+      body: { knowledge_point_id: kpId, level: evalLevel, comment: comment }
+    });
+    if (r.status === 401) { location.href = 'login.html'; return; }
+    if (r.ok && r.data.ok) {
+      okBox.textContent = '自我评价已保存。这是你的自我感觉，不影响系统判定。';
+      okBox.classList.add('show');
+    } else {
+      errBox.textContent = (r.data && r.data.error) || '提交失败，请稍后再试';
+      errBox.classList.add('show');
+    }
+  } catch (e) {
+    errBox.textContent = '网络异常，请检查网络后重试';
+    errBox.classList.add('show');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '提交自我评价';
+  }
+});
+
+document.getElementById('logoutBtn').addEventListener('click', async function () {
+  try {
+    await api('/student-api/logout', { method: 'POST', csrf: true });
+  } catch (e) {}
+  sessionStorage.removeItem('csrf_token');
+  location.href = 'login.html';
+});
+
+async function init() {
+  kpId = qs('kp');
+  if (!kpId) { showErr('缺少考点参数，请从我的首页点进考点'); return; }
+  try {
+    var r = await api('/student-api/me', {});
+    if (r.status === 401) { location.href = 'login.html'; return; }
+    if (!r.ok || !r.data.ok || !r.data.user) { showErr('获取登录信息失败，请刷新页面重试'); return; }
+    me = r.data.user;
+    if (me.csrf_token) sessionStorage.setItem('csrf_token', me.csrf_token);
+    if (me.must_change_password === 1 || me.must_change_password === true) {
+      location.href = 'change-password.html';
+      return;
+    }
+    if (me.role === 'teacher') { location.href = 'teacher.html'; return; }
+    if (me.role !== 'student') { location.href = 'login.html'; return; }
+    await loadKp();
+    loadQuestions('basic', 'basicList', 'basicCount');
+    loadQuestions('advanced', 'advList', 'advCount');
+  } catch (e) {
+    showErr('网络异常，请检查网络后刷新页面');
+  }
+}
+
+init();
+</script>
+</body>
+</html>
