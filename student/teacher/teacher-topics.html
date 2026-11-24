@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>考点与题目管理 · 学生数学复习平台</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<style>
+* { box-sizing: border-box; }
+body { margin: 0; font-family: -apple-system, "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif; background: #f1f5f9; color: #1e293b; }
+.topbar { background: #0E6B66; color: #fff; padding: 14px 16px; }
+.topbar .inner { max-width: 960px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.topbar h1 { font-size: 18px; margin: 0; }
+.topbar .actions { display: flex; gap: 16px; align-items: center; }
+.topbar a { color: #fff; font-size: 14px; text-decoration: none; }
+.linkbtn { background: none; border: none; color: #fff; font-size: 14px; cursor: pointer; padding: 0; font-family: inherit; }
+.container { max-width: 960px; margin: 0 auto; padding: 24px 16px 40px; }
+.card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+.card h2 { font-size: 18px; margin: 0 0 4px; color: #0f172a; }
+.sub { color: #64748b; font-size: 14px; margin: 0 0 12px; line-height: 1.6; }
+.err { display: none; background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; border-radius: 8px; padding: 10px 12px; font-size: 14px; margin-bottom: 16px; }
+.err.show { display: block; }
+.okmsg { display: none; background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; border-radius: 8px; padding: 10px 12px; font-size: 14px; margin-top: 14px; }
+.okmsg.show { display: block; }
+.empty { color: #94a3b8; font-size: 14px; padding: 8px 0; }
+.kp-item { border-top: 1px solid #f1f5f9; padding: 12px 0; }
+.kp-item:first-of-type { border-top: none; }
+.kp-item .t { font-weight: 700; font-size: 16px; color: #0f172a; }
+.kp-item .d { color: #475569; font-size: 14px; margin-top: 4px; line-height: 1.6; }
+.kp-item .m { color: #94a3b8; font-size: 13px; margin-top: 4px; }
+.kp-item.sel { background: #f0fdfa; border-radius: 8px; padding: 12px; }
+.btn { display: inline-block; border: none; border-radius: 8px; padding: 10px 18px; font-size: 15px; font-weight: 700; cursor: pointer; background: #0E6B66; color: #fff; }
+.btn:hover { background: #0a5651; }
+.btn:disabled { opacity: .55; cursor: not-allowed; }
+.btn-small { padding: 6px 12px; font-size: 13px; }
+.btn-ghost { background: #fff; color: #0E6B66; border: 1px solid #0E6B66; }
+.btn-danger { background: #C62828; }
+.btn-danger:hover { background: #a01e1e; }
+.btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+label { display: block; font-size: 14px; font-weight: 700; margin: 12px 0 6px; }
+input, select, textarea { width: 100%; padding: 10px 12px; font-size: 15px; border: 1px solid #cbd5e1; border-radius: 8px; background: #fff; font-family: inherit; line-height: 1.6; }
+input:focus, select:focus, textarea:focus { outline: 2px solid #99d5d1; border-color: #0E6B66; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }
+@media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }
+.table-wrap { overflow-x: auto; margin-top: 8px; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 640px; }
+th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
+th { color: #64748b; font-size: 13px; white-space: nowrap; }
+td .rowbtns { display: flex; gap: 8px; white-space: nowrap; }
+.badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+.badge.lv0 { background: #f1f5f9; color: #64748b; }
+.badge.lv1 { background: #fee2e2; color: #991b1b; }
+.badge.lv2 { background: #fef3c7; color: #92400e; }
+.badge.lv3 { background: #dcfce7; color: #166534; }
+.badge.gray { background: #f1f5f9; color: #64748b; }
+.badge.blue { background: #dbeafe; color: #1e40af; }
+.badge.green { background: #dcfce7; color: #166534; }
+.badge.red { background: #fee2e2; color: #991b1b; }
+.rec { border-top: 1px solid #f1f5f9; padding: 12px 0; font-size: 14px; line-height: 1.7; }
+.rec:first-of-type { border-top: none; }
+.rec .q { color: #0f172a; }
+.rec .a { color: #475569; margin-top: 4px; }
+.rec img.ans-img { max-width: 100%; display: block; margin-top: 8px; border: 1px solid #e2e8f0; border-radius: 8px; }
+.rec .m { color: #94a3b8; font-size: 13px; margin-top: 4px; }
+.grade-box { margin-top: 8px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.grade-box select, .grade-box input { width: auto; padding: 6px 10px; font-size: 14px; }
+.foot { text-align: center; color: #94a3b8; font-size: 13px; }
+.foot a { color: #0E6B66; }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="inner">
+    <h1>学生数学复习平台 · 考点与题目管理</h1>
+    <div class="actions">
+      <a href="../teacher.html">教师首页</a>
+      <a href="../change-password.html">修改密码</a>
+      <button class="linkbtn" id="logoutBtn" type="button">退出登录</button>
+    </div>
+  </div>
+</div>
+<main class="container">
+  <div class="err" id="err"></div>
+
+  <div class="card">
+    <h2>考点列表</h2>
+    <p class="sub">三个试点考点。点「管理题目」进入该考点的题目管理，「查看进度」看学生学习情况。</p>
+    <div id="kpList"><p class="empty">加载中…</p></div>
+  </div>
+
+  <div class="card" id="qCard" hidden>
+    <h2 id="qCardTitle">题目管理</h2>
+    <p class="sub" id="qCardSub"></p>
+    <div class="btn-row" style="margin-top:0;">
+      <button class="btn btn-small" type="button" id="newQBtn">+ 新建题目</button>
+      <button class="btn btn-small btn-ghost" type="button" id="showProgressBtn">查看本考点学生进度</button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>题型</th><th>分类</th><th>题干</th><th>满分</th><th>操作</th></tr>
+        </thead>
+        <tbody id="qBody">
+          <tr><td colspan="5" class="empty">加载中…</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="okmsg" id="qOk"></div>
+    <div class="err" id="qErr" style="margin-top:10px;"></div>
+  </div>
+
+  <div class="card" id="qFormCard" hidden>
+    <h2 id="qFormTitle">新建题目</h2>
+    <form id="qForm">
+      <div class="form-grid">
+        <div>
+          <label for="qfQtype">题型</label>
+          <select id="qfQtype">
+            <option value="single">单选题</option>
+            <option value="multiple">多选题</option>
+            <option value="fill">填空题</option>
+            <option value="constructed">解答题</option>
+            <option value="image">图片题（带图的单选）</option>
+          </select>
+        </div>
+        <div>
+          <label for="qfCategory">分类</label>
+          <select id="qfCategory">
+            <option value="basic">基础过关</option>
+            <option value="advanced">能力提升</option>
+          </select>
+        </div>
+      </div>
+      <label for="qfContent">题干（可用 KaTeX：行内 $...$，独立 $$...$$；填空题用 ___ 表示空）</label>
+      <textarea id="qfContent" rows="3" placeholder="如：已知椭圆过点 $A(1,2)$，求…"></textarea>
+      <label for="qfOptions">选项（单选/多选/图片题必填，每行一个，格式如 A. 选项内容；填空题、解答题留空）</label>
+      <textarea id="qfOptions" rows="4" placeholder="A. x^2/4+y^2/3=1&#10;B. x^2/9+y^2/4=1"></textarea>
+      <label for="qfAnswer">标准答案</label>
+      <textarea id="qfAnswer" rows="2" placeholder="单选/图片题：一个字母，如 B；多选：字母拼接，如 AC；填空题：JSON 数组，如 [[&quot;2&quot;,&quot;二&quot;],[&quot;x=1&quot;]]；解答题：参考答案文字"></textarea>
+      <label for="qfExplanation">解析（答完后展示给学生）</label>
+      <textarea id="qfExplanation" rows="3"></textarea>
+      <div class="form-grid">
+        <div>
+          <label for="qfScore">满分</label>
+          <input id="qfScore" type="number" step="0.5" min="0" value="5">
+        </div>
+        <div>
+          <label for="qfImageUrl">图片地址（图片题必填，相对路径，如 images/kp2-chord.png）</label>
+          <input id="qfImageUrl" type="text" autocomplete="off" placeholder="images/xxx.png">
+        </div>
+      </div>
+      <div class="err" id="qfErr"></div>
+      <div class="btn-row">
+        <button class="btn" type="submit" id="qfSubmit">保存题目</button>
+        <button class="btn btn-ghost" type="button" id="qfCancel">取消</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="card" id="progressCard" hidden>
+    <h2 id="progressTitle">学生进度</h2>
+    <p class="sub">系统判定只看实际答题情况，自评是学生自己的感觉，两者分开显示。</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>学生</th><th>班级</th><th>已答题数</th><th>答对</th><th>正确率</th><th>系统判定</th><th>自评</th><th>操作</th></tr>
+        </thead>
+        <tbody id="progressBody">
+          <tr><td colspan="8" class="empty">加载中…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card" id="studentDetailCard" hidden>
+    <h2 id="studentDetailTitle">学生答题详情</h2>
+    <h3 style="font-size:15px;margin:16px 0 4px;">答题记录</h3>
+    <div id="stuRecords"><p class="empty">加载中…</p></div>
+    <h3 style="font-size:15px;margin:16px 0 4px;">错题</h3>
+    <div id="stuWrong"><p class="empty">加载中…</p></div>
+  </div>
+
+  <p class="foot"><a href="../teacher.html">← 返回教师首页</a></p>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script>
+var me = null;
+var kps = [];
+var curKpId = null;
+var curKpTitle = '';
+var curQuestions = [];
+var editingQid = null;
+
+var MASTERY = ['未开始', '待加强', '基本掌握', '已掌握'];
+var SELF = ['', '完全没掌握', '部分掌握', '基本掌握', '完全掌握'];
+var QTYPE_NAME = { single: '单选', multiple: '多选', fill: '填空', constructed: '解答', image: '图片' };
+var CAT_NAME = { basic: '基础', advanced: '能力' };
+
+function esc(s) {
+  return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+function showBox(id, msg) {
+  var e = document.getElementById(id);
+  e.textContent = msg;
+  e.classList.add('show');
+}
+function hideBox(id) { document.getElementById(id).classList.remove('show'); }
+function renderMath(el) {
+  if (window.renderMathInElement) {
+    try {
+      renderMathInElement(el, {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '$', right: '$', display: false }
+        ],
+        throwOnError: false
+      });
+    } catch (e) {}
+  }
+}
+function masteryBadge(level) {
+  level = level == null ? 0 : level;
+  return '<span class="badge lv' + level + '">' + MASTERY[level] + '</span>';
+}
+
+async function api(path, opts) {
+  opts = opts || {};
+  var headers = { 'Content-Type': 'application/json' };
+  if (opts.csrf) headers['X-CSRF-Token'] = sessionStorage.getItem('csrf_token') || '';
+  var res = await fetch(path, {
+    method: opts.method || 'GET',
+    credentials: 'include',
+    headers: headers,
+    body: opts.body ? JSON.stringify(opts.body) : undefined
+  });
+  var data = null;
+  try { data = await res.json(); } catch (e) {}
+  if (res.status === 403 && opts.csrf && !opts._retried) {
+    try {
+      var meRes = await fetch('/student-api/me', { credentials: 'include' });
+      var meData = await meRes.json();
+      if (meRes.ok && meData.user && meData.user.csrf_token) {
+        sessionStorage.setItem('csrf_token', meData.user.csrf_token);
+        opts._retried = true;
+        return api(path, opts);
+      }
+    } catch (e) {}
+  }
+  return { status: res.status, ok: res.ok, data: data || {} };
+}
+
+async function loadKps() {
+  var r = await api('/student-api/teacher/knowledge-points', {});
+  if (r.status === 401) { location.href = '../login.html'; return; }
+  if (r.status === 403) { showBox('err', '没有教师权限，请用教师账号登录'); return; }
+  if (!r.ok || !r.data.ok) {
+    document.getElementById('kpList').innerHTML = '<p class="empty">考点加载失败，请刷新页面重试</p>';
+    return;
+  }
+  kps = r.data.points || r.data.knowledge_points || [];
+  var box = document.getElementById('kpList');
+  if (!kps.length) {
+    box.innerHTML = '<p class="empty">暂无考点</p>';
+    return;
+  }
+  box.innerHTML = kps.map(function (p) {
+    var count = p.question_count != null ? p.question_count : (p.total_questions != null ? p.total_questions : '');
+    return '<div class="kp-item" data-kp="' + p.id + '">' +
+      '<div class="t">' + esc(p.title || '') + '</div>' +
+      (p.description ? '<div class="d">' + esc(p.description) + '</div>' : '') +
+      '<div class="m">' + (count !== '' ? '题目 ' + count + ' 道' : '') + '</div>' +
+      '<div class="btn-row">' +
+      '<button class="btn btn-small" type="button" data-manage="' + p.id + '">管理题目</button>' +
+      '<button class="btn btn-small btn-ghost" type="button" data-progress="' + p.id + '">查看进度</button>' +
+      '</div></div>';
+  }).join('');
+  renderMath(box);
+  box.querySelectorAll('[data-manage]').forEach(function (b) {
+    b.addEventListener('click', function () { selectKp(parseInt(b.dataset.manage, 10)); });
+  });
+  box.querySelectorAll('[data-progress]').forEach(function (b) {
+    b.addEventListener('click', function () { showProgress(parseInt(b.dataset.progress, 10)); });
+  });
+}
+
+function kpById(id) {
+  for (var i = 0; i < kps.length; i++) {
+    if (String(kps[i].id) === String(id)) return kps[i];
+  }
+  return null;
+}
+
+function selectKp(id) {
+  curKpId = id;
+  var kp = kpById(id);
+  curKpTitle = kp ? (kp.title || '') : '';
+  document.querySelectorAll('.kp-item').forEach(function (el) {
+    el.classList.toggle('sel', String(el.dataset.kp) === String(id));
+  });
+  document.getElementById('qCard').hidden = false;
+  document.getElementById('qCardTitle').textContent = '题目管理 · ' + curKpTitle;
+  document.getElementById('qCardSub').textContent = kp && kp.description ? kp.description : '';
+  document.getElementById('qFormCard').hidden = true;
+  document.getElementById('studentDetailCard').hidden = true;
+  loadQuestions();
+  document.getElementById('qCard').scrollIntoView({ behavior: 'smooth' });
+}
+
+async function loadQuestions() {
+  var body = document.getElementById('qBody');
+  body.innerHTML = '<tr><td colspan="5" class="empty">加载中…</td></tr>';
+  var r = await api('/student-api/teacher/questions?kp=' + curKpId, {});
+  if (r.status === 401) { location.href = '../login.html'; return; }
+  if (!r.ok || !r.data.ok) {
+    body.innerHTML = '<tr><td colspan="5" class="empty">题目加载失败，请刷新页面重试</td></tr>';
+    return;
+  }
+  curQuestions = r.data.questions || [];
+  if (!curQuestions.length) {
+    body.innerHTML = '<tr><td colspan="5" class="empty">该考点暂无题目，点「+ 新建题目」添加</td></tr>';
+    return;
+  }
+  body.innerHTML = curQuestions.map(function (q) {
+    var content = q.content || '';
+    var short = content.length > 40 ? content.slice(0, 40) + '…' : content;
+    return '<tr><td>' + esc(QTYPE_NAME[q.qtype] || q.qtype) + '</td>' +
+      '<td>' + esc(CAT_NAME[q.category] || q.category || '') + '</td>' +
+      '<td>' + esc(short) + '</td>' +
+      '<td>' + esc(q.score) + '</td>' +
+      '<td><div class="rowbtns">' +
+      '<button class="btn btn-small btn-ghost" type="button" data-edit="' + q.id + '">编辑</button>' +
+      '<button class="btn btn-small btn-danger" type="button" data-del="' + q.id + '">删除</button>' +
+      '</div></td></tr>';
+  }).join('');
+  renderMath(body);
+  body.querySelectorAll('[data-edit]').forEach(function (b) {
+    b.addEventListener('click', function () { openEditForm(parseInt(b.dataset.edit, 10)); });
+  });
+  body.querySelectorAll('[data-del]').forEach(function (b) {
+    b.addEventListener('click', function () { deleteQuestion(parseInt(b.dataset.del, 10)); });
+  });
+}
+
+function parseOptions(text) {
+  text = (text || '').trim();
+  if (!text) return [];
+  if (text.charAt(0) === '[') {
+    try {
+      var arr = JSON.parse(text);
+      if (Array.isArray(arr)) return arr;
+    } catch (e) {}
+  }
+  var out = [];
+  text.split('\n').forEach(function (line) {
+    line = line.trim();
+    if (!line) return;
+    var m = line.match(/^([A-Za-z])[\.、\s]+(.*)$/);
+    if (m) out.push({ key: m[1].toUpperCase(), text: m[2].trim() });
+    else out.push({ key: String.fromCharCode(65 + out.length), text: line });
+  });
+  return out;
+}
+
+function optionsToText(options) {
+  if (!options) return '';
+  if (typeof options === 'string') {
+    try {
+      var arr = JSON.parse(options);
+      if (Array.isArray(arr)) options = arr;
+      else return options;
+    } catch (e) { return options; }
+  }
+  if (!Array.isArray(options)) return '';
+  return options.map(function (o) { return o.key + '. ' + (o.text || ''); }).join('\n');
+}
+
+function answerToText(answer, qtype) {
+  if (answer == null) return '';
+  if (qtype === 'fill' || Array.isArray(answer)) {
+    return typeof answer === 'string' ? answer : JSON.stringify(answer);
+  }
+  return String(answer);
+}
+
+function openNewForm() {
+  editingQid = null;
+  document.getElementById('qFormTitle').textContent = '新建题目 · ' + curKpTitle;
+  document.getElementById('qForm').reset();
+  document.getElementById('qfScore').value = '5';
+  document.getElementById('qFormCard').hidden = false;
+  hideBox('qfErr');
+  document.getElementById('qFormCard').scrollIntoView({ behavior: 'smooth' });
+}
+
+function openEditForm(qid) {
+  var q = null;
+  curQuestions.forEach(function (x) { if (String(x.id) === String(qid)) q = x; });
+  if (!q) return;
+  editingQid = qid;
+  document.getElementById('qFormTitle').textContent = '编辑题目 · ' + curKpTitle;
+  document.getElementById('qfQtype').value = q.qtype || 'single';
+  document.getElementById('qfCategory').value = q.category || 'basic';
+  document.getElementById('qfContent').value = q.content || '';
+  document.getElementById('qfOptions').value = optionsToText(q.options);
+  document.getElementById('qfAnswer').value = answerToText(q.answer, q.qtype);
+  document.getElementById('qfExplanation').value = q.explanation || '';
+  document.getElementById('qfScore').value = q.score != null ? q.score : 5;
+  document.getElementById('qfImageUrl').value = q.image_url || '';
+  document.getElementById('qFormCard').hidden = false;
+  hideBox('qfErr');
+  document.getElementById('qFormCard').scrollIntoView({ behavior: 'smooth' });
+}
+
+document.getElementById('newQBtn').addEventListener('click', openNewForm);
+document.getElementById('qfCancel').addEventListener('click', function () {
+  document.getElementById('qFormCard').hidden = true;
+  editingQid = null;
+});
+
+document.getElementById('qForm').addEventListener('submit', async function (e) {
+  e.preventDefault();
+  hideBox('qfErr');
+  var qtype = document.getElementById('qfQtype').value;
+  var content = document.getElementById('qfContent').value.trim();
+  var answerRaw = document.getElementById('qfAnswer').value.trim();
+  if (!content) { showBox('qfErr', '请填写题干'); return; }
+  var options = parseOptions(document.getElementById('qfOptions').value);
+  if ((qtype === 'single' || qtype === 'multiple' || qtype === 'image') && options.length < 2) {
+    showBox('qfErr', '单选/多选/图片题至少需要 2 个选项');
+    return;
+  }
+  var answer = answerRaw;
+  if (qtype === 'fill') {
+    try {
+      answer = JSON.parse(answerRaw);
+      if (!Array.isArray(answer)) throw new Error('bad');
+    } catch (err) {
+      showBox('qfErr', '填空题答案必须是 JSON 数组，如 [["2","二"],["x=1"]]');
+      return;
+    }
+  }
+  if ((qtype === 'single' || qtype === 'multiple' || qtype === 'image') && !answerRaw) {
+    showBox('qfErr', '请填写标准答案（单选一个字母，多选字母拼接，如 AC）');
+    return;
+  }
+  var score = parseFloat(document.getElementById('qfScore').value);
+  if (isNaN(score) || score < 0) { showBox('qfErr', '满分请填不小于 0 的数字'); return; }
+  var body = {
+    knowledge_point_id: curKpId,
+    qtype: qtype,
+    category: document.getElementById('qfCategory').value,
+    content: content,
+    options: options,
+    answer: answer,
+    explanation: document.getElementById('qfExplanation').value.trim(),
+    score: score,
+    image_url: document.getElementById('qfImageUrl').value.trim()
+  };
+  var btn = document.getElementById('qfSubmit');
+  btn.disabled = true;
+  btn.textContent = '保存中…';
+  try {
+    var path = editingQid ? ('/student-api/teacher/questions/' + editingQid) : '/student-api/teacher/questions';
+    var r = await api(path, { method: 'POST', csrf: true, body: body });
+    if (r.status === 401) { location.href = '../login.html'; return; }
+    if (r.ok && r.data.ok) {
+      document.getElementById('qFormCard').hidden = true;
+      editingQid = null;
+      showBox('qOk', '题目已保存');
+      setTimeout(function () { hideBox('qOk'); }, 3000);
+      loadQuestions();
+      loadKps();
+    } else {
+      showBox('qfErr', (r.data && r.data.error) || '保存失败，请稍后再试');
+    }
+  } catch (err) {
+    showBox('qfErr', '网络异常，请检查网络后重试');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '保存题目';
+  }
+});
+
+async function deleteQuestion(qid) {
+  if (!confirm('确定删除这道题吗？该题的答题记录与错题记录也会一并删除。')) return;
+  hideBox('qErr');
+  try {
+    var r = await api('/student-api/teacher/questions/' + qid + '/delete', { method: 'POST', csrf: true });
+    if (r.status === 401) { location.href = '../login.html'; return; }
+    if (r.ok && r.data.ok) {
+      showBox('qOk', '题目已删除');
+      setTimeout(function () { hideBox('qOk'); }, 3000);
+      loadQuestions();
+      loadKps();
+    } else {
+      showBox('qErr', (r.data && r.data.error) || '删除失败，请稍后再试');
+    }
+  } catch (e) {
+    showBox('qErr', '网络异常，请检查网络后重试');
+  }
+}
+
+async function showProgress(kpId) {
+  var kp = kpById(kpId);
+  if (kp) {
+    curKpId = kpId;
+    curKpTitle = kp.title || '';
+    document.querySelectorAll('.kp-item').forEach(function (el) {
+      el.classList.toggle('sel', String(el.dataset.kp) === String(kpId));
+    });
+    document.getElementById('qCard').hidden = false;
+    document.getElementById('qCardTitle').textContent = '题目管理 · ' + curKpTitle;
+    loadQuestions();
+  }
+  var card = document.getElementById('progressCard');
+  card.hidden = false;
+  document.getElementById('progressTitle').textContent = '学生进度' + (kp ? ' · ' + (kp.title || '') : '');
+  var body = document.getElementById('progressBody');
+  body.innerHTML = '<tr><td colspan="8" class="empty">加载中…</td></tr>';
+  var r = await api('/student-api/teacher/progress?kp=' + kpId, {});
+  if (r.status === 401) { location.href = '../login.html'; return; }
+  if (!r.ok || !r.data.ok) {
+    body.innerHTML = '<tr><td colspan="8" class="empty">进度加载失败，请刷新页面重试</td></tr>';
+    return;
+  }
+  var rows = r.data.progress || r.data.students || [];
+  if (!rows.length) {
+    body.innerHTML = '<tr><td colspan="8" class="empty">暂无学生数据</td></tr>';
+    return;
+  }
+  body.innerHTML = rows.map(function (s) {
+    var rate = s.rate != null ? (Math.round(s.rate * 100) + '%') : (s.answered ? Math.round(100 * (s.correct_count || 0) / s.answered) + '%' : '—');
+    return '<tr><td>' + esc(s.name || s.student_name || '') + '</td>' +
+      '<td>' + esc(s.class_name || '') + '</td>' +
+      '<td>' + esc(s.answered != null ? s.answered : 0) + '</td>' +
+      '<td>' + esc(s.correct_count != null ? s.correct_count : 0) + '</td>' +
+      '<td>' + esc(rate) + '</td>' +
+      '<td>' + masteryBadge(s.mastery_level) + '</td>' +
+      '<td>' + esc(s.self_level ? SELF[s.self_level] : '未评价') + '</td>' +
+      '<td><div class="rowbtns"><button class="btn btn-small btn-ghost" type="button" data-stu="' + s.student_id + '" data-name="' + esc(s.name || '') + '">查看记录</button></div></td></tr>';
+  }).join('');
+  body.querySelectorAll('[data-stu]').forEach(function (b) {
+    b.addEventListener('click', function () { showStudentDetail(b.dataset.stu, b.dataset.name); });
+  });
+  card.scrollIntoView({ behavior: 'smooth' });
+}
+
+document.getElementById('showProgressBtn').addEventListener('click', function () {
+  if (curKpId) showProgress(curKpId);
+});
+
+function uploadImgSrc(imagePath) {
+  if (!imagePath) return '';
+  var name = String(imagePath).split('/').pop();
+  return '/student-api/uploads/' + encodeURIComponent(name);
+}
+
+async function showStudentDetail(studentId, studentName) {
+  var card = document.getElementById('studentDetailCard');
+  card.hidden = false;
+  document.getElementById('studentDetailTitle').textContent = '学生答题详情 · ' + studentName;
+  document.getElementById('stuRecords').innerHTML = '<p class="empty">加载中…</p>';
+  document.getElementById('stuWrong').innerHTML = '<p class="empty">加载中…</p>';
+  var rr = await api('/student-api/teacher/student-records?student_id=' + studentId, {});
+  if (rr.status === 401) { location.href = '../login.html'; return; }
+  var recBox = document.getElementById('stuRecords');
+  if (!rr.ok || !rr.data.ok) {
+    recBox.innerHTML = '<p class="empty">答题记录加载失败</p>';
+  } else {
+    var recs = rr.data.records || [];
+    if (!recs.length) {
+      recBox.innerHTML = '<p class="empty">暂无答题记录</p>';
+    } else {
+      recBox.innerHTML = recs.map(function (rec) {
+        var html = '<div class="rec" data-rec="' + rec.id + '">' +
+          '<div class="q">' + esc(rec.content || rec.question || rec.title || ('题目 #' + (rec.question_id || rec.id))) + '</div>';
+        if (rec.knowledge_point_title || rec.kp_title) html += '<div class="m">考点：' + esc(rec.knowledge_point_title || rec.kp_title) + '</div>';
+        if (rec.answer != null && rec.answer !== '') html += '<div class="a">学生答案：' + esc(typeof rec.answer === 'object' ? JSON.stringify(rec.answer) : rec.answer) + '</div>';
+        if (rec.image_path) html += '<img class="ans-img" src="' + esc(uploadImgSrc(rec.image_path)) + '" alt="学生作答图片">';
+        var graded = rec.graded === 1 || rec.graded === true;
+        if (graded) {
+          html += '<div class="m">已批改：' + (rec.correct ? '正确' : '错误') + ' · 得分 ' + esc(rec.score) + ' / ' + esc(rec.max_score) + '</div>';
+        } else {
+          html += '<div class="m"><span class="badge blue">待批改</span></div>' +
+            '<div class="grade-box">' +
+            '<select class="grade-correct"><option value="1">正确</option><option value="0">错误</option></select>' +
+            '<input type="number" step="0.5" min="0" class="grade-score" value="' + esc(rec.max_score != null ? rec.max_score : 5) + '" placeholder="得分">' +
+            '<button class="btn btn-small grade-btn" type="button">提交批改</button>' +
+            '</div>';
+        }
+        if (rec.created_at) html += '<div class="m">' + esc(rec.created_at) + '</div>';
+        return html + '</div>';
+      }).join('');
+      renderMath(recBox);
+      recBox.querySelectorAll('.grade-btn').forEach(function (btn) {
+        btn.addEventListener('click', async function () {
+          var recEl = btn.closest('.rec');
+          var rid = recEl.dataset.rec;
+          var correct = recEl.querySelector('.grade-correct').value === '1';
+          var score = parseFloat(recEl.querySelector('.grade-score').value);
+          if (isNaN(score) || score < 0) { alert('请填写得分'); return; }
+          btn.disabled = true;
+          btn.textContent = '提交中…';
+          try {
+            var gr = await api('/student-api/teacher/grade-answer', {
+              method: 'POST', csrf: true,
+              body: { record_id: parseInt(rid, 10), correct: correct, score: score }
+            });
+            if (gr.status === 401) { location.href = '../login.html'; return; }
+            if (gr.ok && gr.data.ok) {
+              showStudentDetail(studentId, studentName);
+            } else {
+              alert((gr.data && gr.data.error) || '批改失败，请稍后再试');
+              btn.disabled = false;
+              btn.textContent = '提交批改';
+            }
+          } catch (e) {
+            alert('网络异常，请检查网络后重试');
+            btn.disabled = false;
+            btn.textContent = '提交批改';
+          }
+        });
+      });
+    }
+  }
+  var wr = await api('/student-api/teacher/student-wrong?student_id=' + studentId, {});
+  var wrongBox = document.getElementById('stuWrong');
+  if (!wr.ok || !wr.data.ok) {
+    wrongBox.innerHTML = '<p class="empty">错题加载失败</p>';
+  } else {
+    var wrongs = wr.data.wrong_questions || [];
+    if (!wrongs.length) {
+      wrongBox.innerHTML = '<p class="empty">暂无错题</p>';
+    } else {
+      wrongBox.innerHTML = wrongs.map(function (w) {
+        var html = '<div class="rec"><div class="q">' + esc(w.content || w.question || w.title || ('错题 #' + (w.question_id || w.id))) + '</div>';
+        if (w.knowledge_point_title || w.kp_title) html += '<div class="m">考点：' + esc(w.knowledge_point_title || w.kp_title) + '</div>';
+        if (w.correct_answer != null) html += '<div class="a">正确答案：' + esc(typeof w.correct_answer === 'object' ? JSON.stringify(w.correct_answer) : w.correct_answer) + '</div>';
+        if (w.explanation) html += '<div class="a">解析：' + esc(w.explanation) + '</div>';
+        return html + '</div>';
+      }).join('');
+      renderMath(wrongBox);
+    }
+  }
+  card.scrollIntoView({ behavior: 'smooth' });
+}
+
+document.getElementById('logoutBtn').addEventListener('click', async function () {
+  try {
+    await api('/student-api/logout', { method: 'POST', csrf: true });
+  } catch (e) {}
+  sessionStorage.removeItem('csrf_token');
+  location.href = '../login.html';
+});
+
+async function init() {
+  try {
+    var r = await api('/student-api/me', {});
+    if (r.status === 401) { location.href = '../login.html'; return; }
+    if (!r.ok || !r.data.ok || !r.data.user) { showBox('err', '获取登录信息失败，请刷新页面重试'); return; }
+    me = r.data.user;
+    if (me.csrf_token) sessionStorage.setItem('csrf_token', me.csrf_token);
+    if (me.must_change_password === 1 || me.must_change_password === true) {
+      location.href = '../change-password.html';
+      return;
+    }
+    if (me.role !== 'teacher') { location.href = '../student.html'; return; }
+    loadKps();
+  } catch (e) {
+    showBox('err', '网络异常，请检查网络后刷新页面');
+  }
+}
+
+init();
+</script>
+</body>
+</html>
