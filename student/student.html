@@ -233,7 +233,8 @@ function renderKps(points) {
     var badge = done
       ? '<span class="badge done">已完成</span>'
       : '<span class="badge lv' + level + '">' + MASTERY[level] + '</span>';
-    var html = '<div class="kp-card"><div class="t"><a href="learn.html?kp=' + p.id + '">' + esc(p.title || '考点') + '</a> ' + badge + '</div>';
+    var num = (p.sort_order != null && p.sort_order !== '') ? '考点 ' + p.sort_order + ' · ' : '';
+    var html = '<div class="kp-card"><div class="t"><a href="learn.html?kp=' + p.id + '">' + num + esc(p.title || '考点') + '</a> ' + badge + '</div>';
     if (p.description || p.intro) html += '<div class="d">' + esc(p.description || p.intro) + '</div>';
     html += '<div class="prog"><div class="fill" style="width:' + pct + '%"></div></div>' +
       '<div class="prog-text">' + ans + '/' + total + '题 · ' + pct + '%</div>';
