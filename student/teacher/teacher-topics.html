@@ -280,7 +280,7 @@ async function loadKps() {
   box.innerHTML = kps.map(function (p) {
     var count = p.question_count != null ? p.question_count : (p.total_questions != null ? p.total_questions : '');
     return '<div class="kp-item" data-kp="' + p.id + '">' +
-      '<div class="t">' + esc(p.title || '') + '</div>' +
+      '<div class="t">' + (p.sort_order != null ? '考点 ' + p.sort_order + ' · ' : '') + esc(p.title || '') + '</div>' +
       (p.description ? '<div class="d">' + esc(p.description) + '</div>' : '') +
       '<div class="m">' + (count !== '' ? '题目 ' + count + ' 道' : '') + '</div>' +
       '<div class="btn-row">' +
