@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>错题详情 · 学生数学复习平台</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<style>
+* { box-sizing: border-box; }
+body { margin: 0; font-family: -apple-system, "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif; background: #f1f5f9; color: #1e293b; }
+.topbar { background: #0E6B66; color: #fff; padding: 14px 16px; }
+.topbar .inner { max-width: 960px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.topbar h1 { font-size: 18px; margin: 0; }
+.topbar .actions { display: flex; gap: 16px; align-items: center; }
+.topbar a { color: #fff; font-size: 14px; text-decoration: none; }
+.linkbtn { background: none; border: none; color: #fff; font-size: 14px; cursor: pointer; padding: 0; font-family: inherit; }
+.container { max-width: 720px; margin: 0 auto; padding: 24px 16px 40px; }
+.card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+.card h2 { font-size: 18px; margin: 0 0 4px; color: #0f172a; }
+.sec-title { font-size: 20px; font-weight: 700; color: #0f172a; margin: 0 0 6px; }
+.meta { color: #64748b; font-size: 14px; margin: 0; line-height: 1.7; }
+.meta span { margin-right: 16px; }
+.badge { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+.badge.lv0 { background: #f1f5f9; color: #64748b; }
+.badge.lv1 { background: #fee2e2; color: #991b1b; }
+.badge.lv2 { background: #fef3c7; color: #92400e; }
+.badge.lv3 { background: #dcfce7; color: #166534; }
+.empty { color: #94a3b8; font-size: 14px; padding: 8px 0; }
+.err { display: none; background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; border-radius: 8px; padding: 10px 12px; font-size: 14px; margin-bottom: 16px; }
+.err.show { display: block; }
+.q { font-size: 15px; line-height: 1.7; color: #0f172a; }
+.q img.qimg { max-width: 100%; display: block; margin: 8px 0; border: 1px solid #e2e8f0; border-radius: 8px; }
+.qtag { display: inline-block; font-size: 12px; font-weight: 700; color: #0E6B66; background: #f0fdfa; border: 1px solid #99d5d1; border-radius: 999px; padding: 1px 8px; margin-right: 6px; }
+.opts { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+.opt { display: block; width: 100%; text-align: left; padding: 10px 12px; font-size: 15px; border: 1px solid #cbd5e1; border-radius: 8px; background: #fff; cursor: pointer; font-family: inherit; line-height: 1.6; }
+.opt:hover { border-color: #0E6B66; }
+.opt.sel { border-color: #0E6B66; background: #f0fdfa; }
+.opt:disabled { cursor: default; opacity: .75; }
+.opt .key { display: inline-block; min-width: 22px; height: 22px; line-height: 22px; text-align: center; border: 1px solid #cbd5e1; border-radius: 50%; font-size: 13px; font-weight: 700; margin-right: 8px; }
+.opt.sel .key { background: #0E6B66; color: #fff; border-color: #0E6B66; }
+.fill-in { width: 120px; padding: 6px 8px; font-size: 15px; border: 1px solid #cbd5e1; border-radius: 6px; margin: 0 2px; font-family: inherit; }
+.fill-in:focus { outline: 2px solid #99d5d1; border-color: #0E6B66; }
+.btn { display: inline-block; border: none; border-radius: 8px; padding: 10px 18px; font-size: 15px; font-weight: 700; cursor: pointer; background: #0E6B66; color: #fff; margin-top: 12px; }
+.btn:hover { background: #0a5651; }
+.btn:disabled { opacity: .55; cursor: not-allowed; }
+.result { display: none; margin-top: 12px; border-radius: 8px; padding: 12px; font-size: 14px; line-height: 1.7; }
+.result.show { display: block; }
+.result.right { background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; }
+.result.wrong { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
+.result .ans { margin-top: 6px; color: #334155; }
+.ans-line { font-size: 15px; line-height: 1.7; color: #0f172a; margin-top: 8px; }
+.ans-line .lab { font-weight: 700; color: #0E6B66; }
+.note { color: #64748b; font-size: 13px; margin-top: 10px; line-height: 1.6; }
+.foot { text-align: center; color: #94a3b8; font-size: 13px; }
+.foot a { color: #0E6B66; }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="inner">
+    <h1>学生数学复习平台</h1>
+    <div class="actions">
+      <a href="/">返回课件资源站</a>
+      <a href="student.html">我的首页</a>
+      <a href="change-password.html">修改密码</a>
+      <button class="linkbtn" id="logoutBtn" type="button">退出登录</button>
+    </div>
+  </div>
+</div>
+<main class="container">
+  <div class="err" id="err"></div>
+  <div class="card">
+    <p class="sec-title">错题详情 <span id="statusBadge"></span></p>
+    <p class="meta" id="wrongMeta">加载中…</p>
+  </div>
+  <div class="card">
+    <h2>题目</h2>
+    <div id="qArea"><p class="empty">加载中…</p></div>
+  </div>
+  <div class="card">
+    <h2>重新作答</h2>
+    <div id="reArea"><p class="empty">加载中…</p></div>
+    <div class="result" id="reResult"></div>
+    <p class="note">订正：重新作答并答对后，这道题会从错题本里移出，状态变为“已订正”。</p>
+  </div>
+  <div class="card">
+    <h2>当时提交的答案</h2>
+    <div id="subArea"><p class="empty">加载中…</p></div>
+  </div>
+  <div class="card">
+    <h2>正确答案与解析</h2>
+    <div id="ansArea"><p class="empty">加载中…</p></div>
+  </div>
+  <p class="foot"><a href="student.html">← 返回我的首页</a></p>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script>
+var wid = null;
+var wq = null;
+var selected = {};
+var submitted = false;
+
+function showErr(msg) {
+  var e = document.getElementById('err');
+  e.textContent = msg;
+  e.classList.add('show');
+}
+function esc(s) {
+  return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+function renderMath(el) {
+  if (window.renderMathInElement) {
+    try {
+      renderMathInElement(el, {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '$', right: '$', display: false }
+        ],
+        throwOnError: false
+      });
+    } catch (e) {}
+  }
+}
+function setHtml(id, html) {
+  var el = document.getElementById(id);
+  el.innerHTML = html;
+  renderMath(el);
+}
+
+async function api(path, opts) {
+  opts = opts || {};
+  var headers = { 'Content-Type': 'application/json' };
+  if (opts.csrf) headers['X-CSRF-Token'] = sessionStorage.getItem('csrf_token') || '';
+  var res = await fetch(path, {
+    method: opts.method || 'GET',
+    credentials: 'include',
+    headers: headers,
+    body: opts.body ? JSON.stringify(opts.body) : undefined
+  });
+  var data = null;
+  try { data = await res.json(); } catch (e) {}
+  if (res.status === 403 && opts.csrf && !opts._retried) {
+    try {
+      var meRes = await fetch('/student-api/me', { credentials: 'include' });
+      var meData = await meRes.json();
+      if (meRes.ok && meData.user && meData.user.csrf_token) {
+        sessionStorage.setItem('csrf_token', meData.user.csrf_token);
+        opts._retried = true;
+        return api(path, opts);
+      }
+    } catch (e) {}
+  }
+  return { status: res.status, ok: res.ok, data: data || {} };
+}
+
+var QTYPE_NAME = { single: '单选题', multiple: '多选题', fill: '填空题', constructed: '解答题', image: '图片题' };
+
+function fillInputsHtml(content) {
+  var parts = esc(content).split(/_{3,}/);
+  var html = '';
+  for (var i = 0; i < parts.length; i++) {
+    html += parts[i];
+    if (i < parts.length - 1) {
+      html += '<input type="text" class="fill-in" data-blank="' + i + '" autocomplete="off">';
+    }
+  }
+  return html;
+}
+
+function formatAnswerText(ans, qtype) {
+  if (ans == null || ans === '') return '（未填写）';
+  if (qtype === 'fill') {
+    try {
+      var arr = typeof ans === 'string' ? JSON.parse(ans) : ans;
+      if (Array.isArray(arr)) {
+        return arr.map(function (v, i) {
+          var list = Array.isArray(v) ? v : [v];
+          return '第 ' + (i + 1) + ' 空：' + list.join(' 或 ');
+        }).join('；');
+      }
+    } catch (e) {}
+    return String(ans);
+  }
+  return String(ans);
+}
+
+function renderDetail(w) {
+  wq = w;
+  var resolved = w.resolved === 1 || w.resolved === true;
+  document.getElementById('statusBadge').innerHTML = resolved
+    ? '<span class="badge lv3">已订正</span>'
+    : '<span class="badge lv1">待订正</span>';
+  var meta = [];
+  if (w.kp_title) meta.push('考点：' + w.kp_title);
+  if (w.category === 'basic') meta.push('基础过关');
+  else if (w.category === 'advanced') meta.push('能力提升');
+  meta.push(QTYPE_NAME[w.qtype] || w.qtype);
+  if (w.wrong_count) meta.push('错了 ' + w.wrong_count + ' 次');
+  if (w.first_wrong_at) meta.push('首次答错：' + w.first_wrong_at);
+  document.getElementById('wrongMeta').textContent = meta.join(' · ');
+
+  // 题目
+  var qh = '<div class="q"><span class="qtag">' + esc(QTYPE_NAME[w.qtype] || w.qtype) + '</span><span class="qtag">' + esc(w.score) + ' 分</span>';
+  if (w.qtype === 'fill') {
+    qh += fillInputsHtml(w.content || '').replace(/<input[^>]*>/g, '<span style="border-bottom:2px solid #94a3b8;padding:0 24px;">&nbsp;</span>');
+  } else {
+    qh += esc(w.content || '');
+  }
+  qh += '</div>';
+  if (w.image_url) {
+    qh += '<div class="q"><img class="qimg" src="' + esc(w.image_url) + '" alt="题目图"></div>';
+  }
+  if ((w.qtype === 'single' || w.qtype === 'multiple' || w.qtype === 'image') && w.options && w.options.length) {
+    qh += '<div class="q" style="margin-top:10px;">';
+    w.options.forEach(function (o) {
+      qh += '<div style="margin:4px 0;"><b>' + esc(o.key) + '.</b> ' + esc(o.text || '') + '</div>';
+    });
+    qh += '</div>';
+  }
+  setHtml('qArea', qh);
+
+  // 当时提交的答案
+  var sub = '';
+  if (w.submitted_answer != null) {
+    sub = '<div class="ans-line"><span class="lab">我的答案：</span>' + esc(formatAnswerText(w.submitted_answer, w.qtype)) + '</div>';
+    if (w.submitted_at) sub += '<div class="ans-line"><span class="lab">提交时间：</span>' + esc(w.submitted_at) + '</div>';
+    if (w.submitted_score != null) sub += '<div class="ans-line"><span class="lab">当时得分：</span>' + esc(w.submitted_score) + ' / ' + esc(w.score) + ' 分</div>';
+  } else {
+    sub = '<p class="empty">没有找到当时的答错记录。</p>';
+  }
+  setHtml('subArea', sub);
+
+  // 正确答案与解析
+  var ah = '<div class="ans-line"><span class="lab">正确答案：</span>' + esc(formatAnswerText(w.answer, w.qtype)) + '</div>';
+  if (w.explanation) ah += '<div class="ans-line"><span class="lab">解析：</span>' + esc(w.explanation) + '</div>';
+  setHtml('ansArea', ah);
+
+  renderReArea();
+}
+
+function renderReArea() {
+  var w = wq;
+  var box = document.getElementById('reArea');
+  var res = document.getElementById('reResult');
+  res.className = 'result';
+  res.innerHTML = '';
+  if (w.resolved === 1 || w.resolved === true) {
+    box.innerHTML = '<p class="empty">这道题已经订正过了。如需再练一遍，可以去考点学习页重新作答。</p>';
+    return;
+  }
+  if (w.qtype === 'constructed') {
+    box.innerHTML = '<p class="empty">解答题请到考点学习页重新提交，等待老师批改。</p>';
+    return;
+  }
+  selected = {};
+  submitted = false;
+  var html = '';
+  if (w.qtype === 'fill') {
+    html += '<div class="q">' + fillInputsHtml(w.content || '') + '</div>';
+  } else if (w.options && w.options.length) {
+    html += '<div class="opts">';
+    w.options.forEach(function (o) {
+      html += '<button type="button" class="opt" data-key="' + esc(o.key) + '"><span class="key">' + esc(o.key) + '</span>' + esc(o.text || '') + '</button>';
+    });
+    html += '</div>';
+  }
+  html += '<button type="button" class="btn" id="reSubmit">提交订正</button>';
+  box.innerHTML = html;
+  renderMath(box);
+  box.querySelectorAll('.opt').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      if (submitted) return;
+      var key = btn.dataset.key;
+      if (w.qtype === 'multiple') {
+        if (selected[key]) { delete selected[key]; btn.classList.remove('sel'); }
+        else { selected[key] = true; btn.classList.add('sel'); }
+      } else {
+        selected = {};
+        selected[key] = true;
+        box.querySelectorAll('.opt').forEach(function (b) { b.classList.remove('sel'); });
+        btn.classList.add('sel');
+      }
+    });
+  });
+  document.getElementById('reSubmit').addEventListener('click', submitReAnswer);
+}
+
+async function submitReAnswer() {
+  if (submitted || !wq) return;
+  var w = wq;
+  var box = document.getElementById('reArea');
+  var body = { question_id: w.question_id };
+  if (w.qtype === 'single' || w.qtype === 'image') {
+    var keys = Object.keys(selected);
+    if (!keys.length) { alert('请先选择一个选项'); return; }
+    body.answer = keys[0];
+  } else if (w.qtype === 'multiple') {
+    var mkeys = Object.keys(selected).sort();
+    if (!mkeys.length) { alert('请先选择至少一个选项'); return; }
+    body.answer = mkeys.join('');
+  } else if (w.qtype === 'fill') {
+    var vals = [];
+    box.querySelectorAll('.fill-in').forEach(function (inp) { vals.push(inp.value); });
+    body.answer = vals;
+  } else {
+    return;
+  }
+  var btn = document.getElementById('reSubmit');
+  btn.disabled = true;
+  btn.textContent = '提交中…';
+  try {
+    var r = await api('/student-api/answer', { method: 'POST', csrf: true, body: body });
+    if (r.status === 401) { location.href = 'login.html'; return; }
+    if (r.ok && r.data.ok) {
+      submitted = true;
+      box.querySelectorAll('.opt, .fill-in').forEach(function (el) { el.disabled = true; });
+      btn.textContent = '已提交';
+      var res = document.getElementById('reResult');
+      if (r.data.correct) {
+        res.className = 'result show right';
+        res.innerHTML = '<b>订正成功！</b>得分 ' + r.data.score + ' / ' + r.data.max_score + ' 分，这道题已从错题本移出。';
+      } else {
+        res.className = 'result show wrong';
+        var h = '<b>还是错了，再想想。</b>得分 ' + r.data.score + ' / ' + r.data.max_score + ' 分';
+        if (r.data.correct_answer != null && r.data.correct_answer !== '') {
+          h += '<div class="ans">正确答案：' + esc(formatAnswerText(r.data.correct_answer, w.qtype)) + '</div>';
+        }
+        if (r.data.explanation) h += '<div class="ans">解析：' + esc(r.data.explanation) + '</div>';
+        res.innerHTML = h;
+        renderMath(res);
+      }
+      // 刷新详情，更新订正状态
+      var d = await api('/student-api/student/wrong-questions/' + wid, {});
+      if (d.ok && d.data.ok) renderDetail(d.data.wrong_question);
+    } else {
+      alert((r.data && r.data.error) || '提交失败，请稍后再试');
+      btn.disabled = false;
+      btn.textContent = '提交订正';
+    }
+  } catch (e) {
+    alert('网络异常，请检查网络后重试');
+    btn.disabled = false;
+    btn.textContent = '提交订正';
+  }
+}
+
+async function init() {
+  try {
+    var params = new URLSearchParams(location.search);
+    wid = params.get('wid');
+    if (!wid) { showErr('缺少错题编号，请从“我的错题”里点进来'); return; }
+    var m = await api('/student-api/me', {});
+    if (m.status === 401) { location.href = 'login.html'; return; }
+    if (!m.ok || !m.data.ok || !m.data.user) { showErr('获取登录信息失败，请刷新页面重试'); return; }
+    if (m.data.user.csrf_token) sessionStorage.setItem('csrf_token', m.data.user.csrf_token);
+    if (m.data.user.must_change_password === 1 || m.data.user.must_change_password === true) {
+      location.href = 'change-password.html';
+      return;
+    }
+    if (m.data.user.role !== 'student') { location.href = 'login.html'; return; }
+    var r = await api('/student-api/student/wrong-questions/' + wid, {});
+    if (r.status === 401) { location.href = 'login.html'; return; }
+    if (r.status === 404) { showErr('这道错题不存在，或者不是你的错题'); return; }
+    if (r.ok && r.data.ok) renderDetail(r.data.wrong_question);
+    else showErr('错题加载失败，请刷新页面重试');
+  } catch (e) {
+    showErr('网络异常，请检查网络后刷新页面');
+  }
+}
+
+document.getElementById('logoutBtn').addEventListener('click', async function () {
+  try {
+    await api('/student-api/logout', { method: 'POST', csrf: true });
+  } catch (e) {}
+  sessionStorage.removeItem('csrf_token');
+  location.href = 'login.html';
+});
+
+init();
+</script>
+</body>
+</html>

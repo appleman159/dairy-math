@@ -41,6 +41,11 @@ body { margin: 0; font-family: -apple-system, "PingFang SC", "Microsoft YaHei", 
 .kp-item .m { color: #94a3b8; font-size: 13px; margin-top: 4px; }
 .foot { text-align: center; color: #94a3b8; font-size: 13px; }
 .foot a { color: #0E6B66; }
+.wrong-link { display: block; text-decoration: none; color: inherit; cursor: pointer; border-top: 1px solid #f1f5f9; padding: 12px 0; }
+.wrong-link:first-of-type { border-top: none; }
+.wrong-link:hover .t { color: #0E6B66; }
+.wrong-link .t { font-weight: 700; font-size: 15px; color: #0f172a; }
+.wrong-link .m { color: #94a3b8; font-size: 13px; margin-top: 4px; }
 </style>
 </head>
 <body>
@@ -117,15 +122,25 @@ function renderTasks(tasks) {
   }).join('');
 }
 
+function plainTitle(s, n) {
+  var t = String(s == null ? '' : s).replace(/\$/g, '');
+  return t.length > n ? t.slice(0, n) + '…' : t;
+}
+
 function renderWrong(list) {
   var box = document.getElementById('wrongList');
   document.getElementById('wrongCount').textContent = list.length ? '（' + list.length + '）' : '';
   if (!list.length) { box.innerHTML = '<p class="empty">暂无错题，继续保持</p>'; return; }
   box.innerHTML = list.map(function (w) {
-    var title = w.title || w.question || w.question_text || ('错题 #' + (w.question_id || w.id || ''));
-    var html = '<div class="item"><div class="t">' + esc(title) + '</div>';
-    if (w.topic || w.knowledge_point) html += '<div class="m">考点：' + esc(w.topic || w.knowledge_point) + '</div>';
-    return html + '</div>';
+    var title = plainTitle(w.content || w.title || w.question || '', 45) || ('错题 #' + (w.question_id || w.id || ''));
+    var meta = [];
+    if (w.kp_title) meta.push('考点：' + w.kp_title);
+    if (w.wrong_count) meta.push('错了 ' + w.wrong_count + ' 次');
+    if (w.first_wrong_at) meta.push('首次答错：' + w.first_wrong_at);
+    var html = '<a class="wrong-link" href="wrong-detail.html?wid=' + w.id + '"><div class="t">' + esc(title) + '</div>';
+    if (meta.length) html += '<div class="m">' + esc(meta.join(' · ')) + '</div>';
+    html += '<div class="m"><span class="badge lv1">待订正</span> 查看详情 →</div></a>';
+    return html;
   }).join('');
 }
 
