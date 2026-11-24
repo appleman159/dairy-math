@@ -562,6 +562,13 @@ function uploadImgSrc(imagePath) {
   return '/student-api/uploads/' + encodeURIComponent(name);
 }
 
+function qImgSrc(imageUrl) {
+  if (!imageUrl) return '';
+  var u = String(imageUrl);
+  if (u.indexOf('http://') === 0 || u.indexOf('https://') === 0 || u.charAt(0) === '/') return u;
+  return '../' + u;
+}
+
 async function showStudentDetail(studentId, studentName) {
   var card = document.getElementById('studentDetailCard');
   card.hidden = false;
@@ -581,6 +588,7 @@ async function showStudentDetail(studentId, studentName) {
       recBox.innerHTML = recs.map(function (rec) {
         var html = '<div class="rec" data-rec="' + rec.id + '">' +
           '<div class="q">' + esc(rec.content || rec.question || rec.title || ('题目 #' + (rec.question_id || rec.id))) + '</div>';
+        if (rec.image_url) html += '<img class="qimg" src="' + esc(qImgSrc(rec.image_url)) + '" alt="题目图">';
         if (rec.knowledge_point_title || rec.kp_title) html += '<div class="m">考点：' + esc(rec.knowledge_point_title || rec.kp_title) + '</div>';
         if (rec.answer != null && rec.answer !== '') html += '<div class="a">学生答案：' + esc(typeof rec.answer === 'object' ? JSON.stringify(rec.answer) : rec.answer) + '</div>';
         if (rec.image_path) html += '<img class="ans-img" src="' + esc(uploadImgSrc(rec.image_path)) + '" alt="学生作答图片">';
@@ -641,6 +649,7 @@ async function showStudentDetail(studentId, studentName) {
     } else {
       wrongBox.innerHTML = wrongs.map(function (w) {
         var html = '<div class="rec"><div class="q">' + esc(w.content || w.question || w.title || ('错题 #' + (w.question_id || w.id))) + '</div>';
+        if (w.image_url) html += '<img class="qimg" src="' + esc(qImgSrc(w.image_url)) + '" alt="题目图">';
         if (w.knowledge_point_title || w.kp_title) html += '<div class="m">考点：' + esc(w.knowledge_point_title || w.kp_title) + '</div>';
         if (w.correct_answer != null) html += '<div class="a">正确答案：' + esc(typeof w.correct_answer === 'object' ? JSON.stringify(w.correct_answer) : w.correct_answer) + '</div>';
         if (w.explanation) html += '<div class="a">解析：' + esc(w.explanation) + '</div>';
