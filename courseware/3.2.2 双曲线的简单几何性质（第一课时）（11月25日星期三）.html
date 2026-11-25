@@ -3314,5 +3314,83 @@ document.addEventListener('DOMContentLoaded', function () {
   window.addEventListener('load', function () { schedule(); setTimeout(schedule, 400); });
 })();
 </script>
+<style id="mobile-adapt">
+/* ================= 手机端专项适配（v3 追加；桌面/投屏端原样式不受影响） =================
+   1) 左栏 45vh 底部留白清零：投屏端给控制条留的空位在手机上变成约 380px 纯空白
+   2) 封面锁进视口宽度：标题与作业行不再被 .cover-stage 的 overflow:hidden 裁掉
+   3) 100vh -> 100dvh：手机浏览器地址栏不再压住底部控制条
+   4) 滚到底不再被固定控制条永久遮住最后一段内容（底部避让 + 安全区）
+   5) 手指落在图形上也能正常翻页滑动（原 touch-action:none 会把整页卡住）
+   6) 小屏控制条图标化 + 触控目标 >=44px；表格 / 公式 / 控件收紧字号内边距
+======================================================================================= */
+@media (max-width: 1100px) {
+  html, body { height: 100dvh !important; }
+
+  body:not(.cover-mode) #leftPane, #leftPane { padding-bottom: 6px !important; }
+  #splitContainer { padding: 8px 8px calc(118px + env(safe-area-inset-bottom, 0px)) !important; }
+  #rightScrollBody { padding-bottom: 6px !important; }
+
+  .cover-stage { min-height: calc(100dvh - 8.5rem) !important; padding: 0 10px !important; }
+  body .cover-stage .cover-inner, .cover-inner {
+    width: 100% !important; max-width: 100% !important;
+    min-width: 0 !important; padding: 1rem .3rem !important;
+  }
+  .cover-inner * { min-width: 0 !important; overflow-wrap: anywhere !important; word-break: break-word; }
+  .cover-inner h1, .cover-inner h2, .cover-inner div, .cover-inner .flow, .cover-inner .flow * {
+    white-space: normal !important;
+  }
+  body .cover-stage .cover-inner .cover-title, .cover-title {
+    font-size: clamp(1.5rem, 6.8vw, 2.15rem) !important; line-height: 1.2 !important;
+  }
+  .cover-sub { font-size: clamp(.98rem, 4vw, 1.2rem) !important; }
+
+  .hyp-svg, .lab-wrap, .lab-wrap svg { touch-action: pan-y !important; }
+
+  .hyp-cmp { width: 100% !important; font-size: .82rem !important; }
+  .hyp-cmp th, .hyp-cmp td { padding: .3rem .22rem !important; word-break: break-word; }
+  .hyp-cmp td:first-child { white-space: normal !important; }
+
+  .katex { font-size: .98em !important; }
+  .katex-display { padding: .4em .5em !important; }
+  .step-body { font-size: 1rem !important; line-height: 1.85 !important; }
+
+  .page-pop {
+    left: 8px !important; right: 8px !important; max-width: none !important;
+    bottom: calc(124px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+  .page-pop button { min-height: 38px; }
+  #navDock .pal-panel { bottom: calc(56px + env(safe-area-inset-bottom, 0px)) !important; }
+  #globalDrawToolbar {
+    bottom: calc(124px + env(safe-area-inset-bottom, 0px)) !important;
+    right: 8px !important; flex-wrap: wrap; max-width: calc(100vw - 16px);
+  }
+  #globalDrawToolbar button { min-height: 34px; min-width: 34px; }
+  .hyp-fig-zoom button { width: 2.4rem; height: 2.4rem; }
+  .hyp-slider-row input[type=checkbox] { width: 1.35rem; height: 1.35rem; }
+  .param-controls input[type=range] { width: min(100%, 180px) !important; height: 30px !important; }
+  .dock-btn, .hyp-fig-zoom button, .page-pop button { -webkit-tap-highlight-color: transparent; }
+}
+
+@media (max-width: 640px) {
+  .nav-dock {
+    gap: 5px !important; padding: 6px !important;
+    padding-bottom: calc(6px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+  #navDock .dock-btn {
+    height: 44px !important; min-width: 44px !important; flex: 1 1 0 !important;
+    padding: 0 !important; gap: 3px !important;
+    justify-content: center !important; font-size: 0 !important;
+  }
+  #navDock .dock-btn i, #navDock .dock-btn .fa-solid { font-size: 17px !important; }
+  #navDock .dock-btn .dock-label { display: none !important; }
+  #stepBadge { font-size: 10px !important; opacity: 1 !important; }
+  .dock-page { height: 44px !important; min-width: 52px !important; font-size: 12px !important; }
+  #splitContainer { padding-bottom: calc(128px + env(safe-area-inset-bottom, 0px)) !important; }
+  .page-pop, #globalDrawToolbar { bottom: calc(134px + env(safe-area-inset-bottom, 0px)) !important; }
+  .hyp-cmp { font-size: .76rem !important; }
+  .pc, .step-card { padding: .7rem .75rem !important; }
+  .step-body { font-size: .97rem !important; line-height: 1.8 !important; }
+}
+</style>
 </body>
 </html>
