@@ -3074,6 +3074,7 @@ window.addEventListener('resize', function () {
 });
 
 document.addEventListener('DOMContentLoaded', function () {
+  if (window.innerWidth <= 640) fontScale = 1.0; // 手机默认 100%，不沿用投屏的 180%
   document.documentElement.style.setProperty('--font-scale', fontScale);
   el('fontScaleLabel').textContent = Math.round(fontScale * 100) + '%';
   initSplitDrag();
