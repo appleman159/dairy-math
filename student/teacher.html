@@ -572,7 +572,6 @@ async function replyQuestion(qid) {
 }
 
 async function deleteQuestion(qid) {
-  if (!confirm('确定删除这条提问吗？')) return;
   var r = await api('/student-api/teacher/student-questions/' + qid + '/delete', { method: 'POST', csrf: true, body: {} });
   if (r.status === 401) { location.href = 'login.html'; return; }
   if (r.ok && r.data.ok) loadQuestions();
