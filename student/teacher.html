@@ -99,6 +99,29 @@ td .rowbtns { display: flex; gap: 8px; }
   </div>
 
   <div class="card">
+    <h2>学生成绩</h2>
+    <p class="sub">三次考试成绩与趋势（总分、班排 / 年级）· 学生端只显示自己的成绩</p>
+    <div style="margin-bottom:8px;">
+      <label for="gradesClassFilter">班级</label>
+      <select id="gradesClassFilter" style="margin-left:6px;padding:6px 8px;border:1px solid #cbd5e1;border-radius:8px;">
+        <option value="">全部班级</option>
+      </select>
+      <span class="sub" style="margin-left:12px;">共 <span id="gradesCount">0</span> 人</span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>姓名</th><th>班级</th><th>高一二阶</th><th>高一期末</th><th>高二阶段考1</th><th>客观</th><th>主观</th><th>趋势</th><th>分类</th></tr>
+        </thead>
+        <tbody id="gradesBody">
+          <tr><td colspan="9" class="empty">加载中…</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="err" id="gradesErr"></div>
+  </div>
+
+  <div class="card">
     <h2>新建学生</h2>
     <p class="sub">学生首次登录后需要修改初始密码</p>
     <form id="newStudentForm">
@@ -168,6 +191,54 @@ td .rowbtns { display: flex; gap: 8px; }
 var me = null;
 var classes = [];
 var resetStudentId = null;
+var allGrades = [];
+
+function examCell(e) {
+  if (!e) return '—';
+  var t = (e.total == null || e.total === '') ? '—' : e.total;
+  if (t === '缺考') return '缺考';
+  return t + '（' + (e.class_rank || '—') + '/' + (e.grade_rank || '—') + '）';
+}
+
+function renderGrades() {
+  var filter = document.getElementById('gradesClassFilter').value;
+  var list = allGrades.filter(function (g) {
+    return !filter || String(g.class_id) === String(filter);
+  });
+  document.getElementById('gradesCount').textContent = list.length;
+  var body = document.getElementById('gradesBody');
+  if (!list.length) {
+    body.innerHTML = '<tr><td colspan="9" class="empty">暂无成绩数据</td></tr>';
+    return;
+  }
+  body.innerHTML = list.map(function (g) {
+    var ex = g.exams || [];
+    return '<tr><td>' + esc(g.name || '') + '</td><td>' + esc(g.class_name || '') + '</td>' +
+      '<td>' + esc(examCell(ex[0])) + '</td><td>' + esc(examCell(ex[1])) + '</td><td>' + esc(examCell(ex[2])) + '</td>' +
+      '<td>' + esc(g.objective_rate || '—') + '</td><td>' + esc(g.subjective_rate || '—') + '</td>' +
+      '<td>' + esc(g.trend || '—') + '</td><td>' + esc(g.category || '—') + '</td></tr>';
+  }).join('');
+}
+
+async function loadGrades() {
+  var r = await api('/student-api/teacher/grades', {});
+  if (r.status === 401) { location.href = 'login.html'; return; }
+  if (r.status === 403) { showErr('没有教师权限，请用教师账号登录'); return; }
+  if (r.ok && r.data.ok) {
+    allGrades = r.data.grades || [];
+    var sel = document.getElementById('gradesClassFilter');
+    var cur = sel.value;
+    sel.innerHTML = '<option value="">全部班级</option>' + (r.data.classes || []).map(function (c) {
+      return '<option value="' + esc(c.id) + '">' + esc(c.name) + '</option>';
+    }).join('');
+    sel.value = cur;
+    renderGrades();
+  } else {
+    showBox('gradesErr', (r.data && r.data.error) || '成绩加载失败，请刷新页面重试');
+  }
+}
+
+document.getElementById('gradesClassFilter').addEventListener('change', renderGrades);
 
 function esc(s) {
   return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -435,6 +506,7 @@ async function init() {
     document.getElementById('userLine').textContent = '用户名：' + me.username;
     await loadClasses();
     loadStudents();
+    loadGrades();
   } catch (e) {
     showErr('网络异常，请检查网络后刷新页面');
   }

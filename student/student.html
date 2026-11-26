@@ -56,6 +56,13 @@ body { margin: 0; font-family: -apple-system, "PingFang SC", "Microsoft YaHei", 
 .wrong-link:hover .t { color: #0E6B66; }
 .wrong-link .t { font-weight: 700; font-size: 15px; color: #0f172a; }
 .wrong-link .m { color: #94a3b8; font-size: 13px; margin-top: 4px; }
+.gtable { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 14px; }
+.gtable th, .gtable td { border-bottom: 1px solid #f1f5f9; padding: 8px 4px; text-align: center; }
+.gtable th { color: #64748b; font-weight: 600; }
+.gtable td:first-child, .gtable th:first-child { text-align: left; }
+.gtable td.num { font-weight: 700; color: #0f172a; }
+.gmeta { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 12px; font-size: 14px; color: #475569; }
+.gmeta b { color: #0f172a; }
 </style>
 </head>
 <body>
@@ -74,6 +81,10 @@ body { margin: 0; font-family: -apple-system, "PingFang SC", "Microsoft YaHei", 
   <div class="card">
     <p class="welcome" id="welcome">你好</p>
     <p class="meta"><span id="classLine"></span><span id="userLine"></span></p>
+  </div>
+  <div class="card" id="gradesCard" style="display:none">
+    <h2>我的成绩</h2>
+    <div id="gradesBody"><p class="empty">加载中…</p></div>
   </div>
   <div class="card">
     <h2>我的学习情况</h2>
@@ -253,8 +264,41 @@ async function loadKps() {
   else document.getElementById('kpList').innerHTML = '<p class="empty">考点加载失败，请刷新页面重试</p>';
 }
 
+function renderGrades(g) {
+  var card = document.getElementById('gradesCard');
+  var box = document.getElementById('gradesBody');
+  if (!g) {
+    card.style.display = 'none';
+    return;
+  }
+  card.style.display = '';
+  var html = '<table class="gtable"><thead><tr><th>考试</th><th>总分</th><th>班排</th><th>年级</th></tr></thead><tbody>';
+  (g.exams || []).forEach(function (e) {
+    html += '<tr><td>' + esc(e.name) + '</td><td class="num">' + esc(e.total) + '</td><td>' + esc(e.class_rank) + '</td><td>' + esc(e.grade_rank) + '</td></tr>';
+  });
+  html += '</tbody></table>';
+  var meta = [];
+  if (g.objective_rate) meta.push('客观得分率 <b>' + esc(g.objective_rate) + '</b>');
+  if (g.subjective_rate) meta.push('主观得分率 <b>' + esc(g.subjective_rate) + '</b>');
+  if (g.trend) meta.push('三次趋势 <b>' + esc(g.trend) + '</b>');
+  if (g.category) meta.push('分类 <b>' + esc(g.category) + '</b>');
+  if (meta.length) html += '<div class="gmeta"><span>' + meta.join('</span><span>') + '</span></div>';
+  box.innerHTML = html;
+}
+
+async function loadGrades() {
+  var g = await api('/student-api/student/grades', {});
+  if (g.status === 401) { location.href = 'login.html'; return; }
+  if (g.ok && g.data.ok) renderGrades(g.data.grades);
+  else {
+    document.getElementById('gradesCard').style.display = '';
+    document.getElementById('gradesBody').innerHTML = '<p class="empty">成绩加载失败，请刷新页面重试</p>';
+  }
+}
+
 async function loadAll() {
   loadKps();
+  loadGrades();
 
   var t = await api('/student-api/student/tasks', {});
   if (t.status === 401) { location.href = 'login.html'; return; }
