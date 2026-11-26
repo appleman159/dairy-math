@@ -511,21 +511,6 @@ document.getElementById('logoutBtn').addEventListener('click', async function ()
   location.href = 'login.html';
 });
 
-async function init() {
-  try {
-    var r = await api('/student-api/me', {});
-    if (r.status === 401) { location.href = 'login.html'; return; }
-    if (!r.ok || !r.data.ok || !r.data.user) { showErr('获取登录信息失败，请刷新页面重试'); return; }
-    me = r.data.user;
-    if (me.csrf_token) sessionStorage.setItem('csrf_token', me.csrf_token);
-    if (me.must_change_password === 1 || me.must_change_password === true) {
-      location.href = 'change-password.html';
-      return;
-    }
-    if (me.role !== 'teacher') { location.href = 'student.html'; return; }
-    document.getElementById('welcome').textContent = '你好，' + (me.name || me.username) + '老师';
-    document.getElementById('userLine').textContent = '用户名：' + me.username;
-
 var allQuestions = [];
 
 function renderQuestions() {
@@ -596,6 +581,21 @@ async function deleteQuestion(qid) {
 
 document.getElementById('qClassFilter').addEventListener('change', renderQuestions);
 document.getElementById('qStatusFilter').addEventListener('change', renderQuestions);
+
+async function init() {
+  try {
+    var r = await api('/student-api/me', {});
+    if (r.status === 401) { location.href = 'login.html'; return; }
+    if (!r.ok || !r.data.ok || !r.data.user) { showErr('获取登录信息失败，请刷新页面重试'); return; }
+    me = r.data.user;
+    if (me.csrf_token) sessionStorage.setItem('csrf_token', me.csrf_token);
+    if (me.must_change_password === 1 || me.must_change_password === true) {
+      location.href = 'change-password.html';
+      return;
+    }
+    if (me.role !== 'teacher') { location.href = 'student.html'; return; }
+    document.getElementById('welcome').textContent = '你好，' + (me.name || me.username) + '老师';
+    document.getElementById('userLine').textContent = '用户名：' + me.username;
 
     await loadClasses();
     loadStudents();
