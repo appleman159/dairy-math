@@ -55,6 +55,15 @@ td .rowbtns { display: flex; gap: 8px; }
 .modal-card p { color: #64748b; font-size: 14px; margin: 0 0 6px; }
 .modal-btns { display: flex; gap: 10px; margin-top: 18px; }
 .modal-btns .btn { flex: 1; }
+
+.item { border-top: 1px solid #f1f5f9; padding: 12px 0; }
+.item:first-of-type { border-top: none; }
+.item .t { font-weight: 700; font-size: 15px; color: #0f172a; }
+.item .d { color: #475569; font-size: 14px; margin-top: 4px; line-height: 1.6; }
+.item .m { color: #94a3b8; font-size: 13px; margin-top: 4px; }
+.qimg { max-width: 100%; border-radius: 8px; margin-top: 8px; border: 1px solid #e2e8f0; }
+.qreply { background: #f0fdfa; border: 1px solid #99d5d1; border-radius: 8px; padding: 10px 12px; margin-top: 8px; font-size: 14px; line-height: 1.6; }
+.qreply .who { color: #0E6B66; font-weight: 700; }
 </style>
 </head>
 <body>
@@ -119,6 +128,18 @@ td .rowbtns { display: flex; gap: 8px; }
       </table>
     </div>
     <div class="err" id="gradesErr"></div>
+  </div>
+
+  <div class="card">
+    <h2>学生提问</h2>
+    <p class="sub">学生提交的问题集中在这里，可以回复或删除</p>
+    <div style="margin-bottom:8px; display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
+      <label>班级 <select id="qClassFilter" style="padding:6px 8px;border:1px solid #cbd5e1;border-radius:8px;"><option value="">全部班级</option></select></label>
+      <label>状态 <select id="qStatusFilter" style="padding:6px 8px;border:1px solid #cbd5e1;border-radius:8px;"><option value="">全部</option><option value="open">未回复</option><option value="answered">已回复</option></select></label>
+      <span class="sub">共 <span id="qCount">0</span> 条</span>
+    </div>
+    <div id="qList"><p class="empty">加载中…</p></div>
+    <div class="err" id="qErr"></div>
   </div>
 
   <div class="card">
@@ -504,9 +525,82 @@ async function init() {
     if (me.role !== 'teacher') { location.href = 'student.html'; return; }
     document.getElementById('welcome').textContent = '你好，' + (me.name || me.username) + '老师';
     document.getElementById('userLine').textContent = '用户名：' + me.username;
+
+var allQuestions = [];
+
+function renderQuestions() {
+  var cf = document.getElementById('qClassFilter').value;
+  var sf = document.getElementById('qStatusFilter').value;
+  var list = allQuestions.filter(function (q) {
+    if (cf && String(q.class_id) !== String(cf)) return false;
+    if (sf && q.status !== sf) return false;
+    return true;
+  });
+  document.getElementById('qCount').textContent = list.length;
+  var box = document.getElementById('qList');
+  if (!list.length) { box.innerHTML = '<p class="empty">暂无提问</p>'; return; }
+  box.innerHTML = list.map(function (q) {
+    var badge = q.status === 'answered'
+      ? '<span class="badge done">已回复</span>'
+      : '<span class="badge lv1">未回复</span>';
+    var html = '<div class="item"><div class="t">' + esc(q.student_name || '') + ' · ' + esc(q.class_name || '') + ' ' + badge + '</div>'
+      + '<div class="d">' + esc(q.content || '') + '</div>';
+    if (q.image_path) html += '<img class="qimg" src="/student-api/' + esc(q.image_path) + '" alt="题目图片">';
+    html += '<div class="m">' + esc(q.created_at || '') + '</div>';
+    if (q.status === 'answered' && q.reply) {
+      html += '<div class="qreply"><span class="who">我的回复：</span>' + esc(q.reply) + '</div>';
+    }
+    html += '<div style="margin-top:8px;"><textarea id="reply-' + q.id + '" rows="2" style="width:100%;border:1px solid #cbd5e1;border-radius:8px;padding:8px 10px;font-size:14px;font-family:inherit;" placeholder="写回复…">' + esc(q.reply || '') + '</textarea></div>'
+      + '<div style="margin-top:8px;display:flex;gap:8px;">'
+      + '<button class="btn btn-small" type="button" onclick="replyQuestion(' + q.id + ')">回复</button>'
+      + '<button class="btn btn-small btn-danger" type="button" onclick="deleteQuestion(' + q.id + ')">删除</button>'
+      + '</div></div>';
+    return html;
+  }).join('');
+}
+
+async function loadQuestions() {
+  var r = await api('/student-api/teacher/questions', {});
+  if (r.status === 401) { location.href = 'login.html'; return; }
+  if (r.ok && r.data.ok) {
+    allQuestions = r.data.questions || [];
+    var sel = document.getElementById('qClassFilter');
+    var cur = sel.value;
+    sel.innerHTML = '<option value="">全部班级</option>' + (r.data.classes || []).map(function (c) {
+      return '<option value="' + esc(c.id) + '">' + esc(c.name) + '</option>';
+    }).join('');
+    sel.value = cur;
+    renderQuestions();
+  } else {
+    document.getElementById('qList').innerHTML = '<p class="empty">提问加载失败，请刷新页面重试</p>';
+  }
+}
+
+async function replyQuestion(qid) {
+  var ta = document.getElementById('reply-' + qid);
+  var reply = (ta.value || '').trim();
+  if (!reply) { alert('请先写回复内容'); return; }
+  var r = await api('/student-api/teacher/student-questions/' + qid + '/reply', { method: 'POST', csrf: true, body: { reply: reply } });
+  if (r.status === 401) { location.href = 'login.html'; return; }
+  if (r.ok && r.data.ok) loadQuestions();
+  else alert((r.data && r.data.error) || '回复失败，请重试');
+}
+
+async function deleteQuestion(qid) {
+  if (!confirm('确定删除这条提问吗？')) return;
+  var r = await api('/student-api/teacher/student-questions/' + qid + '/delete', { method: 'POST', csrf: true, body: {} });
+  if (r.status === 401) { location.href = 'login.html'; return; }
+  if (r.ok && r.data.ok) loadQuestions();
+  else alert((r.data && r.data.error) || '删除失败，请重试');
+}
+
+document.getElementById('qClassFilter').addEventListener('change', renderQuestions);
+document.getElementById('qStatusFilter').addEventListener('change', renderQuestions);
+
     await loadClasses();
     loadStudents();
     loadGrades();
+    loadQuestions();
   } catch (e) {
     showErr('网络异常，请检查网络后刷新页面');
   }
