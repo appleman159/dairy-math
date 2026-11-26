@@ -326,6 +326,34 @@ function readFileAsDataURL(file) {
   });
 }
 
+// 手机/相机拍的照片常常几 MB 到十几 MB，直接传会被服务器拦掉（413）。
+// 超过 1MB 的图先在浏览器里压一下：最长边压到 1600px，JPEG 0.85，
+// 压完一般只有两三百 KB，字迹够清楚，上传也快。
+function compressImage(file) {
+  return new Promise(function (resolve, reject) {
+    var reader = new FileReader();
+    reader.onload = function () {
+      var img = new Image();
+      img.onload = function () {
+        var maxSide = 1600;
+        var w = img.naturalWidth, h = img.naturalHeight;
+        if (w > maxSide || h > maxSide) {
+          var scale = Math.min(maxSide / w, maxSide / h);
+          w = Math.round(w * scale); h = Math.round(h * scale);
+        }
+        var canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', 0.85));
+      };
+      img.onerror = function () { reject(new Error('图片打不开')); };
+      img.src = reader.result;
+    };
+    reader.onerror = function () { reject(new Error('读取图片失败')); };
+    reader.readAsDataURL(file);
+  });
+}
+
 function renderQuestions(list) {
   var box = document.getElementById('qList');
   if (!list.length) { box.innerHTML = '<p class="empty">你还没有提过问题</p>'; return; }
@@ -361,7 +389,11 @@ document.getElementById('qSubmit').addEventListener('click', async function () {
     var body = { content: content };
     var file = document.getElementById('qImage').files[0];
     if (file) {
-      body.image_data = await readFileAsDataURL(file);
+      if (file.size > 1024 * 1024) {
+        body.image_data = await compressImage(file);
+      } else {
+        body.image_data = await readFileAsDataURL(file);
+      }
       body.image_name = file.name;
     }
     var r = await api('/student-api/student/questions', { method: 'POST', csrf: true, body: body });
@@ -370,6 +402,9 @@ document.getElementById('qSubmit').addEventListener('click', async function () {
       document.getElementById('qContent').value = '';
       document.getElementById('qImage').value = '';
       loadQuestions();
+    } else if (r.status === 413) {
+      errBox.textContent = '图片太大了，传不上去，请换张小一点的图再试';
+      errBox.classList.add('show');
     } else {
       errBox.textContent = (r.data && r.data.error) || '提交失败，请重试';
       errBox.classList.add('show');
