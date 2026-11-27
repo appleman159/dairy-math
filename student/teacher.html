@@ -443,6 +443,20 @@ function truncText(v, n) {
   var t = String(v == null ? '' : v);
   return t.length > n ? t.slice(0, n) + '…' : t;
 }
+// 截断不能把 $...$ / $$...$$ 公式从中断开，否则 KaTeX 认不出、会原样露出源码；
+// 若截断点落在公式内，退到该公式的起始 $ 之前再加省略号
+function truncMath(v, n) {
+  var t = String(v == null ? '' : v);
+  if (t.length <= n) return t;
+  var re = /\$\$[\s\S]*?\$\$|\$[^$]*?\$/g;
+  var m;
+  while ((m = re.exec(t)) !== null) {
+    if (n > m.index && n < m.index + m[0].length) {
+      return t.slice(0, m.index) + '…';
+    }
+  }
+  return t.slice(0, n) + '…';
+}
 // 答题弹窗里的题目是 LaTeX 源码：有 KaTeX 时渲染成公式（与 learn.html 同一套 0.16.11），
 // 没加载到 KaTeX 时退回纯文本（去掉 $ 定界符），不影响查看
 function renderMath(el) {
@@ -508,8 +522,8 @@ function renderStudentRecords(records, wrongs) {
         : '<span class="badge off">答错</span>';
       var ans = (r.qtype === 'constructed')
         ? '纸上作答，自评：' + ((r.correct === 1 || r.correct === true) ? '做对了' : '做错了')
-        : ('作答：' + truncText(r.answer || '（未作答）', 40));
-      return '<div class="rec-item"><div class="t">' + esc(truncText(r.content, 90)) + ' ' + badge + '</div>' +
+        : ('作答：' + truncMath(r.answer || '（未作答）', 40));
+      return '<div class="rec-item"><div class="t">' + esc(truncMath(r.content, 90)) + ' ' + badge + '</div>' +
         '<div class="m">' + esc(r.kp_title || '') + ' · ' + (QTYPE_LABEL[r.qtype] || r.qtype || '') + ' · ' + esc(r.answered_at || '') + '</div>' +
         '<div class="a">' + esc(ans) + '</div></div>';
     }).join('');
@@ -519,10 +533,10 @@ function renderStudentRecords(records, wrongs) {
     html += '<p class="empty">没有待订正的错题</p>';
   } else {
     html += wrongs.map(function (w) {
-      return '<div class="rec-item"><div class="t">' + esc(truncText(w.content, 90)) + '</div>' +
+      return '<div class="rec-item"><div class="t">' + esc(truncMath(w.content, 90)) + '</div>' +
         '<div class="m">' + esc(w.kp_title || '') + ' · ' + (QTYPE_LABEL[w.qtype] || w.qtype || '') + '</div>' +
-        '<div class="a">正确答案：' + esc(truncText(w.correct_answer, 60)) + '</div>' +
-        (w.explanation ? '<div class="a">解析：' + esc(truncText(w.explanation, 120)) + '</div>' : '') + '</div>';
+        '<div class="a">正确答案：' + esc(truncMath(w.correct_answer, 60)) + '</div>' +
+        (w.explanation ? '<div class="a">解析：' + esc(truncMath(w.explanation, 120)) + '</div>' : '') + '</div>';
     }).join('');
   }
   var recBodyEl = document.getElementById('recBody');
