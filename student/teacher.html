@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>教师管理 · 学生数学复习平台</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
 <style>
 * { box-sizing: border-box; }
 body { margin: 0; font-family: -apple-system, "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif; background: #f1f5f9; color: #1e293b; }
@@ -228,6 +229,8 @@ td .rowbtns { display: flex; gap: 8px; }
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
 <script>
 var me = null;
 var classes = [];
@@ -440,9 +443,20 @@ function truncText(v, n) {
   var t = String(v == null ? '' : v);
   return t.length > n ? t.slice(0, n) + '…' : t;
 }
-// 题目是 LaTeX 源码，教师页没有 KaTeX，去掉 $ 定界符后当纯文本看
-function plainContent(v) {
-  return String(v == null ? '' : v).replace(/\$/g, '');
+// 答题弹窗里的题目是 LaTeX 源码：有 KaTeX 时渲染成公式（与 learn.html 同一套 0.16.11），
+// 没加载到 KaTeX 时退回纯文本（去掉 $ 定界符），不影响查看
+function renderMath(el) {
+  if (window.renderMathInElement) {
+    try {
+      renderMathInElement(el, {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '$', right: '$', display: false }
+        ],
+        throwOnError: false
+      });
+    } catch (e) {}
+  }
 }
 function openStudentRecords(id, name) {
   document.getElementById('recTitle').textContent = name + ' 的答题情况';
@@ -495,7 +509,7 @@ function renderStudentRecords(records, wrongs) {
       var ans = (r.qtype === 'constructed')
         ? '纸上作答，自评：' + ((r.correct === 1 || r.correct === true) ? '做对了' : '做错了')
         : ('作答：' + truncText(r.answer || '（未作答）', 40));
-      return '<div class="rec-item"><div class="t">' + esc(truncText(plainContent(r.content), 90)) + ' ' + badge + '</div>' +
+      return '<div class="rec-item"><div class="t">' + esc(truncText(r.content, 90)) + ' ' + badge + '</div>' +
         '<div class="m">' + esc(r.kp_title || '') + ' · ' + (QTYPE_LABEL[r.qtype] || r.qtype || '') + ' · ' + esc(r.answered_at || '') + '</div>' +
         '<div class="a">' + esc(ans) + '</div></div>';
     }).join('');
@@ -505,13 +519,19 @@ function renderStudentRecords(records, wrongs) {
     html += '<p class="empty">没有待订正的错题</p>';
   } else {
     html += wrongs.map(function (w) {
-      return '<div class="rec-item"><div class="t">' + esc(truncText(plainContent(w.content), 90)) + '</div>' +
+      return '<div class="rec-item"><div class="t">' + esc(truncText(w.content, 90)) + '</div>' +
         '<div class="m">' + esc(w.kp_title || '') + ' · ' + (QTYPE_LABEL[w.qtype] || w.qtype || '') + '</div>' +
-        '<div class="a">正确答案：' + esc(truncText(plainContent(w.correct_answer), 60)) + '</div>' +
-        (w.explanation ? '<div class="a">解析：' + esc(truncText(plainContent(w.explanation), 120)) + '</div>' : '') + '</div>';
+        '<div class="a">正确答案：' + esc(truncText(w.correct_answer, 60)) + '</div>' +
+        (w.explanation ? '<div class="a">解析：' + esc(truncText(w.explanation, 120)) + '</div>' : '') + '</div>';
     }).join('');
   }
-  document.getElementById('recBody').innerHTML = html;
+  var recBodyEl = document.getElementById('recBody');
+  if (window.renderMathInElement) {
+    recBodyEl.innerHTML = html;
+    renderMath(recBodyEl);
+  } else {
+    recBodyEl.innerHTML = html.replace(/\$/g, '');
+  }
 }
 function closeRecords() {
   document.getElementById('recordsModal').hidden = true;
