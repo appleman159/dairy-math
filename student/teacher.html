@@ -55,6 +55,15 @@ td .rowbtns { display: flex; gap: 8px; }
 .modal-card p { color: #64748b; font-size: 14px; margin: 0 0 6px; }
 .modal-btns { display: flex; gap: 10px; margin-top: 18px; }
 .modal-btns .btn { flex: 1; }
+.namelink { background: none; border: none; color: #0E6B66; font-size: 14px; font-weight: 700; cursor: pointer; padding: 0; font-family: inherit; text-decoration: underline; text-underline-offset: 2px; white-space: nowrap; }
+.modal-card.wide { max-width: 880px; max-height: 86vh; overflow-y: auto; }
+.rec-sum { display: flex; gap: 18px; flex-wrap: wrap; margin: 10px 0 4px; font-size: 14px; }
+.rec-sum b { font-size: 16px; }
+.rec-sec { font-weight: 700; margin: 18px 0 6px; font-size: 15px; }
+.rec-item { border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 12px; margin: 8px 0; }
+.rec-item .t { font-size: 14px; line-height: 1.6; }
+.rec-item .m { color: #64748b; font-size: 12px; margin-top: 4px; }
+.rec-item .a { font-size: 13px; margin-top: 4px; color: #334155; line-height: 1.6; }
 
 .item { border-top: 1px solid #f1f5f9; padding: 12px 0; }
 .item:first-of-type { border-top: none; }
@@ -208,6 +217,17 @@ td .rowbtns { display: flex; gap: 8px; }
   </div>
 </div>
 
+<div class="modal" id="recordsModal" hidden>
+  <div class="modal-card wide">
+    <h3 id="recTitle">答题情况</h3>
+    <p id="recSub"></p>
+    <div id="recBody"><p class="empty">加载中…</p></div>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" id="recClose" type="button">关闭</button>
+    </div>
+  </div>
+</div>
+
 <script>
 var me = null;
 var classes = [];
@@ -324,7 +344,7 @@ function renderStudents(list) {
       : '<span class="badge ok">已修改</span>';
     var toggleLabel = (s.is_active === 1 || s.is_active === true) ? '停用' : '启用';
     var toggleVal = (s.is_active === 1 || s.is_active === true) ? 0 : 1;
-    return '<tr><td>' + esc(s.name || '') + '</td><td>' + esc(s.username || '') + '</td>' +
+    return '<tr><td><button class="namelink" type="button" data-records="' + s.id + '" data-name="' + esc(s.name || s.username) + '" title="查看答题情况">' + esc(s.name || '') + '</button></td><td>' + esc(s.username || '') + '</td>' +
       '<td>' + esc(s.class_name || classNameOf(s.class_id) || '') + '</td>' +
       '<td>' + status + '</td><td>' + pwd + '</td>' +
       '<td><div class="rowbtns">' +
@@ -334,6 +354,9 @@ function renderStudents(list) {
   }).join('');
   body.querySelectorAll('[data-reset]').forEach(function (b) {
     b.addEventListener('click', function () { openReset(b.dataset.reset, b.dataset.name); });
+  });
+  body.querySelectorAll('[data-records]').forEach(function (b) {
+    b.addEventListener('click', function () { openStudentRecords(b.dataset.records, b.dataset.name); });
   });
   body.querySelectorAll('[data-toggle]').forEach(function (b) {
     b.addEventListener('click', function () { setActive(b.dataset.toggle, parseInt(b.dataset.val, 10)); });
@@ -410,6 +433,92 @@ function closeReset() {
 document.getElementById('resetCancel').addEventListener('click', closeReset);
 document.getElementById('resetModal').addEventListener('click', function (e) {
   if (e.target === this) closeReset();
+});
+
+var QTYPE_LABEL = { single: '单选', multiple: '多选', fill: '填空', constructed: '解答' };
+function truncText(v, n) {
+  var t = String(v == null ? '' : v);
+  return t.length > n ? t.slice(0, n) + '…' : t;
+}
+// 题目是 LaTeX 源码，教师页没有 KaTeX，去掉 $ 定界符后当纯文本看
+function plainContent(v) {
+  return String(v == null ? '' : v).replace(/\$/g, '');
+}
+function openStudentRecords(id, name) {
+  document.getElementById('recTitle').textContent = name + ' 的答题情况';
+  document.getElementById('recSub').textContent = '按答题时间倒序，最近 100 条';
+  document.getElementById('recBody').innerHTML = '<p class="empty">加载中…</p>';
+  document.getElementById('recordsModal').hidden = false;
+  Promise.all([
+    api('/student-api/teacher/student-records?student_id=' + id, {}),
+    api('/student-api/teacher/student-wrong?student_id=' + id, {})
+  ]).then(function (rs) {
+    var rec = rs[0], wr = rs[1];
+    if (rec.status === 401 || wr.status === 401) { location.href = 'login.html'; return; }
+    if (!rec.ok || !rec.data.ok) {
+      document.getElementById('recBody').innerHTML = '<p class="empty">答题记录加载失败，请刷新页面重试</p>';
+      return;
+    }
+    renderStudentRecords(rec.data.records || [], (wr.ok && wr.data.ok) ? (wr.data.wrong_questions || []) : []);
+  }).catch(function () {
+    document.getElementById('recBody').innerHTML = '<p class="empty">加载失败，请重试</p>';
+  });
+}
+function renderStudentRecords(records, wrongs) {
+  var total = records.length;
+  var correct = records.filter(function (r) { return r.correct === 1 || r.correct === true; }).length;
+  var rate = total ? Math.round(correct / total * 100) : 0;
+  var byKp = {};
+  records.forEach(function (r) {
+    var k = r.kp_title || '未分类';
+    byKp[k] = byKp[k] || { total: 0, correct: 0 };
+    byKp[k].total++;
+    if (r.correct === 1 || r.correct === true) byKp[k].correct++;
+  });
+  var kpRows = Object.keys(byKp).map(function (k) {
+    var v = byKp[k];
+    return '<tr><td>' + esc(k) + '</td><td>' + v.total + '</td><td>' + v.correct + '</td><td>' + Math.round(v.correct / v.total * 100) + '%</td></tr>';
+  }).join('');
+  var html = '<div class="rec-sum"><span>共答题 <b>' + total + '</b> 道</span><span>答对 <b>' + correct + '</b> 道</span><span>正确率 <b>' + rate + '%</b></span><span>待订正错题 <b>' + wrongs.length + '</b> 道</span></div>';
+  html += '<div class="rec-sec">分考点统计</div>';
+  html += kpRows
+    ? '<div class="table-wrap"><table><thead><tr><th>考点</th><th>答题</th><th>答对</th><th>正确率</th></tr></thead><tbody>' + kpRows + '</tbody></table></div>'
+    : '<p class="empty">暂无答题记录</p>';
+  html += '<div class="rec-sec">答题记录（最近 ' + total + ' 条）</div>';
+  if (!total) {
+    html += '<p class="empty">该学生还没有答题记录</p>';
+  } else {
+    html += records.map(function (r) {
+      var badge = (r.correct === 1 || r.correct === true)
+        ? '<span class="badge ok">答对</span>'
+        : '<span class="badge off">答错</span>';
+      var ans = (r.qtype === 'constructed')
+        ? '纸上作答，自评：' + ((r.correct === 1 || r.correct === true) ? '做对了' : '做错了')
+        : ('作答：' + truncText(r.answer || '（未作答）', 40));
+      return '<div class="rec-item"><div class="t">' + esc(truncText(plainContent(r.content), 90)) + ' ' + badge + '</div>' +
+        '<div class="m">' + esc(r.kp_title || '') + ' · ' + (QTYPE_LABEL[r.qtype] || r.qtype || '') + ' · ' + esc(r.answered_at || '') + '</div>' +
+        '<div class="a">' + esc(ans) + '</div></div>';
+    }).join('');
+  }
+  html += '<div class="rec-sec">待订正错题（' + wrongs.length + ' 道）</div>';
+  if (!wrongs.length) {
+    html += '<p class="empty">没有待订正的错题</p>';
+  } else {
+    html += wrongs.map(function (w) {
+      return '<div class="rec-item"><div class="t">' + esc(truncText(plainContent(w.content), 90)) + '</div>' +
+        '<div class="m">' + esc(w.kp_title || '') + ' · ' + (QTYPE_LABEL[w.qtype] || w.qtype || '') + '</div>' +
+        '<div class="a">正确答案：' + esc(truncText(plainContent(w.correct_answer), 60)) + '</div>' +
+        (w.explanation ? '<div class="a">解析：' + esc(truncText(plainContent(w.explanation), 120)) + '</div>' : '') + '</div>';
+    }).join('');
+  }
+  document.getElementById('recBody').innerHTML = html;
+}
+function closeRecords() {
+  document.getElementById('recordsModal').hidden = true;
+}
+document.getElementById('recClose').addEventListener('click', closeRecords);
+document.getElementById('recordsModal').addEventListener('click', function (e) {
+  if (e.target === this) closeRecords();
 });
 document.getElementById('resetConfirm').addEventListener('click', async function () {
   var p1 = document.getElementById('resetPwd').value;
