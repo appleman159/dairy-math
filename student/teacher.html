@@ -688,7 +688,7 @@ function renderQuestions() {
 }
 
 async function loadQuestions() {
-  var r = await api('/student-api/teacher/questions', {});
+  var r = await api('/student-api/teacher/student-questions', {});
   if (r.status === 401) { location.href = 'login.html'; return; }
   if (r.ok && r.data.ok) {
     allQuestions = r.data.questions || [];
